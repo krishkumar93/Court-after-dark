@@ -116,7 +116,7 @@ export default function EquipmentBookingModal({
             </div>
             <div className="text-right shrink-0">
               <span className="text-[10px] text-slate-400">Rate</span>
-              <div className="text-lg font-black text-primary-400">${rentalRate}</div>
+              <div className="text-lg font-black text-primary-400">₹{rentalRate}</div>
               <span className="text-[10px] text-slate-500">/ 2h session</span>
             </div>
           </div>
@@ -222,7 +222,7 @@ export default function EquipmentBookingModal({
           <div className="rounded-2xl border border-primary-400/30 bg-primary-400/10 p-4 space-y-1.5">
             <div className="flex justify-between text-slate-300">
               <span>Rental Rate:</span>
-              <span>${rentalRate} × {quantity} unit(s)</span>
+              <span>₹{rentalRate} × {quantity} unit(s)</span>
             </div>
             <div className="flex justify-between text-slate-300">
               <span>Duration:</span>
@@ -230,7 +230,7 @@ export default function EquipmentBookingModal({
             </div>
             <div className="flex justify-between text-sm font-bold text-white border-t border-primary-400/20 pt-2 mt-1">
               <span>Total Rental Amount:</span>
-              <span className="text-primary-300 text-base">${subtotal.toFixed(2)}</span>
+              <span className="text-primary-300 text-base">₹{subtotal.toFixed(2)}</span>
             </div>
           </div>
 
@@ -241,7 +241,7 @@ export default function EquipmentBookingModal({
             onClick={handleOpenPayment}
             className="w-full flex items-center justify-center gap-2 rounded-xl bg-primary-400 py-3 text-sm font-bold text-dark-950 hover:bg-primary-300 transition shadow-glow-sm"
           >
-            <span>Proceed to Payment (${subtotal.toFixed(2)})</span>
+            <span>Proceed to Payment (₹{subtotal.toFixed(2)})</span>
             <ChevronRight size={16} />
           </button>
         </div>

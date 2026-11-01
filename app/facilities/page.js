@@ -299,25 +299,25 @@ function FacilitiesContent() {
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-xs font-semibold text-slate-300">Max Hourly Rate</label>
               <span className="text-xs font-bold text-primary-400">
-                {maxPrice ? `$${maxPrice}/hr` : "Any Price"}
+                {maxPrice ? `₹${maxPrice}/hr` : "Any Price"}
               </span>
             </div>
             <input
               type="range"
-              min="20"
-              max="150"
-              step="5"
-              value={maxPrice || 150}
+              min="200"
+              max="2500"
+              step="50"
+              value={maxPrice || 2500}
               onChange={(e) => {
-                setMaxPrice(e.target.value === "150" ? "" : e.target.value);
+                setMaxPrice(e.target.value === "2500" ? "" : e.target.value);
                 setPage(1);
               }}
               className="w-full accent-primary-400 cursor-pointer"
             />
             <div className="flex justify-between text-[10px] text-slate-500 mt-1">
-              <span>$20</span>
-              <span>$75</span>
-              <span>$150+</span>
+              <span>₹200</span>
+              <span>₹1,200</span>
+              <span>₹2,500+</span>
             </div>
           </div>
 
@@ -420,7 +420,7 @@ function FacilitiesContent() {
               )}
               {maxPrice && (
                 <span className="inline-flex items-center gap-1 rounded-full bg-dark-800 border border-slate-700 px-2.5 py-1 text-xs text-slate-300">
-                  Max: ${maxPrice}/hr
+                  Max: ₹{maxPrice}/hr
                   <button onClick={() => setMaxPrice("")}>
                     <X size={12} />
                   </button>

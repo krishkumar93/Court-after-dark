@@ -182,7 +182,7 @@ export default function AdminBookingsPage() {
                   </td>
                   <td className="px-4 py-3">
                     <p className="font-bold text-primary-400">
-                      ${b.totalPrice || b.pricePerHour || 40}
+                      ₹{b.totalPrice || b.pricePerHour || 450}
                     </p>
                     <button
                       onClick={() =>

@@ -268,10 +268,10 @@ function SearchContent() {
           </span>
           {[
             { label: "All Prices", value: "" },
-            { label: "Under $20", value: "20" },
-            { label: "Under $40", value: "40" },
-            { label: "Under $60", value: "60" },
-            { label: "Under $100", value: "100" },
+            { label: "Under ₹300", value: "300" },
+            { label: "Under ₹600", value: "600" },
+            { label: "Under ₹1,000", value: "1000" },
+            { label: "Under ₹2,000", value: "2000" },
           ].map((preset) => (
             <button
               key={preset.label}

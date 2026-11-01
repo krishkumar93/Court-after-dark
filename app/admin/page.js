@@ -125,7 +125,7 @@ export default function AdminOverviewPage() {
         <StatCard
           icon={DollarSign}
           label="Total Revenue Generated"
-          value={`$${totalRevenue.toLocaleString()}`}
+          value={`₹${totalRevenue.toLocaleString("en-IN")}`}
           subtext="Confirmed + Completed"
           highlight={true}
         />

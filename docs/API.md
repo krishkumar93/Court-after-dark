@@ -125,3 +125,4 @@ Checks out sports gear directly. Decrements available stock atomically.
 
 ### `POST /api/waitlist`
 Queues the authenticated athlete for a booked time slot. If the current reservation is cancelled, waitlisted athletes are notified in FIFO sequence.
+

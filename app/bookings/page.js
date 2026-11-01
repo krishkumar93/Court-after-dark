@@ -436,7 +436,7 @@ export default function BookingsPage() {
                           {c.equipmentId?.name} × {c.quantity}
                         </h4>
                         <p className="text-[11px] text-slate-400">
-                          {c.equipmentId?.category} • Fee: <strong className="text-primary-300">${c.totalAmount || c.rentalPrice || 6}</strong>
+                          {c.equipmentId?.category} • Fee: <strong className="text-primary-300">₹{c.totalAmount || c.rentalPrice || 100}</strong>
                         </p>
                       </div>
                     </div>

@@ -198,7 +198,7 @@ export default function BookingDetailPage() {
                 <Tag size={13} className="text-primary-400" /> Total Fee
               </span>
               <p className="text-sm font-bold text-primary-400 mt-1">
-                ${booking.totalPrice || booking.pricePerHour || 40}
+                ₹{booking.totalPrice || booking.pricePerHour || 450}
               </p>
             </div>
             <div>
@@ -262,17 +262,17 @@ export default function BookingDetailPage() {
               <div className="space-y-1.5 text-slate-300">
                 <div className="flex justify-between">
                   <span className="text-slate-400">Court Slot Fee:</span>
-                  <span>${booking.pricePerHour || 40}</span>
+                  <span>₹{booking.pricePerHour || 450}</span>
                 </div>
                 {booking.equipmentTotal > 0 && (
                   <div className="flex justify-between">
                     <span className="text-slate-400">Equipment Add-ons:</span>
-                    <span>+${booking.equipmentTotal}</span>
+                    <span>+₹{booking.equipmentTotal}</span>
                   </div>
                 )}
                 <div className="flex justify-between font-bold text-white border-t border-slate-800 pt-1.5">
                   <span>Grand Total Paid:</span>
-                  <span className="text-primary-400 text-sm">${booking.totalPrice}</span>
+                  <span className="text-primary-400 text-sm">₹{booking.totalPrice}</span>
                 </div>
               </div>
             </div>
@@ -289,7 +289,7 @@ export default function BookingDetailPage() {
                 {booking.equipmentAddons.map((eq, i) => (
                   <div key={i} className="flex items-center justify-between p-2 rounded-xl bg-dark-850 border border-slate-800">
                     <span className="text-slate-200">{eq.name} × {eq.quantity}</span>
-                    <span className="text-primary-300 font-bold">${eq.price}</span>
+                    <span className="text-primary-300 font-bold">₹{eq.price}</span>
                   </div>
                 ))}
               </div>

@@ -97,7 +97,7 @@ export default function FacilityCard({ facility, onFavoriteToggle, isFavorited =
         <div className="absolute bottom-3 right-3 rounded-xl bg-dark-950/90 border border-primary-400/30 px-3 py-1 backdrop-blur-md">
           <span className="text-[10px] text-slate-400">from </span>
           <span className="text-sm font-black text-primary-400">
-            ${facility.pricePerHour || 40}
+            ₹{facility.pricePerHour || 450}
           </span>
           <span className="text-[10px] text-slate-400"> / hr</span>
         </div>

@@ -46,7 +46,7 @@ export default function BookingCard({ booking, onCancel }) {
           </span>
           <span className="flex items-center gap-1.5 text-slate-300">
             <Tag size={13} className="text-slate-500 shrink-0" />
-            <strong className="text-primary-400">${booking.totalPrice || booking.pricePerHour || 40}</strong>
+            <strong className="text-primary-400">₹{booking.totalPrice || booking.pricePerHour || 450}</strong>
             <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
               isPaid ? "bg-emerald-500/15 text-emerald-300" : "bg-amber-500/15 text-amber-300"
             }`}>

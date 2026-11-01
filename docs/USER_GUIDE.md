@@ -41,3 +41,4 @@ To ensure equitable nocturnal play across high-demand sports facilities, Courts 
 Courts After Dark provides two payment options:
 1. **Credit / Debit Cards:** Instant payment with cardholder name, 16-digit card number, MM/YY expiry, and CVV.
 2. **Razorpay Gateway:** Native support for Indian UPI apps (Google Pay, PhonePe, Paytm, BHIM), NetBanking, and mobile wallets.
+

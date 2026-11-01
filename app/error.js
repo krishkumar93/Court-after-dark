@@ -49,3 +49,4 @@ export default function GlobalErrorPage({ error, reset }) {
     </div>
   );
 }
+

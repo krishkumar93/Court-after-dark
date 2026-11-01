@@ -361,7 +361,7 @@ export default function FacilityDetailPage({ params }) {
 
               <div className="rounded-xl bg-dark-950/90 border border-primary-400/40 px-3.5 py-1.5 backdrop-blur-md self-start sm:self-auto">
                 <span className="text-xs text-slate-400">Rate: </span>
-                <span className="text-xl font-black text-primary-400">${pricePerHour}</span>
+                <span className="text-xl font-black text-primary-400">₹{pricePerHour}</span>
                 <span className="text-xs text-slate-400"> / hour</span>
               </div>
             </div>
@@ -546,7 +546,7 @@ export default function FacilityDetailPage({ params }) {
                           <div className="min-w-0">
                             <div className="text-white font-semibold truncate">{eq.name}</div>
                             <div className="text-[10px] text-slate-400">
-                              +${eq.rentalPrice || 5} • {eq.category}
+                              +₹{eq.rentalPrice || 80} • {eq.category}
                             </div>
                           </div>
                         </div>
@@ -612,17 +612,17 @@ export default function FacilityDetailPage({ params }) {
                 </div>
                 <div className="flex justify-between text-slate-300">
                   <span>Court Rate (1 hr):</span>
-                  <span>${pricePerHour}</span>
+                  <span>₹{pricePerHour}</span>
                 </div>
                 {equipmentTotal > 0 && (
                   <div className="flex justify-between text-slate-300">
                     <span>Equipment Add-ons:</span>
-                    <span>+${equipmentTotal}</span>
+                    <span>+₹{equipmentTotal}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm font-bold text-white border-t border-primary-400/20 pt-2">
                   <span>Total Amount:</span>
-                  <span className="text-primary-300 text-base">${grandTotal}</span>
+                  <span className="text-primary-300 text-base">₹{grandTotal}</span>
                 </div>
               </div>
             )}
@@ -637,7 +637,7 @@ export default function FacilityDetailPage({ params }) {
               <CreditCard size={16} />
               <span>
                 {selectedSlot
-                  ? `Proceed to Payment ($${grandTotal})`
+                  ? `Proceed to Payment (₹${grandTotal})`
                   : "Select an Open Slot to Book"}
               </span>
             </button>

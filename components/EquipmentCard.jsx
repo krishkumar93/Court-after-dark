@@ -35,7 +35,7 @@ export default function EquipmentCard({ item, onCheckout }) {
         {/* Rental Price Badge */}
         <div className="absolute bottom-3 right-3 rounded-lg bg-dark-950/90 border border-primary-400/40 px-2.5 py-1 backdrop-blur-md">
           <span className="text-[10px] text-slate-400">Rent </span>
-          <span className="text-sm font-black text-primary-400">${rentalPrice}</span>
+          <span className="text-sm font-black text-primary-400">₹{rentalPrice}</span>
           <span className="text-[10px] text-slate-400"> / session</span>
         </div>
       </div>
@@ -92,7 +92,7 @@ export default function EquipmentCard({ item, onCheckout }) {
             >
               {isAvailable ? (
                 <>
-                  <ShoppingBag size={14} /> Book / Rent Gear (${rentalPrice})
+                  <ShoppingBag size={14} /> Book / Rent Gear (₹{rentalPrice})
                 </>
               ) : (
                 "Out of Stock"

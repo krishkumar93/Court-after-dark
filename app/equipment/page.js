@@ -223,7 +223,7 @@ export default function EquipmentPage() {
                       </h4>
                       <div className="flex items-center gap-2 text-[11px] text-slate-400 mt-0.5">
                         <span className="text-primary-300 font-semibold">
-                          ${c.totalAmount || c.rentalPrice || 6}
+                          ₹{c.totalAmount || c.rentalPrice || 100}
                         </span>
                         <span>• Method: {c.paymentMethod || "Card"} ({c.paymentStatus || "Paid"})</span>
                       </div>
