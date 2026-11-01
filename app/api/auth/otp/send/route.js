@@ -55,7 +55,7 @@ export async function POST(request) {
     }
 
     // Generate & record OTP
-    const otpResult = createOtp(norm.normalized, channel, purpose);
+    const otpResult = await createOtp(norm.normalized, channel, purpose);
 
     return NextResponse.json({
       success: true,
@@ -64,6 +64,8 @@ export async function POST(request) {
       target: norm.normalized,
       maskedTarget: otpResult.maskedTarget,
       devOtp: otpResult.devOtp, // Provides seamless testing experience
+      whatsappUrl: otpResult.whatsappUrl,
+      carrierDispatched: otpResult.carrierDispatched,
       userExists,
       expiresAt: otpResult.expiresAt,
     });
@@ -75,3 +77,4 @@ export async function POST(request) {
     );
   }
 }
+

@@ -116,3 +116,4 @@ export async function POST(request) {
     return NextResponse.json({ error: err.message || "Failed to verify OTP." }, { status: 500 });
   }
 }
+

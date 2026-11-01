@@ -42,7 +42,7 @@ console.log("   ✓ Contact masking tests passed.");
 
 // 4. Testing OTP Lifecycle for Phone
 console.log("4. Testing OTP Lifecycle for Phone...");
-const phoneOtpResult = createOtp("9876511111", "phone", "login");
+const phoneOtpResult = await createOtp("9876511111", "phone", "login");
 assert(phoneOtpResult.success, "createOtp should succeed");
 assert.equal(phoneOtpResult.devOtp.length, 6, "OTP must be 6 digits");
 
@@ -57,7 +57,7 @@ console.log("   ✓ Phone OTP generation and verification passed.");
 
 // 5. Testing OTP Lifecycle for Email
 console.log("5. Testing OTP Lifecycle for Email...");
-const emailOtpResult = createOtp("priya@example.com", "email", "register");
+const emailOtpResult = await createOtp("priya@example.com", "email", "register");
 assert(emailOtpResult.success);
 assert.equal(emailOtpResult.devOtp.length, 6);
 
@@ -66,3 +66,4 @@ assert.equal(passEmailVerify.success, true);
 console.log("   ✓ Email OTP generation and verification passed.");
 
 console.log("\n🎉 All OTP authentication tests passed successfully!");
+

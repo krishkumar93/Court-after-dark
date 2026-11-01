@@ -22,6 +22,7 @@ import {
   RefreshCw,
   Edit2,
   Check,
+  ExternalLink,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
@@ -43,6 +44,8 @@ export default function LoginPage() {
   // OTP Metadata
   const [maskedTarget, setMaskedTarget] = useState("");
   const [devOtp, setDevOtp] = useState("");
+  const [whatsappUrl, setWhatsappUrl] = useState("");
+  const [carrierDispatched, setCarrierDispatched] = useState(false);
   const [countdown, setCountdown] = useState(45);
   const [canResend, setCanResend] = useState(false);
   const [notification, setNotification] = useState(null); // Real-time Simulated Incoming SMS/Email Toast
@@ -121,6 +124,8 @@ export default function LoginPage() {
       const res = await sendOtp(target, authMethod, "login");
       setMaskedTarget(res.maskedTarget || target);
       setDevOtp(res.devOtp || "");
+      setWhatsappUrl(res.whatsappUrl || "");
+      setCarrierDispatched(!!res.carrierDispatched);
       setStep("otp");
       setCountdown(45);
       setCanResend(false);
@@ -130,13 +135,15 @@ export default function LoginPage() {
         channel: authMethod,
         target: res.maskedTarget,
         code: res.devOtp,
+        whatsappUrl: res.whatsappUrl,
+        carrierDispatched: res.carrierDispatched,
         text:
           authMethod === "phone"
-            ? `SMS received from CAD-AUTH: Your verification code is ${res.devOtp}. Valid for 5 minutes.`
-            : `Email received from auth@courtsafterdark.com: Your verification code is ${res.devOtp}.`,
+            ? `SMS dispatched to ${res.maskedTarget}: Your verification code is ${res.devOtp}. Valid for 5 minutes.`
+            : `Email dispatched to ${res.maskedTarget}: Your verification code is ${res.devOtp}.`,
       });
 
-      showToast(`Verification code sent to ${res.maskedTarget}!`);
+      showToast(`Verification code ready for ${res.maskedTarget}!`);
     } catch (err) {
       setErrorMessage(err.message || "Failed to send verification code. Please retry.");
       showToast(err.message || "Could not send OTP", "error");
@@ -252,36 +259,62 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Realistic Simulated SMS / Email Banner (when OTP is sent) */}
-        {notification && step === "otp" && (
-          <div className="rounded-2xl border border-emerald-500/40 bg-emerald-950/40 p-4 space-y-2 shadow-lg animate-in fade-in slide-in-from-top-2 duration-300">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-400">
-                {notification.channel === "phone" ? <Smartphone size={14} /> : <Mail size={14} />}
-                <span>
-                  {notification.channel === "phone" ? "Incoming SMS from CAD-AUTH" : "Incoming Email Notification"}
-                </span>
+        {/* Prominent Real-Time SMS & WhatsApp Dispatch Card (when OTP is sent) */}
+        {step === "otp" && (
+          <div className="rounded-2xl border-2 border-emerald-500/50 bg-gradient-to-br from-emerald-950/70 to-dark-950 p-4 sm:p-5 space-y-3.5 shadow-2xl animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="flex items-center justify-between border-b border-emerald-500/20 pb-2.5">
+              <div className="flex items-center gap-2">
+                <div className="h-7 w-7 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                  {authMethod === "phone" ? <Smartphone size={15} /> : <Mail size={15} />}
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">
+                    {authMethod === "phone" ? "Mobile Phone Verification" : "Email Verification"}
+                  </span>
+                  <span className="text-xs font-mono font-bold text-white">{maskedTarget}</span>
+                </div>
               </div>
-              <span className="text-[10px] font-mono font-bold text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded">
-                SIMULATED REAL-TIME
+              <span className="text-[10px] font-mono font-bold text-emerald-300 bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.5 rounded-full">
+                ACTIVE CODE
               </span>
             </div>
-            <p className="text-[11px] text-slate-200 font-mono leading-relaxed">
-              "{notification.text}"
-            </p>
-            <div className="pt-1 flex items-center justify-between">
-              <span className="text-[11px] text-slate-400">
-                Code: <strong className="text-emerald-300 font-mono text-xs">{devOtp}</strong>
-              </span>
+
+            {/* The Highlighted 6-digit OTP Box */}
+            <div className="rounded-xl bg-dark-950/90 border border-emerald-500/30 p-3 flex items-center justify-between gap-2">
+              <div>
+                <span className="text-[10px] uppercase font-semibold text-slate-400 block">
+                  Your 6-Digit OTP Code
+                </span>
+                <div className="text-2xl font-black font-mono tracking-widest text-emerald-400">
+                  {devOtp || "••••••"}
+                </div>
+              </div>
               <button
                 type="button"
                 onClick={handleAutoFillOtp}
-                className="flex items-center gap-1 rounded-lg bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-1 text-[11px] font-bold text-emerald-300 hover:bg-emerald-500/30 transition"
+                className="flex items-center gap-1.5 rounded-xl bg-emerald-500 text-dark-950 px-3.5 py-2 text-xs font-black hover:bg-emerald-400 transition shadow-glow-sm shrink-0"
               >
-                <Check size={12} />
+                <Check size={14} />
                 <span>Auto-Fill Code</span>
               </button>
             </div>
+
+            {/* WhatsApp Instant Delivery Button */}
+            {whatsappUrl && (
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 p-2.5 text-xs font-bold text-white hover:from-emerald-500 hover:to-teal-500 transition shadow-sm"
+              >
+                <span>📲 Open on WhatsApp to View on Phone</span>
+                <ExternalLink size={13} />
+              </a>
+            )}
+
+            <p className="text-[10px] text-slate-400 leading-relaxed text-center">
+              Code is valid for 5 minutes. Enter this code into the verification boxes below.
+            </p>
           </div>
         )}
 
@@ -430,14 +463,24 @@ export default function LoginPage() {
 
             {/* Quick Demo Number helper */}
             <div className="flex items-center justify-between text-[11px] text-slate-400">
-              <span className="text-slate-500">Test player phone:</span>
-              <button
-                type="button"
-                onClick={() => setPhone("98765 11111")}
-                className="text-primary-400 hover:underline font-semibold"
-              >
-                Fill 98765 11111 (Aarav)
-              </button>
+              <span className="text-slate-500">Quick fill:</span>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPhone("78287 22557")}
+                  className="text-primary-300 font-mono hover:underline font-semibold"
+                >
+                  78287 22557 (Your Phone)
+                </button>
+                <span className="text-slate-600">•</span>
+                <button
+                  type="button"
+                  onClick={() => setPhone("98765 11111")}
+                  className="text-primary-400 hover:underline"
+                >
+                  98765 11111 (Aarav)
+                </button>
+              </div>
             </div>
 
             <button
