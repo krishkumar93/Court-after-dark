@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
+import { isValidEmail } from "@/lib/validators";
 
 export default function LoginPage() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -31,8 +32,11 @@ export default function LoginPage() {
 
   function validate() {
     const e = {};
-    if (!form.email.trim()) e.email = "Email address is required.";
-    else if (!/^\S+@\S+\.\S+$/.test(form.email)) e.email = "Please enter a valid email address.";
+    if (!form.email.trim()) {
+      e.email = "Email address is required.";
+    } else if (!isValidEmail(form.email)) {
+      e.email = "Please enter a valid email address (e.g. name@domain.com).";
+    }
     if (!form.password) e.password = "Password is required.";
     return e;
   }

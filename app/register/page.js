@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
+import { isValidEmail, isValidName, evaluatePasswordStrength } from "@/lib/validators";
 
 export default function RegisterPage() {
   const [form, setForm] = useState({
@@ -36,17 +37,27 @@ export default function RegisterPage() {
 
   function validate() {
     const e = {};
-    if (!form.name.trim()) e.name = "Full name is required.";
+    if (!form.name.trim()) {
+      e.name = "Full name is required.";
+    } else if (!isValidName(form.name)) {
+      e.name = "Name must be between 2 and 50 characters.";
+    }
+
     if (!form.email.trim()) {
       e.email = "Email address is required.";
-    } else if (!/^\S+@\S+\.\S+$/.test(form.email)) {
-      e.email = "Please enter a valid email address.";
+    } else if (!isValidEmail(form.email)) {
+      e.email = "Please enter a valid email address (e.g. name@domain.com).";
     }
+
     if (!form.password) {
       e.password = "Password is required.";
-    } else if (form.password.length < 6) {
-      e.password = "Password must be at least 6 characters.";
+    } else {
+      const strength = evaluatePasswordStrength(form.password);
+      if (!strength.passed) {
+        e.password = `Password is too weak: ${strength.requirements.join(", ")}.`;
+      }
     }
+
     if (form.password && form.password !== form.confirmPassword) {
       e.confirmPassword = "Passwords do not match.";
     }
