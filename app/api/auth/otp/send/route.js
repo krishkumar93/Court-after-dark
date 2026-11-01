@@ -1,80 +1,99 @@
 // app/api/auth/otp/send/route.js
+// Dispatches real carrier SMS OTP to registered mobile numbers.
+// Never exposes OTP codes in responses.
+
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
-import { createOtp, normalizeContact } from "@/lib/otpService";
+import { normalizeIndianPhone, sendRealSmsOtp } from "@/lib/otpService";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { target, channel = "phone", purpose = "login" } = body;
+    const { phone, target, purpose = "login" } = body;
 
-    if (!target) {
+    const phoneInput = phone || target;
+    if (!phoneInput) {
       return NextResponse.json(
-        { error: channel === "phone" ? "Mobile phone number is required." : "Email address is required." },
+        { error: "Mobile phone number is required." },
         { status: 400 }
       );
     }
 
-    const norm = normalizeContact(target, channel);
+    const norm = normalizeIndianPhone(phoneInput);
     if (!norm.valid) {
-      return NextResponse.json({ error: norm.error || "Invalid contact information." }, { status: 400 });
+      return NextResponse.json({ error: norm.error }, { status: 400 });
     }
 
-    // Check database for existing account if required
-    let userExists = false;
-    try {
-      await connectDB();
-      if (channel === "phone") {
-        const found = await User.findOne({
-          $or: [
-            { phone: norm.rawDigits },
-            { phone: norm.normalized },
-            { phone: norm.formatted },
-            { email: `${norm.rawDigits}@phone.courtsafterdark.com` },
-          ],
-        });
-        userExists = !!found;
-      } else {
-        const found = await User.findOne({ email: norm.normalized });
-        userExists = !!found;
-      }
-    } catch {
-      // If DB fails, proceed in memory / fallback mode
-    }
-
-    // If purpose is register and user already exists
-    if (purpose === "register" && userExists) {
+    // Rate limit: max 3 requests per 60 seconds per phone number
+    const rateCheck = checkRateLimit(`otp_send:${norm.e164}`, 3, 60000);
+    if (!rateCheck.allowed) {
       return NextResponse.json(
-        {
-          error: `An account with this ${channel === "phone" ? "phone number" : "email"} already exists. Please sign in instead.`,
-          userExists: true,
-        },
-        { status: 409 }
+        { error: "Too many verification requests. Please wait 1 minute before trying again." },
+        { status: 429 }
       );
     }
 
-    // Generate & record OTP
-    const otpResult = await createOtp(norm.normalized, channel, purpose);
+    // For login purpose, ensure an account exists with this phone
+    if (purpose === "login") {
+      try {
+        await connectDB();
+        const existingUser = await User.findOne({
+          $or: [
+            { phone: norm.e164 },
+            { phone: norm.rawDigits },
+            { phone: norm.formatted },
+          ],
+        });
 
-    return NextResponse.json({
-      success: true,
-      message: `Verification code sent to ${otpResult.maskedTarget}`,
-      channel,
-      target: norm.normalized,
-      maskedTarget: otpResult.maskedTarget,
-      devOtp: otpResult.devOtp, // Provides seamless testing experience
-      whatsappUrl: otpResult.whatsappUrl,
-      carrierDispatched: otpResult.carrierDispatched,
-      userExists,
-      expiresAt: otpResult.expiresAt,
-    });
+        if (!existingUser) {
+          return NextResponse.json(
+            { error: "No account found with this mobile number. Please sign up first." },
+            { status: 404 }
+          );
+        }
+
+        if (existingUser.status === "suspended") {
+          return NextResponse.json(
+            { error: "This athlete account has been suspended by administration." },
+            { status: 403 }
+          );
+        }
+      } catch (dbErr) {
+        console.warn("[OTP Send DB Check Warning]", dbErr.message);
+      }
+    }
+
+    // Dispatch real SMS OTP
+    const sendResult = await sendRealSmsOtp(norm.e164);
+
+    if (!sendResult.success) {
+      return NextResponse.json(
+        {
+          error: sendResult.error,
+          configured: sendResult.configured !== false,
+          requiresConfiguration: !!sendResult.requiresConfiguration,
+        },
+        { status: sendResult.requiresConfiguration ? 503 : 400 }
+      );
+    }
+
+    // Return success without exposing OTP
+    return NextResponse.json(
+      {
+        success: true,
+        maskedPhone: norm.masked,
+        phone: norm.e164,
+        message: `Verification code sent via SMS to ${norm.masked}.`,
+      },
+      { status: 200 }
+    );
   } catch (err) {
     console.error("[OTP Send Error]", err);
     return NextResponse.json(
-      { error: err.message || "Failed to send verification code. Please try again." },
+      { error: err.message || "Failed to dispatch verification code." },
       { status: 500 }
     );
   }
 }
-

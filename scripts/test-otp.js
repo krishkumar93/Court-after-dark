@@ -1,69 +1,96 @@
 // scripts/test-otp.js
-// Tests for OTP generation, contact normalization, masking, and verification logic.
+// Unit tests for real carrier SMS OTP service, Indian phone normalization, masking,
+// pending registration lifecycle, and secure verification.
+
+process.env.NODE_ENV = "test";
 
 import assert from "node:assert/strict";
-import { normalizeContact, maskContact, createOtp, verifyOtpCode } from "../lib/otpService.js";
+import {
+  normalizeIndianPhone,
+  getSmsProvider,
+  savePendingRegistration,
+  getPendingRegistration,
+  deletePendingRegistration,
+  sendRealSmsOtp,
+  verifyRealSmsOtp,
+} from "../lib/otpService.js";
 
-console.log("🧪 Running OTP & Contact Authentication tests...\n");
+console.log("🧪 Running Real SMS OTP Service & Phone Authentication tests...\n");
 
-// 1. Testing Phone Normalization
-console.log("1. Testing Phone Normalization...");
-const p1 = normalizeContact("9876543210", "phone");
-assert.equal(p1.valid, true, "10-digit number must be valid");
-assert.equal(p1.normalized, "+919876543210", "Should prepend +91");
-assert.equal(p1.rawDigits, "9876543210");
+// 1. Indian Phone Number Normalization & Masking
+console.log("1. Testing Indian Phone Normalization & Masking...");
+const p1 = normalizeIndianPhone("7828722557");
+assert.equal(p1.valid, true, "10-digit number starting with 7 must be valid");
+assert.equal(p1.e164, "+917828722557", "Must format to E.164");
+assert.equal(p1.rawDigits, "7828722557");
+assert.equal(p1.formatted, "+91 78287 22557");
+assert.equal(p1.masked, "+91 78*** **557");
 
-const p2 = normalizeContact("+91 98765 43210", "phone");
+const p2 = normalizeIndianPhone("+91 98765 43210");
 assert.equal(p2.valid, true);
-assert.equal(p2.normalized, "+919876543210");
+assert.equal(p2.e164, "+919876543210");
+assert.equal(p2.rawDigits, "9876543210");
 
-const p3 = normalizeContact("12345", "phone");
-assert.equal(p3.valid, false, "Too short phone number must be invalid");
-console.log("   ✓ Phone normalization tests passed.");
+const pInvalid1 = normalizeIndianPhone("12345");
+assert.equal(pInvalid1.valid, false, "Short number must be invalid");
 
-// 2. Testing Email Normalization
-console.log("2. Testing Email Normalization...");
-const e1 = normalizeContact(" Aarav.Sharma@EXAMPLE.COM ", "email");
-assert.equal(e1.valid, true);
-assert.equal(e1.normalized, "aarav.sharma@example.com");
+const pInvalid2 = normalizeIndianPhone("1828722557");
+assert.equal(pInvalid2.valid, false, "Indian numbers starting with 1 must be invalid");
+console.log("   ✓ Indian phone normalization and masking tests passed.");
 
-const e2 = normalizeContact("not-an-email", "email");
-assert.equal(e2.valid, false, "Invalid email must fail");
-console.log("   ✓ Email normalization tests passed.");
+// 2. Pending Registration Store Lifecycle
+console.log("2. Testing Pending Registration Store Lifecycle...");
+const testRegData = {
+  name: "Test Athlete",
+  email: "athlete@example.com",
+  phone: "7828722557",
+  hashedPassword: "hashed_dummy_password",
+};
 
-// 3. Testing Contact Masking for Privacy
-console.log("3. Testing Contact Masking...");
-const mPhone = maskContact("+919876543210", "phone");
-assert(mPhone.includes("+91 98*** **210"), "Phone should mask middle digits");
+const sessionId = savePendingRegistration(testRegData);
+assert(sessionId.startsWith("reg_"), "Session ID must start with reg_");
 
-const mEmail = maskContact("aarav@example.com", "email");
-assert.equal(mEmail, "aa***@example.com", "Email should mask user prefix");
-console.log("   ✓ Contact masking tests passed.");
+const retrieved = getPendingRegistration(sessionId, "7828722557");
+assert(retrieved !== null, "Should retrieve stored pending registration");
+assert.equal(retrieved.name, "Test Athlete");
+assert.equal(retrieved.email, "athlete@example.com");
 
-// 4. Testing OTP Lifecycle for Phone
-console.log("4. Testing OTP Lifecycle for Phone...");
-const phoneOtpResult = await createOtp("9876511111", "phone", "login");
-assert(phoneOtpResult.success, "createOtp should succeed");
-assert.equal(phoneOtpResult.devOtp.length, 6, "OTP must be 6 digits");
+deletePendingRegistration(sessionId, "7828722557");
+const retrievedAfterDelete = getPendingRegistration(sessionId, "7828722557");
+assert.equal(retrievedAfterDelete, null, "Should return null after deletion");
+console.log("   ✓ Pending registration store tests passed.");
 
-// Try wrong OTP
-const failVerify = verifyOtpCode("9876511111", "phone", "000000");
-assert.equal(failVerify.success, false, "Wrong OTP should fail");
+// 3. Provider Inspection
+console.log("3. Testing SMS Provider Detection...");
+const provider = getSmsProvider();
+assert(typeof provider === "object", "Provider check must return an object");
+console.log(`   ✓ SMS provider status inspected (configured: ${provider.configured}).`);
 
-// Try correct OTP
-const passVerify = verifyOtpCode("9876511111", "phone", phoneOtpResult.devOtp);
-assert.equal(passVerify.success, true, "Correct OTP should succeed");
-console.log("   ✓ Phone OTP generation and verification passed.");
+// 4. Secure SMS OTP Dispatch (Zero OTP Leakage)
+console.log("4. Testing Secure SMS OTP Dispatch...");
+const dispatchResult = await sendRealSmsOtp("7828722557");
+assert.equal(dispatchResult.success, true, "Dispatch in test mode must succeed");
+assert.equal(dispatchResult.devOtp, undefined, "CRITICAL: devOtp MUST NEVER be present in dispatch response");
+assert.equal(dispatchResult.otp, undefined, "CRITICAL: otp MUST NEVER be leaked in dispatch response");
+assert(dispatchResult.maskedPhone.includes("***"), "Masked phone should hide middle digits");
+console.log("   ✓ OTP dispatch passed without exposing OTP in response.");
 
-// 5. Testing OTP Lifecycle for Email
-console.log("5. Testing OTP Lifecycle for Email...");
-const emailOtpResult = await createOtp("priya@example.com", "email", "register");
-assert(emailOtpResult.success);
-assert.equal(emailOtpResult.devOtp.length, 6);
+// 5. Rate Limiting / Cooldown
+console.log("5. Testing 45s Resend Cooldown...");
+const rapidDispatch = await sendRealSmsOtp("7828722557");
+assert.equal(rapidDispatch.success, false, "Rapid duplicate request must be blocked by cooldown");
+assert(rapidDispatch.error.includes("Please wait"), "Error message should mention wait cooldown");
+console.log("   ✓ Resend cooldown protection passed.");
 
-const passEmailVerify = verifyOtpCode("priya@example.com", "email", emailOtpResult.devOtp);
-assert.equal(passEmailVerify.success, true);
-console.log("   ✓ Email OTP generation and verification passed.");
+// 6. OTP Verification (Correct vs Wrong Codes)
+console.log("6. Testing Real OTP Verification Logic...");
+const failVerify = await verifyRealSmsOtp("7828722557", "000000");
+assert.equal(failVerify.success, false, "Incorrect OTP must fail verification");
 
-console.log("\n🎉 All OTP authentication tests passed successfully!");
+const passVerify = await verifyRealSmsOtp("7828722557", "123456");
+assert.equal(passVerify.success, true, "Correct OTP must succeed");
+assert.equal(passVerify.verified, true);
+assert.equal(passVerify.normalizedPhone, "+917828722557");
+console.log("   ✓ OTP verification logic passed.");
 
+console.log("\n🎉 All Real SMS OTP tests passed successfully!");

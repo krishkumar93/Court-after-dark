@@ -6,10 +6,11 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true }, // stored as a bcrypt hash, never plain text
   role: { type: String, enum: ["player", "admin"], default: "player" },
   phone: { type: String, default: "" },
+  phoneVerified: { type: Boolean, default: false },
   bio: { type: String, default: "" },
   preferredSports: [{ type: String }],
   favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: "Facility" }],
-  status: { type: String, enum: ["active", "suspended"], default: "active" },
+  status: { type: String, enum: ["active", "pending", "suspended"], default: "pending" },
   createdAt: { type: Date, default: Date.now },
 });
 

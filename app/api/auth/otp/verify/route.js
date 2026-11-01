@@ -1,91 +1,138 @@
 // app/api/auth/otp/verify/route.js
+// Verifies real SMS OTP entered by user, activates account, and creates JWT session.
+
 import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
 import { signToken, AUTH_COOKIE_NAME } from "@/lib/auth";
-import { verifyOtpCode, normalizeContact } from "@/lib/otpService";
+import {
+  normalizeIndianPhone,
+  verifyRealSmsOtp,
+  getPendingRegistration,
+  deletePendingRegistration,
+} from "@/lib/otpService";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { target, channel = "phone", otp, name, role = "player" } = body;
+    const { phone, target, otp, pendingSessionId } = body;
 
-    if (!target || !otp) {
-      return NextResponse.json({ error: "Contact target and verification code are required." }, { status: 400 });
+    const phoneInput = phone || target;
+    if (!phoneInput || !otp) {
+      return NextResponse.json(
+        { error: "Registered mobile phone number and 6-digit verification code are required." },
+        { status: 400 }
+      );
     }
 
-    const norm = normalizeContact(target, channel);
+    const norm = normalizeIndianPhone(phoneInput);
     if (!norm.valid) {
-      return NextResponse.json({ error: norm.error || "Invalid contact information." }, { status: 400 });
+      return NextResponse.json({ error: norm.error }, { status: 400 });
     }
 
-    // Verify OTP
-    const verification = verifyOtpCode(norm.normalized, channel, otp);
-    if (!verification.success) {
-      return NextResponse.json({ error: verification.error || "Invalid or expired OTP." }, { status: 400 });
+    // Rate limit verification attempts (max 10 attempts per minute per phone)
+    const rateCheck = checkRateLimit(`otp_verify:${norm.e164}`, 10, 60000);
+    if (!rateCheck.allowed) {
+      return NextResponse.json(
+        { error: "Too many verification attempts. Please wait 1 minute." },
+        { status: 429 }
+      );
     }
 
+    // 1. Verify OTP with real carrier provider
+    const verifyResult = await verifyRealSmsOtp(norm.e164, otp);
+    if (!verifyResult.success) {
+      return NextResponse.json(
+        { error: verifyResult.error || "Incorrect verification code. Please check your SMS." },
+        { status: 400 }
+      );
+    }
+
+    // 2. Verified! Complete registration or login
     let user = null;
+    await connectDB().catch(() => {});
 
-    try {
-      await connectDB();
+    // Check if this was a pending registration
+    const pending = getPendingRegistration(pendingSessionId, norm.e164);
 
-      // Find user
-      if (channel === "phone") {
-        user = await User.findOne({
-          $or: [
-            { phone: norm.rawDigits },
-            { phone: norm.normalized },
-            { phone: norm.formatted },
-            { email: `${norm.rawDigits}@phone.courtsafterdark.com` },
-          ],
-        });
-      } else {
-        user = await User.findOne({ email: norm.normalized });
-      }
-
-      // If user does not exist, create new account
-      if (!user) {
-        const dummyPassword = await bcrypt.hash(`cad_pass_${Date.now()}`, 10);
-        const resolvedName =
-          name?.trim() ||
-          (channel === "phone"
-            ? `Athlete ${norm.rawDigits.slice(-4)}`
-            : norm.normalized.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()));
-
-        const resolvedEmail =
-          channel === "email" ? norm.normalized : `${norm.rawDigits}@phone.courtsafterdark.com`;
-
-        const resolvedPhone = channel === "phone" ? norm.formatted : "";
-
+    if (pending) {
+      try {
+        // Create active user in database
         user = await User.create({
-          name: resolvedName,
-          email: resolvedEmail,
-          phone: resolvedPhone,
-          password: dummyPassword,
+          name: pending.name,
+          email: pending.email,
+          phone: norm.e164,
+          password: pending.password,
           role: "player",
-          bio: "Passionate athlete active on Courts After Dark.",
+          phoneVerified: true,
+          status: "active",
+          bio: "Verified athlete on Courts After Dark.",
           preferredSports: ["Badminton Court", "Football Ground"],
         });
+      } catch (dbErr) {
+        // If email or phone already registered
+        const existing = await User.findOne({
+          $or: [{ email: pending.email }, { phone: norm.e164 }],
+        });
+
+        if (existing) {
+          existing.phoneVerified = true;
+          existing.status = "active";
+          await existing.save();
+          user = existing;
+        } else {
+          user = {
+            _id: `usr_${Date.now()}`,
+            name: pending.name,
+            email: pending.email,
+            phone: norm.e164,
+            role: "player",
+          };
+        }
       }
-    } catch (dbErr) {
-      // In-memory fallback if DB is unreachable
-      console.warn("[OTP DB Fallback]", dbErr.message);
-      user = {
-        _id: `usr_${Date.now()}`,
-        name: name?.trim() || (channel === "phone" ? `Athlete ${norm.rawDigits.slice(-4)}` : "Athlete Member"),
-        email: channel === "email" ? norm.normalized : `${norm.rawDigits}@phone.courtsafterdark.com`,
-        phone: channel === "phone" ? norm.formatted : "",
-        role: "player",
-      };
+
+      deletePendingRegistration(pendingSessionId, norm.e164);
+    } else {
+      // Login verification: find existing user
+      try {
+        user = await User.findOne({
+          $or: [
+            { phone: norm.e164 },
+            { phone: norm.rawDigits },
+            { phone: norm.formatted },
+          ],
+        });
+
+        if (user) {
+          user.phoneVerified = true;
+          user.status = "active";
+          await user.save();
+        }
+      } catch (dbErr) {
+        console.warn("[User Lookup Warning]", dbErr.message);
+      }
+
+      // Fallback if DB offline in demo
+      if (!user) {
+        user = {
+          _id: `usr_${Date.now()}`,
+          name: `Athlete ${norm.rawDigits.slice(-4)}`,
+          email: `${norm.rawDigits}@phone.courtsafterdark.com`,
+          phone: norm.e164,
+          role: "player",
+        };
+      }
     }
 
     if (user.status === "suspended") {
-      return NextResponse.json({ error: "Your athlete account has been suspended by management." }, { status: 403 });
+      return NextResponse.json(
+        { error: "Your athlete account has been suspended by administration." },
+        { status: 403 }
+      );
     }
 
-    // Sign JWT Token
+    // 3. Issue signed JWT session token in httpOnly cookie
     const token = signToken({
       id: user._id.toString(),
       role: user.role || "player",
@@ -93,12 +140,13 @@ export async function POST(request) {
     });
 
     const response = NextResponse.json({
-      message: "Authentication successful! Welcome to Courts After Dark.",
+      success: true,
+      message: "Mobile phone verified successfully! Welcome to Courts After Dark.",
       user: {
         id: user._id,
         name: user.name,
         email: user.email,
-        phone: user.phone || "",
+        phone: user.phone || norm.e164,
         role: user.role || "player",
       },
     });
@@ -112,8 +160,10 @@ export async function POST(request) {
 
     return response;
   } catch (err) {
-    console.error("[OTP Verify Error]", err);
-    return NextResponse.json({ error: err.message || "Failed to verify OTP." }, { status: 500 });
+    console.error("[OTP Verify Controller Error]", err);
+    return NextResponse.json(
+      { error: err.message || "Failed to complete verification." },
+      { status: 500 }
+    );
   }
 }
-
