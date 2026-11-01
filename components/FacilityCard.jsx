@@ -50,6 +50,7 @@ export default function FacilityCard({ facility, onFavoriteToggle, isFavorited =
   return (
     <Link
       href={`/facilities/${facility._id}`}
+      aria-label={`View details and book ${facility.name}`}
       className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-800/80 bg-dark-850 hover:border-primary-400/50 hover:bg-dark-800 transition duration-300 shadow-lg card-hover-glow"
     >
       {/* Thumbnail */}
@@ -57,6 +58,11 @@ export default function FacilityCard({ facility, onFavoriteToggle, isFavorited =
         <img
           src={facility.image || FALLBACK_IMAGE}
           alt={facility.name}
+          onError={(e) => {
+            if (e.currentTarget.src !== FALLBACK_IMAGE) {
+              e.currentTarget.src = FALLBACK_IMAGE;
+            }
+          }}
           className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
           loading="lazy"
         />
