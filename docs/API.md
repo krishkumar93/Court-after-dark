@@ -43,6 +43,62 @@ Provides instant 1-click authentication without entering credentials.
 
 ---
 
+### `POST /api/auth/otp/send`
+Dispatches a 6-digit one-time password to an Indian mobile number via SMS or to an email address.
+
+**Request Body:**
+```json
+{
+  "target": "9876543210", // or "athlete@example.com"
+  "channel": "phone", // "phone" | "email"
+  "purpose": "login" // "login" | "register"
+}
+```
+
+**Success Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Verification code sent to +91 98*** **210",
+  "channel": "phone",
+  "target": "+919876543210",
+  "maskedTarget": "+91 98*** **210",
+  "devOtp": "482019",
+  "expiresAt": 1730000000000
+}
+```
+
+---
+
+### `POST /api/auth/otp/verify`
+Verifies a 6-digit one-time password and establishes a signed session cookie (`cad_token`).
+
+**Request Body:**
+```json
+{
+  "target": "9876543210",
+  "channel": "phone",
+  "otp": "482019",
+  "name": "Rohit Sharma" // Required for new registrations
+}
+```
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Authentication successful! Welcome to Courts After Dark.",
+  "user": {
+    "id": "6724fa10b...",
+    "name": "Rohit Sharma",
+    "email": "9876543210@phone.courtsafterdark.com",
+    "phone": "+91 98765 43210",
+    "role": "player"
+  }
+}
+```
+
+---
+
 ## 2. Facilities & Availability Endpoints
 
 ### `GET /api/facilities`

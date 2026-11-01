@@ -40,3 +40,4 @@ assert(qrUrl.includes(encodeURIComponent(testUri)), "Must embed encoded UPI URI"
 console.log("   ✓ Dynamic QR URL generated successfully.");
 
 console.log("\n🎉 All payment configuration tests passed successfully!");
+

@@ -11,7 +11,8 @@
     "test:rules": "node scripts/test-rules.js",
     "test:validators": "node scripts/test-validators.js",
     "test:payments": "node scripts/test-payments.js",
-    "test": "node scripts/test-rules.js && node scripts/test-validators.js && node scripts/test-payments.js"
+    "test:otp": "node scripts/test-otp.js",
+    "test": "node scripts/test-rules.js && node scripts/test-validators.js && node scripts/test-payments.js && node scripts/test-otp.js"
   },
   "dependencies": {
     "next": "14.2.35",

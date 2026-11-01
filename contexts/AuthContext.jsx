@@ -68,6 +68,33 @@ export function AuthProvider({ children }) {
     return data.user;
   }
 
+  async function sendOtp(target, channel = "phone", purpose = "login") {
+    const res = await fetch("/api/auth/otp/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ target, channel, purpose }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || "Failed to send OTP.");
+    }
+    return data;
+  }
+
+  async function verifyOtp({ target, channel = "phone", otp, name = "" }) {
+    const res = await fetch("/api/auth/otp/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ target, channel, otp, name }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || "Failed to verify OTP.");
+    }
+    await refreshUser();
+    return data.user;
+  }
+
   async function logout() {
     try {
       await fetch("/api/auth/logout", { method: "POST" });
@@ -88,6 +115,8 @@ export function AuthProvider({ children }) {
         login,
         loginDemo,
         register,
+        sendOtp,
+        verifyOtp,
         logout,
       }}
     >
