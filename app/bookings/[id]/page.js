@@ -25,6 +25,7 @@ import Badge from "@/components/Badge";
 import Loading from "@/components/Loading";
 import Modal from "@/components/Modal";
 import { formatSlotLabel } from "@/lib/slotUtils";
+import { generatePlainTextPass } from "@/lib/receiptGenerator";
 import { useToast } from "@/contexts/ToastContext";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -120,6 +121,18 @@ export default function BookingDetailPage() {
         </button>
 
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              if (booking) {
+                const text = generatePlainTextPass(booking, facility);
+                navigator.clipboard?.writeText(text);
+                showToast("Match pass details copied to clipboard!");
+              }
+            }}
+            className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-dark-850 px-3.5 py-1.5 text-xs font-semibold text-slate-200 hover:bg-dark-800 transition"
+          >
+            <Share2 size={14} /> Copy Pass
+          </button>
           <button
             onClick={() => window.print()}
             className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-dark-850 px-3.5 py-1.5 text-xs font-semibold text-slate-200 hover:bg-dark-800 transition"
