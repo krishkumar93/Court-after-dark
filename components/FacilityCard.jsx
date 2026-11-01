@@ -6,6 +6,7 @@ import { MapPin, Users, Clock, Heart, Sparkles, ChevronRight, Layers } from "luc
 import Badge from "@/components/Badge";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
+import { to12Hour } from "@/lib/slotUtils";
 
 const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=900&q=80&auto=format&fit=crop";
@@ -153,7 +154,7 @@ export default function FacilityCard({ facility, onFavoriteToggle, isFavorited =
               <Users size={12} className="text-slate-500" /> {facility.capacity} max
             </span>
             <span className="flex items-center gap-1">
-              <Clock size={12} className="text-slate-500" /> {facility.openingTime} - {facility.closingTime}
+              <Clock size={12} className="text-slate-500" /> {to12Hour(facility.openingTime) || facility.openingTime} - {to12Hour(facility.closingTime) || facility.closingTime}
             </span>
           </div>
 
