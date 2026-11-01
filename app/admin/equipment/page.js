@@ -207,7 +207,15 @@ export default function AdminEquipmentPage() {
                   <td className="px-4 py-3 font-bold text-white text-sm">{item.name}</td>
                   <td className="px-4 py-3 text-primary-400 font-semibold">{item.category}</td>
                   <td className="px-4 py-3 text-slate-200 font-bold">
-                    <span className="text-primary-300">{item.availableQuantity}</span> / {item.totalQuantity} units
+                    <span className={item.availableQuantity <= 2 ? "text-amber-400 font-black" : "text-primary-300"}>
+                      {item.availableQuantity}
+                    </span>{" "}
+                    / {item.totalQuantity} units
+                    {item.availableQuantity <= 2 && (
+                      <span className="ml-2 inline-block rounded bg-amber-500/15 border border-amber-500/30 px-1.5 py-0.5 text-[9px] font-bold text-amber-300">
+                        LOW STOCK
+                      </span>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-slate-300">
                     <span className="rounded bg-dark-800 border border-slate-700 px-2 py-0.5 text-[11px]">
