@@ -260,6 +260,33 @@ function SearchContent() {
             </button>
           ))}
         </div>
+
+        {/* Price Budget Filter Pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-t border-slate-800/80 pt-3">
+          <span className="text-xs text-slate-500 font-semibold uppercase tracking-wider pr-2 whitespace-nowrap">
+            Budget:
+          </span>
+          {[
+            { label: "All Prices", value: "" },
+            { label: "Under $20", value: "20" },
+            { label: "Under $40", value: "40" },
+            { label: "Under $60", value: "60" },
+            { label: "Under $100", value: "100" },
+          ].map((preset) => (
+            <button
+              key={preset.label}
+              type="button"
+              onClick={() => setMaxPrice(preset.value)}
+              className={`rounded-xl px-3 py-1 text-xs font-bold transition whitespace-nowrap ${
+                maxPrice === preset.value
+                  ? "bg-primary-400 text-dark-950 shadow-glow-sm"
+                  : "bg-dark-900 border border-slate-800 text-slate-400 hover:border-slate-700 hover:text-white"
+              }`}
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Results Header */}
