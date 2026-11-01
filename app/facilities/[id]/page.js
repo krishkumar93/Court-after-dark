@@ -28,12 +28,13 @@ import {
 } from "lucide-react";
 import Badge from "@/components/Badge";
 import Loading from "@/components/Loading";
+import EmptyState from "@/components/EmptyState";
 import AvailabilityGrid from "@/components/AvailabilityGrid";
 import Modal from "@/components/Modal";
 import PaymentModal from "@/components/PaymentModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
-import { formatSlotLabel } from "@/lib/bookingRules";
+import { formatSlotLabel } from "@/lib/slotUtils";
 import { getEquipmentImage, handleEquipmentImageError } from "@/lib/equipmentImages";
 
 function todayISO() {
@@ -46,8 +47,9 @@ function dateAfterDays(n) {
   return d.toISOString().split("T")[0];
 }
 
-export default function FacilityDetailPage() {
-  const { id } = useParams();
+export default function FacilityDetailPage({ params }) {
+  const routeParams = useParams();
+  const id = params?.id || routeParams?.id;
   const router = useRouter();
   const { user, loginDemo } = useAuth();
   const { showToast } = useToast();
@@ -76,6 +78,7 @@ export default function FacilityDetailPage() {
 
   // Load availability
   function loadAvailability() {
+    if (!id) return;
     setLoading(true);
     setSelectedSlot(null);
     Promise.all([
@@ -261,7 +264,33 @@ export default function FacilityDetailPage() {
   }
 
   if (loading && !facility) return <Loading label="Loading facility data & slot schedule..." />;
-  if (!facility) return <p className="text-center text-slate-400 py-20">Facility not found.</p>;
+  if (!facility) {
+    return (
+      <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8">
+        <EmptyState
+          icon={AlertCircle}
+          title="Facility Not Found"
+          description="The court or arena you requested could not be located, or may have been updated. Explore all available floodlit facilities in our directory."
+          action={
+            <div className="flex items-center gap-3">
+              <button
+                onClick={loadAvailability}
+                className="rounded-xl bg-primary-400 px-4 py-2 text-xs font-bold text-dark-950 hover:bg-primary-300 transition"
+              >
+                Retry Loading
+              </button>
+              <Link
+                href="/facilities"
+                className="rounded-xl border border-slate-700 bg-dark-900 px-4 py-2 text-xs font-bold text-slate-200 hover:text-white hover:bg-dark-800 transition"
+              >
+                Browse All Facilities
+              </Link>
+            </div>
+          }
+        />
+      </div>
+    );
+  }
 
   const maxAdvance = rules?.maxAdvanceBookingDays || 14;
   const maxBookingDate = dateAfterDays(maxAdvance);

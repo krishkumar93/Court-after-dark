@@ -1,6 +1,6 @@
 "use client";
 
-import { formatSlotLabel } from "@/lib/bookingRules";
+import { formatSlotLabel } from "@/lib/slotUtils";
 import { Check, Flame, Users, Bell } from "lucide-react";
 
 export default function AvailabilityGrid({

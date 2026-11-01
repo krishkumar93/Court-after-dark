@@ -5,7 +5,7 @@ import { Search, CalendarDays, Check, X, Tag, Trash2, Eye } from "lucide-react";
 import Loading from "@/components/Loading";
 import Badge from "@/components/Badge";
 import { useToast } from "@/contexts/ToastContext";
-import { formatSlotLabel } from "@/lib/bookingRules";
+import { formatSlotLabel } from "@/lib/slotUtils";
 
 export default function AdminBookingsPage() {
   const [bookings, setBookings] = useState([]);

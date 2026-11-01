@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import Loading from "@/components/Loading";
 import Badge from "@/components/Badge";
-import { formatSlotLabel } from "@/lib/bookingRules";
+import { formatSlotLabel } from "@/lib/slotUtils";
 
 function StatCard({ icon: Icon, label, value, subtext, highlight = false }) {
   return (

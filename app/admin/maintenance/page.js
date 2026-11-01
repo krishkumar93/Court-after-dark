@@ -6,7 +6,7 @@ import Modal from "@/components/Modal";
 import Badge from "@/components/Badge";
 import Loading from "@/components/Loading";
 import { useToast } from "@/contexts/ToastContext";
-import { formatSlotLabel } from "@/lib/bookingRules";
+import { formatSlotLabel } from "@/lib/slotUtils";
 
 const EMPTY_FORM = {
   facilityId: "",

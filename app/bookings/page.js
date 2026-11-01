@@ -13,6 +13,7 @@ import {
   Dumbbell,
   Compass,
   ShoppingBag,
+  Sparkles,
 } from "lucide-react";
 import Loading from "@/components/Loading";
 import BookingCard from "@/components/BookingCard";

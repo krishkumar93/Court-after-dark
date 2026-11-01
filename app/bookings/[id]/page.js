@@ -24,7 +24,7 @@ import {
 import Badge from "@/components/Badge";
 import Loading from "@/components/Loading";
 import Modal from "@/components/Modal";
-import { formatSlotLabel } from "@/lib/bookingRules";
+import { formatSlotLabel } from "@/lib/slotUtils";
 import { useToast } from "@/contexts/ToastContext";
 import { useAuth } from "@/contexts/AuthContext";
 

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Calendar, Clock, MapPin, Tag, ChevronRight, AlertTriangle, CreditCard, Smartphone, Dumbbell } from "lucide-react";
 import Badge from "@/components/Badge";
-import { formatSlotLabel } from "@/lib/bookingRules";
+import { formatSlotLabel } from "@/lib/slotUtils";
 
 export default function BookingCard({ booking, onCancel }) {
   const facility = booking.facilityId || {};
