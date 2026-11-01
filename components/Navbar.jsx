@@ -66,12 +66,9 @@ export default function Navbar() {
     { href: "/search", label: "Search & Book", icon: Search },
     { href: "/facilities", label: "Courts & Grounds", icon: Compass },
     { href: "/equipment", label: "Sports Gear", icon: Dumbbell },
+    { href: "/bookings", label: user ? "My Bookings" : "Bookings", icon: Calendar },
     { href: "/help", label: "Rules & FAQ", icon: HelpCircle },
   ];
-
-  if (user) {
-    navLinks.splice(3, 0, { href: "/bookings", label: "My Bookings", icon: Calendar });
-  }
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-800/80 bg-dark-950/90 backdrop-blur-md">

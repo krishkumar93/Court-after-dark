@@ -2,23 +2,23 @@
 
 import Badge from "@/components/Badge";
 import { Dumbbell, ShieldCheck, Check, Sparkles, ShoppingBag } from "lucide-react";
+import { getEquipmentImage, handleEquipmentImageError } from "@/lib/equipmentImages";
 
 export default function EquipmentCard({ item, onCheckout }) {
   const isAvailable = item.status === "Available" && item.availableQuantity > 0;
   const percentAvailable =
     item.totalQuantity > 0 ? (item.availableQuantity / item.totalQuantity) * 100 : 0;
   const rentalPrice = item.rentalPrice || 5;
+  const imageSrc = getEquipmentImage(item);
 
   return (
     <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-800/90 bg-dark-850 hover:border-primary-400/50 hover:bg-dark-800 transition duration-300 shadow-lg card-hover-glow">
       {/* Thumbnail */}
       <div className="relative h-44 w-full overflow-hidden bg-dark-900">
         <img
-          src={
-            item.image ||
-            "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800&q=80&auto=format&fit=crop"
-          }
+          src={imageSrc}
           alt={item.name}
+          onError={(e) => handleEquipmentImageError(e, item)}
           className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
           loading="lazy"
         />

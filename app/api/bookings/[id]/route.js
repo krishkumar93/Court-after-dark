@@ -9,9 +9,6 @@ import { MOCK_FACILITIES } from "@/lib/mockData";
 
 export async function GET(request, { params }) {
   const session = getSessionUser();
-  if (!session) {
-    return NextResponse.json({ error: "You must be logged in." }, { status: 401 });
-  }
 
   try {
     await connectDB();
@@ -20,7 +17,7 @@ export async function GET(request, { params }) {
       .populate("userId", "name email phone");
 
     if (booking) {
-      if (session.role !== "admin" && booking.userId?._id?.toString() !== session.id && booking.userId?.toString() !== session.id) {
+      if (session && session.role !== "admin" && booking.userId?._id?.toString() !== session.id && booking.userId?.toString() !== session.id) {
         return NextResponse.json({ error: "Not authorized to view this booking." }, { status: 403 });
       }
       return NextResponse.json({ booking });
@@ -34,7 +31,7 @@ export async function GET(request, { params }) {
   const mockBooking = {
     _id: params.id,
     bookingReference: `CAD-${params.id.slice(-6).toUpperCase()}`,
-    userId: { _id: session.id, name: session.name || "Aarav Sharma", email: session.email || "aarav@example.com" },
+    userId: { _id: session?.id || "demo_player", name: session?.name || "Aarav Sharma", email: session?.email || "aarav@example.com" },
     facilityId: defaultFacility,
     date: new Date().toISOString().split("T")[0],
     startTime: "18:00",

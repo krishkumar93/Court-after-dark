@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#140609"/>
+      <stop offset="50%" stop-color="#0c0305"/>
+      <stop offset="100%" stop-color="#030102"/>
+    </linearGradient>
+    <radialGradient id="ballLeather" cx="35%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#f43f5e"/>
+      <stop offset="45%" stop-color="#be123c"/>
+      <stop offset="85%" stop-color="#881337"/>
+      <stop offset="100%" stop-color="#4c0519"/>
+    </radialGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <rect width="800" height="600" fill="url(#bg)"/>
+
+  <ellipse cx="400" cy="505" rx="280" ry="40" fill="#000000" opacity="0.6"/>
+  <ellipse cx="400" cy="500" rx="200" ry="20" fill="#f43f5e" opacity="0.12" filter="url(#glow)"/>
+
+  <!-- Red Match Cricket Ball -->
+  <g id="cricketBall" transform="translate(400, 285)">
+    <circle cx="0" cy="0" r="165" fill="url(#ballLeather)" stroke="#4c0519" stroke-width="3"/>
+    
+    <!-- Prominent Hand-Stitched Seam Curve -->
+    <path d="M -117,-117 C -35,-35 35,35 117,117" stroke="#ffffff" stroke-width="8" stroke-dasharray="10,6" fill="none"/>
+    <path d="M -117,-117 C -35,-35 35,35 117,117" stroke="#9f1239" stroke-width="3" fill="none"/>
+
+    <!-- Gold Foil Crest -->
+    <g transform="translate(20, -30) rotate(-20)">
+      <circle cx="0" cy="0" r="28" fill="none" stroke="#fbbf24" stroke-width="2"/>
+      <text x="0" y="5" font-family="system-ui" font-size="11" font-weight="900" fill="#fbbf24" text-anchor="middle" letter-spacing="1">TURF</text>
+    </g>
+
+    <!-- Shine highlight -->
+    <ellipse cx="-55" cy="-60" rx="55" ry="32" transform="rotate(-30, -55, -60)" fill="#ffffff" opacity="0.35" filter="url(#glow)"/>
+  </g>
+
+  <!-- Modern Sport Badge Pill -->
+  <g transform="translate(400, 520)">
+    <rect x="-120" y="-18" width="240" height="36" rx="18" fill="#140407" stroke="#f43f5e" stroke-width="1.5"/>
+    <text x="0" y="5" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="800" fill="#fb7185" text-anchor="middle" letter-spacing="2">RED LEATHER MATCH BALL</text>
+  </g>
+</svg>

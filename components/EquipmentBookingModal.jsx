@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Modal from "@/components/Modal";
 import PaymentModal from "@/components/PaymentModal";
+import { getEquipmentImage, handleEquipmentImageError } from "@/lib/equipmentImages";
 
 function todayISO() {
   return new Date().toISOString().split("T")[0];
@@ -96,8 +97,9 @@ export default function EquipmentBookingModal({
           <div className="flex items-center gap-3.5 rounded-2xl border border-slate-800 bg-dark-900/90 p-4">
             <div className="h-16 w-16 rounded-xl overflow-hidden bg-dark-800 shrink-0 border border-slate-700">
               <img
-                src={item.image || "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=400&q=80"}
+                src={getEquipmentImage(item)}
                 alt={item.name}
+                onError={(e) => handleEquipmentImageError(e, item)}
                 className="h-full w-full object-cover"
               />
             </div>

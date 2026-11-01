@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#05141e"/>
+      <stop offset="50%" stop-color="#030c14"/>
+      <stop offset="100%" stop-color="#010408"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="featherGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="50%" stop-color="#e2e8f0"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+    <radialGradient id="corkGrad" cx="35%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="50%" stop-color="#eab308"/>
+      <stop offset="100%" stop-color="#a16207"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <rect width="800" height="600" fill="url(#glow)"/>
+
+  <ellipse cx="400" cy="510" rx="260" ry="35" fill="#000000" opacity="0.6"/>
+  <ellipse cx="400" cy="505" rx="180" ry="18" fill="#06b6d4" opacity="0.12"/>
+
+  <!-- High Detail Tournament Feather Shuttlecock -->
+  <g id="shuttlecock" transform="translate(400, 280) rotate(-15)">
+    <!-- Shadow -->
+    <ellipse cx="10" cy="140" rx="90" ry="25" fill="#000000" opacity="0.4"/>
+
+    <!-- Feathers Fan / Skirt -->
+    <!-- Back feathers -->
+    <path d="M -90,-120 L 90,-120 L 30,50 L -30,50 Z" fill="#94a3b8" opacity="0.4"/>
+    
+    <!-- Left Wing Feathers -->
+    <path d="M -95,-120 L -60,-120 L -20,50 L -32,50 Z" fill="url(#featherGrad)" stroke="#cbd5e1" stroke-width="1.2"/>
+    <path d="M -70,-120 L -35,-120 L -12,50 L -24,50 Z" fill="url(#featherGrad)" stroke="#cbd5e1" stroke-width="1.2"/>
+    <path d="M -45,-120 L -10,-120 L -5,50 L -16,50 Z" fill="url(#featherGrad)" stroke="#cbd5e1" stroke-width="1.2"/>
+    
+    <!-- Center Feathers -->
+    <path d="M -20,-120 L 20,-120 L 8,50 L -8,50 Z" fill="url(#featherGrad)" stroke="#cbd5e1" stroke-width="1.5"/>
+
+    <!-- Right Wing Feathers -->
+    <path d="M 10,-120 L 45,-120 L 16,50 L 5,50 Z" fill="url(#featherGrad)" stroke="#cbd5e1" stroke-width="1.2"/>
+    <path d="M 35,-120 L 70,-120 L 24,50 L 12,50 Z" fill="url(#featherGrad)" stroke="#cbd5e1" stroke-width="1.2"/>
+    <path d="M 60,-120 L 95,-120 L 32,50 L 20,50 Z" fill="url(#featherGrad)" stroke="#cbd5e1" stroke-width="1.2"/>
+
+    <!-- Feather shafts / quills -->
+    <line x1="-80" y1="-120" x2="-26" y2="50" stroke="#64748b" stroke-width="1.2"/>
+    <line x1="-55" y1="-120" x2="-18" y2="50" stroke="#64748b" stroke-width="1.2"/>
+    <line x1="-30" y1="-120" x2="-10" y2="50" stroke="#64748b" stroke-width="1.2"/>
+    <line x1="0" y1="-120" x2="0" y2="50" stroke="#64748b" stroke-width="1.5"/>
+    <line x1="30" y1="-120" x2="10" y2="50" stroke="#64748b" stroke-width="1.2"/>
+    <line x1="55" y1="-120" x2="18" y2="50" stroke="#64748b" stroke-width="1.2"/>
+    <line x1="80" y1="-120" x2="26" y2="50" stroke="#64748b" stroke-width="1.2"/>
+
+    <!-- Dual Ribbon Thread Bindings -->
+    <!-- Top Binding (Red Ribbon) -->
+    <path d="M -85,-55 Q 0,-45 85,-55 Q 0,-38 -85,-55" fill="#ef4444" stroke="#b91c1c" stroke-width="1"/>
+    <!-- Bottom Binding (Cyan Ribbon) -->
+    <path d="M -52,10 Q 0,18 52,10 Q 0,25 -52,10" fill="#06b6d4" stroke="#0891b2" stroke-width="1"/>
+
+    <!-- Natural Cork Dome Base -->
+    <!-- White Leather Collar on Cork -->
+    <rect x="-30" y="50" width="60" height="15" rx="3" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+    <!-- Cork Hemispherical Tip -->
+    <path d="M -30,65 C -30,115 30,115 30,65 Z" fill="url(#corkGrad)" stroke="#a16207" stroke-width="2"/>
+    <ellipse cx="-8" cy="85" rx="8" ry="4" fill="#ffffff" opacity="0.4"/>
+  </g>
+
+  <!-- Modern Sport Badge Pill -->
+  <g transform="translate(400, 520)">
+    <rect x="-120" y="-18" width="240" height="36" rx="18" fill="#031118" stroke="#06b6d4" stroke-width="1.5"/>
+    <text x="0" y="5" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="800" fill="#22d3ee" text-anchor="middle" letter-spacing="2">FEATHER SHUTTLECOCK</text>
+  </g>
+</svg>

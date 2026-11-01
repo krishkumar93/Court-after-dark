@@ -21,11 +21,12 @@ import Modal from "@/components/Modal";
 import Badge from "@/components/Badge";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
+import { getEquipmentImage, handleEquipmentImageError } from "@/lib/equipmentImages";
 
 const STATUS_TABS = ["All", "Confirmed", "Completed", "Cancelled"];
 
 export default function BookingsPage() {
-  const { user, loading: userLoading } = useAuth();
+  const { user, loading: userLoading, loginDemo } = useAuth();
   const { showToast } = useToast();
 
   const [mainView, setMainView] = useState("courts"); // 'courts' | 'equipment'
@@ -37,6 +38,20 @@ export default function BookingsPage() {
   const [cancellingId, setCancellingId] = useState(null);
   const [cancelReason, setCancelReason] = useState("");
   const [cancellingLoading, setCancellingLoading] = useState(false);
+  const [demoLoginLoading, setDemoLoginLoading] = useState(false);
+
+  async function handleInstantDemoLogin() {
+    setDemoLoginLoading(true);
+    try {
+      const logged = await loginDemo("player");
+      showToast(`Welcome! Logged in as Demo Athlete (${logged.name}).`);
+      loadAll();
+    } catch {
+      showToast("Demo sign-in failed. Please try again.", "error");
+    } finally {
+      setDemoLoginLoading(false);
+    }
+  }
 
   function loadAll() {
     setLoading(true);
@@ -114,17 +129,93 @@ export default function BookingsPage() {
 
   if (!user) {
     return (
-      <div className="mx-auto max-w-lg px-4 py-20 text-center space-y-4">
-        <h1 className="text-2xl font-bold text-white">Sign In to View Bookings</h1>
-        <p className="text-xs text-slate-400">
-          Track upcoming court games, review your allocation quota, and manage reservations.
-        </p>
-        <Link
-          href="/login"
-          className="inline-block rounded-xl bg-primary-400 px-6 py-2.5 text-xs font-bold text-dark-950 hover:bg-primary-300"
-        >
-          Log In Now
-        </Link>
+      <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8 space-y-10">
+        {/* Sign In & Demo Access Banner */}
+        <div className="text-center max-w-2xl mx-auto space-y-4">
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-primary-400/30 bg-primary-400/10 px-3.5 py-1 text-xs font-bold text-primary-300">
+            <Sparkles size={13} className="text-primary-400" />
+            <span>Digital Game Passes & Reservations</span>
+          </div>
+          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+            Athlete Bookings & Match Tickets
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            View your upcoming floodlit court reservations, review equipment rental receipts, check active fair-quota status, or access verified payment records.
+          </p>
+
+          {/* Action Row */}
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button
+              type="button"
+              disabled={demoLoginLoading}
+              onClick={handleInstantDemoLogin}
+              className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-primary-400 px-6 py-3 text-xs font-bold text-dark-950 hover:bg-primary-300 transition shadow-glow-sm"
+            >
+              <Sparkles size={14} />
+              <span>{demoLoginLoading ? "Signing In as Demo Athlete..." : "Instant 1-Click Access (Demo Player)"}</span>
+            </button>
+            <Link
+              href="/login"
+              className="w-full sm:w-auto rounded-xl border border-slate-700 bg-dark-900 px-6 py-3 text-center text-xs font-bold text-slate-200 hover:text-white hover:bg-dark-800 transition"
+            >
+              Log In to Account
+            </Link>
+            <Link
+              href="/register"
+              className="w-full sm:w-auto rounded-xl border border-slate-700 bg-dark-900 px-6 py-3 text-center text-xs font-bold text-slate-200 hover:text-white hover:bg-dark-800 transition"
+            >
+              Register Free
+            </Link>
+          </div>
+        </div>
+
+        {/* Quick Booking Hub Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800/80">
+          <Link
+            href="/facilities"
+            className="group rounded-2xl border border-slate-800 bg-dark-850 p-5 hover:border-primary-400/40 hover:bg-dark-800 transition shadow-lg card-hover-glow"
+          >
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-400/15 border border-primary-400/30 text-primary-400 mb-3 group-hover:scale-105 transition">
+              <Compass size={20} />
+            </div>
+            <h3 className="text-sm font-bold text-white group-hover:text-primary-300 transition">
+              Book Courts & Grounds
+            </h3>
+            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+              Reserve badminton courts, basketball floors, 7v7 football turfs, and cricket nets with night floodlights.
+            </p>
+          </Link>
+
+          <Link
+            href="/equipment"
+            className="group rounded-2xl border border-slate-800 bg-dark-850 p-5 hover:border-primary-400/40 hover:bg-dark-800 transition shadow-lg card-hover-glow"
+          >
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-400/15 border border-primary-400/30 text-primary-400 mb-3 group-hover:scale-105 transition">
+              <Dumbbell size={20} />
+            </div>
+            <h3 className="text-sm font-bold text-white group-hover:text-primary-300 transition">
+              Rent Sports Gear
+            </h3>
+            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+              Rent dumbbells, match footballs, volleyballs, cricket bats, and table tennis paddles with live stock tracking.
+            </p>
+          </Link>
+
+          <Link
+            href="/search"
+            className="group rounded-2xl border border-slate-800 bg-dark-850 p-5 hover:border-primary-400/40 hover:bg-dark-800 transition shadow-lg card-hover-glow"
+          >
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-400/15 border border-primary-400/30 text-primary-400 mb-3 group-hover:scale-105 transition">
+              <Search size={20} />
+            </div>
+            <h3 className="text-sm font-bold text-white group-hover:text-primary-300 transition">
+              Unified Search
+            </h3>
+            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+              Search across both available grounds and sports equipment simultaneously with sport filters and instant checkout.
+            </p>
+          </Link>
+        </div>
       </div>
     );
   }
@@ -330,8 +421,9 @@ export default function BookingsPage() {
                     <div className="flex items-center gap-3">
                       <div className="h-14 w-14 rounded-xl overflow-hidden bg-dark-900 border border-slate-800 shrink-0">
                         <img
-                          src={c.equipmentId?.image || "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=400&q=80"}
+                          src={getEquipmentImage(c.equipmentId)}
                           alt={c.equipmentId?.name}
+                          onError={(e) => handleEquipmentImageError(e, c.equipmentId)}
                           className="h-full w-full object-cover"
                         />
                       </div>

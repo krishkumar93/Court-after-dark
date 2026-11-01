@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#051410"/>
+      <stop offset="50%" stop-color="#071b15"/>
+      <stop offset="100%" stop-color="#020806"/>
+    </linearGradient>
+    <radialGradient id="turfGlow" cx="50%" cy="80%" r="60%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="ballShading" cx="35%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="50%" stop-color="#e2e8f0"/>
+      <stop offset="80%" stop-color="#94a3b8"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </radialGradient>
+    <linearGradient id="blackPanel" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <rect width="800" height="600" fill="url(#turfGlow)"/>
+
+  <!-- Field lines on turf -->
+  <path d="M 0 520 Q 400 480 800 520" stroke="#10b981" stroke-width="2" stroke-opacity="0.25" fill="none"/>
+  <ellipse cx="400" cy="510" rx="300" ry="45" fill="#000000" opacity="0.6"/>
+  <ellipse cx="400" cy="505" rx="220" ry="25" fill="#10b981" opacity="0.12" filter="url(#glow)"/>
+
+  <!-- Football Group -->
+  <g id="football" transform="translate(400, 290)">
+    <!-- Ball Base Sphere -->
+    <circle cx="0" cy="0" r="165" fill="url(#ballShading)" stroke="#0f172a" stroke-width="3"/>
+
+    <!-- Central Pentagon -->
+    <polygon points="0,-48 46,-15 28,39 -28,39 -46,-15" fill="url(#blackPanel)" stroke="#cbd5e1" stroke-width="3"/>
+    <!-- Central decorative neon lines -->
+    <circle cx="0" cy="0" r="14" fill="none" stroke="#10b981" stroke-width="2"/>
+    <circle cx="0" cy="0" r="5" fill="#10b981"/>
+
+    <!-- Seams connecting to outer pentagons -->
+    <!-- Top-left seam -->
+    <line x1="0" y1="-48" x2="0" y2="-105" stroke="#cbd5e1" stroke-width="3"/>
+    <!-- Top-right seam -->
+    <line x1="46" y1="-15" x2="100" y2="-32" stroke="#cbd5e1" stroke-width="3"/>
+    <!-- Bottom-right seam -->
+    <line x1="28" y1="39" x2="62" y2="92" stroke="#cbd5e1" stroke-width="3"/>
+    <!-- Bottom-left seam -->
+    <line x1="-28" y1="39" x2="-62" y2="92" stroke="#cbd5e1" stroke-width="3"/>
+    <!-- Left seam -->
+    <line x1="-46" y1="-15" x2="-100" y2="-32" stroke="#cbd5e1" stroke-width="3"/>
+
+    <!-- Top Pentagon -->
+    <polygon points="0,-105 45,-128 28,-164 -28,-164 -45,-128" fill="url(#blackPanel)" stroke="#cbd5e1" stroke-width="3"/>
+    
+    <!-- Top-Right Hexagon edges -->
+    <line x1="45" y1="-128" x2="100" y2="-95" stroke="#cbd5e1" stroke-width="3"/>
+    <line x1="100" y1="-95" x2="100" y2="-32" stroke="#cbd5e1" stroke-width="3"/>
+
+    <!-- Right Pentagon -->
+    <polygon points="100,-32 150,-10 162,45 120,70 95,30" fill="url(#blackPanel)" stroke="#cbd5e1" stroke-width="3"/>
+    <line x1="95" y1="30" x2="62" y2="92" stroke="#cbd5e1" stroke-width="3"/>
+
+    <!-- Bottom-Right edge -->
+    <line x1="62" y1="92" x2="25" y2="155" stroke="#cbd5e1" stroke-width="3"/>
+    <line x1="-62" y1="92" x2="-25" y2="155" stroke="#cbd5e1" stroke-width="3"/>
+
+    <!-- Bottom Pentagon -->
+    <polygon points="25,155 -25,155 -55,164 0,165 55,164" fill="url(#blackPanel)" stroke="#cbd5e1" stroke-width="3"/>
+
+    <!-- Bottom-Left edge -->
+    <line x1="-62" y1="92" x2="-95" y2="30" stroke="#cbd5e1" stroke-width="3"/>
+
+    <!-- Left Pentagon -->
+    <polygon points="-100,-32 -95,30 -120,70 -162,45 -150,-10" fill="url(#blackPanel)" stroke="#cbd5e1" stroke-width="3"/>
+    <line x1="-100" y1="-32" x2="-100" y2="-95" stroke="#cbd5e1" stroke-width="3"/>
+    <line x1="-100" y1="-95" x2="-45" y2="-128" stroke="#cbd5e1" stroke-width="3"/>
+
+    <!-- Light reflection shine over ball -->
+    <ellipse cx="-60" cy="-65" rx="55" ry="35" transform="rotate(-30, -60, -65)" fill="#ffffff" opacity="0.32" filter="url(#glow)"/>
+  </g>
+
+  <!-- Modern Sport Badge Pill -->
+  <g transform="translate(400, 520)">
+    <rect x="-105" y="-18" width="210" height="36" rx="18" fill="#04120e" stroke="url(#accent)" stroke-width="1.5"/>
+    <text x="0" y="5" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="800" fill="#34d399" text-anchor="middle" letter-spacing="2">PRO MATCH FOOTBALL</text>
+  </g>
+</svg>

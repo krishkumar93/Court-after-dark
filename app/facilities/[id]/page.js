@@ -34,6 +34,7 @@ import PaymentModal from "@/components/PaymentModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
 import { formatSlotLabel } from "@/lib/bookingRules";
+import { getEquipmentImage, handleEquipmentImageError } from "@/lib/equipmentImages";
 
 function todayISO() {
   return new Date().toISOString().split("T")[0];
@@ -504,10 +505,20 @@ export default function FacilityDetailPage() {
                         key={eq._id}
                         className="flex items-center justify-between rounded-xl bg-dark-850 p-2.5 text-xs border border-slate-800"
                       >
-                        <div className="min-w-0 pr-2">
-                          <div className="text-white font-semibold truncate">{eq.name}</div>
-                          <div className="text-[10px] text-slate-400">
-                            +${eq.rentalPrice || 5} • {eq.category}
+                        <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                          <div className="h-9 w-9 rounded-lg overflow-hidden bg-dark-900 border border-slate-700/80 shrink-0">
+                            <img
+                              src={getEquipmentImage(eq)}
+                              alt={eq.name}
+                              onError={(e) => handleEquipmentImageError(e, eq)}
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-white font-semibold truncate">{eq.name}</div>
+                            <div className="text-[10px] text-slate-400">
+                              +${eq.rentalPrice || 5} • {eq.category}
+                            </div>
                           </div>
                         </div>
 

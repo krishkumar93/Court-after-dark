@@ -347,7 +347,7 @@ async function seed() {
       rentalPrice: 6,
       condition: "Good",
       description: "FIFA-approved thermo-bonded match soccer ball with textured casing for optimal flight and grip under floodlights.",
-      image: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800&q=80&auto=format&fit=crop",
+      image: "/images/equipment/football.svg",
     },
     {
       name: "Wilson Evolution Basketball",
@@ -356,7 +356,7 @@ async function seed() {
       rentalPrice: 7,
       condition: "Good",
       description: "Official indoor/outdoor composite leather basketball with deep channels and exceptional grip control.",
-      image: "https://images.unsplash.com/photo-1519861531473-9200262188bf?w=800&q=80&auto=format&fit=crop",
+      image: "/images/equipment/basketball.svg",
     },
     {
       name: "SS Pro English Willow Bat",
@@ -365,7 +365,7 @@ async function seed() {
       rentalPrice: 15,
       condition: "Good",
       description: "Grade 1 English willow cricket bat with huge edges, light pickup, and factory pre-knocked surface.",
-      image: "https://images.unsplash.com/photo-1593766788306-2856e051417c?w=800&q=80&auto=format&fit=crop",
+      image: "/images/equipment/cricket-bat.svg",
     },
     {
       name: "Kookaburra Turf Leather Ball",
@@ -374,7 +374,7 @@ async function seed() {
       rentalPrice: 5,
       condition: "New",
       description: "High-grade 4-piece alum tanned leather ball designed for tournament play with white seam.",
-      image: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=800&q=80&auto=format&fit=crop",
+      image: "/images/equipment/cricket-ball.svg",
     },
     {
       name: "Babolat Pure Drive Tennis Racket",
@@ -383,7 +383,7 @@ async function seed() {
       rentalPrice: 10,
       condition: "Good",
       description: "The gold-standard graphite racket offering explosive power, pinpoint stability, and spin control.",
-      image: "https://images.unsplash.com/photo-1617083934555-ac7d4efe0f46?w=800&q=80&auto=format&fit=crop",
+      image: "/images/equipment/tennis-racket.svg",
     },
     {
       name: "Yonex Nanoflare 800 Badminton Racket",
@@ -392,7 +392,7 @@ async function seed() {
       rentalPrice: 8,
       condition: "Good",
       description: "Ultra-lightweight head-light badminton racket with Sonic Flare System for rapid-fire rallies and steep smashes.",
-      image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=800&q=80&auto=format&fit=crop",
+      image: "/images/equipment/badminton-racket.svg",
     },
     {
       name: "Yonex Aerosensa Shuttlecock (Tube)",
@@ -401,7 +401,7 @@ async function seed() {
       rentalPrice: 6,
       condition: "New",
       description: "Tube of 6 precision-tested natural goose feather tournament shuttlecocks for consistent trajectory.",
-      image: "https://images.unsplash.com/photo-1613918108466-292b78a8ef95?w=800&q=80&auto=format&fit=crop",
+      image: "/images/equipment/shuttlecock.svg",
     },
     {
       name: "Manduka High-Grip Yoga Mat",
@@ -410,7 +410,7 @@ async function seed() {
       rentalPrice: 4,
       condition: "Good",
       description: "Extra-thick high-density cushioning non-slip mat for yoga, core conditioning, and mobility warmups.",
-      image: "https://images.unsplash.com/photo-1545205597-3d9d02c29597?w=800&q=80&auto=format&fit=crop",
+      image: "/images/equipment/yoga-mat.svg",
     },
     {
       name: "Mikasa V200W Competition Volleyball",
@@ -419,7 +419,7 @@ async function seed() {
       rentalPrice: 6,
       condition: "Fair",
       description: "FIVB official 18-panel aerodynamic dimpled match volleyball with microfiber cover.",
-      image: "https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=800&q=80&auto=format&fit=crop",
+      image: "/images/equipment/volleyball.svg",
     },
     {
       name: "Butterfly Timo Boll Carbon Bat",
@@ -428,7 +428,7 @@ async function seed() {
       rentalPrice: 6,
       condition: "Good",
       description: "Carbon composite paddle with high-tension rubber for offensive top-spin attacks and swift blocks.",
-      image: "https://images.unsplash.com/photo-1611251135345-18c56206d6d1?w=800&q=80&auto=format&fit=crop",
+      image: "/images/equipment/table-tennis-bat.svg",
     },
     {
       name: "Nittaku 3-Star Table Tennis Balls",
@@ -437,7 +437,7 @@ async function seed() {
       rentalPrice: 3,
       condition: "New",
       description: "Pack of 3 premium ITTF competition 40+ non-celluloid balls with true bounce symmetry.",
-      image: "https://images.unsplash.com/photo-1534158914592-062992fbe900?w=800&q=80&auto=format&fit=crop",
+      image: "/images/equipment/table-tennis-bat.svg",
     },
     {
       name: "Crossrope Speed Jump Rope",
@@ -446,7 +446,7 @@ async function seed() {
       rentalPrice: 3,
       condition: "Good",
       description: "Smooth-bearing weighted jump rope with ergonomic grip handles for agility conditioning.",
-      image: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800&q=80&auto=format&fit=crop",
+      image: "/images/equipment/jump-rope.svg",
     },
     {
       name: "Hex Dumbbell Pairs (5-20kg)",
@@ -455,7 +455,7 @@ async function seed() {
       rentalPrice: 8,
       condition: "Good",
       description: "Rubber encased hexagonal dumbbells with knurled ergonomic chrome handles.",
-      image: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=800&q=80&auto=format&fit=crop",
+      image: "/images/equipment/dumbbell.svg",
     },
     {
       name: "Heavy Duty Cricket Stumps Set",
@@ -464,7 +464,7 @@ async function seed() {
       rentalPrice: 10,
       condition: "Good",
       description: "Solid hardwood cricket stumps with cast-iron spring-back base and bails.",
-      image: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=800&q=80&auto=format&fit=crop",
+      image: "/images/equipment/cricket-stumps.svg",
     },
     {
       name: "Agility Training Cones Set",
@@ -473,7 +473,7 @@ async function seed() {
       rentalPrice: 4,
       condition: "Good",
       description: "Set of 20 high-visibility flexible marker cones with carry handle for speed and tactical drills.",
-      image: "https://images.unsplash.com/photo-1526232761682-d26e03ac148e?w=800&q=80&auto=format&fit=crop",
+      image: "/images/equipment/cones.svg",
     },
   ].map((e) => ({
     ...e,
