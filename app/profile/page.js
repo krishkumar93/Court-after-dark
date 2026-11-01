@@ -17,6 +17,7 @@ import {
   Heart,
 } from "lucide-react";
 import Badge from "@/components/Badge";
+import { isValidPhone, isValidName } from "@/lib/validators";
 
 const SPORT_OPTIONS = [
   "Badminton Court",
@@ -67,6 +68,15 @@ export default function ProfilePage() {
 
   async function handleSaveProfile(e) {
     e.preventDefault();
+    if (!name.trim() || !isValidName(name)) {
+      showToast("Please enter a valid full name (2-50 characters).", "error");
+      return;
+    }
+    if (phone && !isValidPhone(phone)) {
+      showToast("Please enter a valid phone number (at least 7 digits).", "error");
+      return;
+    }
+
     setSavingProfile(true);
 
     try {
