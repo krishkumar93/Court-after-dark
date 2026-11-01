@@ -26,8 +26,8 @@ const BookingSchema = new mongoose.Schema({
   totalPrice: { type: Number, default: 40 },
   paymentMethod: {
     type: String,
-    enum: ["Card", "Razorpay", "Pay at Venue"],
-    default: "Pay at Venue",
+    enum: ["UPI", "Card", "Razorpay", "Pay at Venue"],
+    default: "UPI",
   },
   paymentStatus: {
     type: String,
@@ -41,6 +41,8 @@ const BookingSchema = new mongoose.Schema({
     razorpayPaymentId: { type: String, default: "" },
     razorpayOrderId: { type: String, default: "" },
     upiId: { type: String, default: "" },
+    merchantUpiId: { type: String, default: "" },
+    utrNumber: { type: String, default: "" },
     paidAt: { type: Date, default: null },
   },
   status: {

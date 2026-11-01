@@ -50,7 +50,7 @@ export default function BookingCard({ booking, onCancel }) {
             <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
               isPaid ? "bg-emerald-500/15 text-emerald-300" : "bg-amber-500/15 text-amber-300"
             }`}>
-              {booking.paymentMethod === "Razorpay" ? "⚡ Razorpay" : booking.paymentMethod === "Card" ? "💳 Card" : "Venue"}: {booking.paymentStatus || "Pay at Venue"}
+              {booking.paymentMethod === "UPI" ? "📱 UPI" : booking.paymentMethod === "Razorpay" ? "⚡ Razorpay" : booking.paymentMethod === "Card" ? "💳 Card" : "Venue"}: {booking.paymentStatus || "Pay at Venue"}
             </span>
           </span>
         </div>

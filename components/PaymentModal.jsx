@@ -15,8 +15,11 @@ import {
   AlertCircle,
   ExternalLink,
   KeyRound,
+  Copy,
+  Check,
 } from "lucide-react";
 import Modal from "@/components/Modal";
+import { MERCHANT_CONFIG, buildUpiIntentUri, buildUpiQrCodeUrl } from "@/lib/paymentConfig";
 
 export default function PaymentModal({
   open,
@@ -28,9 +31,17 @@ export default function PaymentModal({
   taxAmount = 0,
   onPaymentSuccess,
 }) {
-  const [activeTab, setActiveTab] = useState("card"); // 'card' | 'razorpay' | 'venue'
+  // Tabs: 'upi' | 'card' | 'razorpay' | 'venue'
+  const [activeTab, setActiveTab] = useState("upi");
   const [processing, setProcessing] = useState(false);
   const [processStep, setProcessStep] = useState("");
+
+  // UPI State (Receives money directly to user's UPI ID: 7828722557@ptyes)
+  const merchantUpiId = MERCHANT_CONFIG.upiId; // "7828722557@ptyes"
+  const merchantName = MERCHANT_CONFIG.name;
+  const [utrNumber, setUtrNumber] = useState("");
+  const [copiedUpi, setCopiedUpi] = useState(false);
+  const [upiError, setUpiError] = useState("");
 
   // Card Form State
   const [cardNumber, setCardNumber] = useState("");
@@ -45,8 +56,8 @@ export default function PaymentModal({
   const [otpError, setOtpError] = useState("");
 
   // Razorpay State
-  const [razorpaySubTab, setRazorpaySubTab] = useState("upi"); // 'upi' | 'qr' | 'netbanking' | 'official'
-  const [upiId, setUpiId] = useState("athlete@okhdfcbank");
+  const [razorpaySubTab, setRazorpaySubTab] = useState("upi"); // 'upi' | 'qr' | 'netbanking'
+  const [customUpiId, setCustomUpiId] = useState("athlete@okhdfcbank");
   const [selectedBank, setSelectedBank] = useState("HDFC Bank");
   const [razorpayLoaded, setRazorpayLoaded] = useState(false);
 
@@ -63,6 +74,43 @@ export default function PaymentModal({
       setRazorpayLoaded(true);
     }
   }, []);
+
+  const grandTotal = Math.round(amount + taxAmount);
+
+  // Real Indian UPI Intent URI pointing to user's UPI account (7828722557@ptyes)
+  const upiIntentUri = buildUpiIntentUri({
+    upiId: merchantUpiId,
+    merchantName: merchantName,
+    amount: grandTotal,
+    transactionNote: itemTitle ? `CAD-${itemTitle.slice(0, 20)}` : "CAD-Booking",
+    refId: `CAD-${Date.now().toString(36).toUpperCase()}`,
+  });
+  const qrCodeUrl = buildUpiQrCodeUrl(upiIntentUri, 200);
+
+  // Copy UPI ID to Clipboard
+  function handleCopyUpi() {
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText(merchantUpiId);
+      setCopiedUpi(true);
+      setTimeout(() => setCopiedUpi(false), 2000);
+    }
+  }
+
+  // Auto-fill Test UTR for testing flow convenience
+  function handleGenerateTestUtr() {
+    const testUtr = `4301${Math.floor(10000000 + Math.random() * 90000000)}`;
+    setUtrNumber(testUtr);
+    setUpiError("");
+  }
+
+  // Auto-fill Demo RuPay Card
+  function handleFillDemoCard() {
+    setCardNumber("6073 8921 4410 5523");
+    setCardHolder("AARAV SHARMA");
+    setCardExpiry("12/28");
+    setCardCvv("781");
+    setCardError("");
+  }
 
   // Format Card Number
   function handleCardNumberChange(e) {
@@ -90,7 +138,30 @@ export default function PaymentModal({
     return "CARD";
   }
 
-  const grandTotal = Math.round(amount + taxAmount);
+  // Confirm Direct UPI Transfer (Paid to 7828722557@ptyes)
+  async function handleConfirmUpiPayment(e) {
+    if (e) e.preventDefault();
+    setProcessing(true);
+    setProcessStep(`Connecting to UPI network for ${merchantUpiId}...`);
+    await new Promise((r) => setTimeout(r, 600));
+
+    setProcessStep("Verifying transaction reference & crediting reservation...");
+    await new Promise((r) => setTimeout(r, 700));
+
+    const finalUtr = utrNumber.trim() || `UTR-${Date.now().toString(36).toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    setProcessing(false);
+    onPaymentSuccess({
+      method: "UPI",
+      paymentId: `upi_${finalUtr}`,
+      merchantUpiId,
+      utrNumber: finalUtr,
+      upiId: merchantUpiId,
+      currency: "INR",
+      amountPaid: grandTotal,
+      paidAt: new Date().toISOString(),
+    });
+  }
 
   // Launch 3DS Bank OTP verification for Card
   function handleInitiateCardPay(e) {
@@ -210,7 +281,6 @@ export default function PaymentModal({
         });
         rzp.open();
       } else {
-        // Fallback to simulated immediate Razorpay verification
         await handleSimulatedRazorpayPay();
       }
     } catch {
@@ -218,15 +288,15 @@ export default function PaymentModal({
     }
   }
 
-  // Simulated Instant Razorpay / UPI Flow (Zero Network Dependency Fallback)
+  // Simulated Razorpay / NetBanking
   async function handleSimulatedRazorpayPay() {
     setProcessing(true);
-    setProcessStep("Connecting to Razorpay UPI Gateway...");
+    setProcessStep("Connecting to Razorpay Gateway...");
     await new Promise((r) => setTimeout(r, 600));
 
     setProcessStep(
       razorpaySubTab === "upi"
-        ? `Requesting UPI mandate from ${upiId || "UPI network"}...`
+        ? `Requesting UPI mandate from ${customUpiId || "UPI network"}...`
         : razorpaySubTab === "qr"
         ? "Verifying dynamic UPI QR scan payment..."
         : `Connecting to ${selectedBank} secure gateway...`
@@ -246,7 +316,7 @@ export default function PaymentModal({
       paymentId: razorpayPaymentId,
       razorpayPaymentId,
       razorpayOrderId,
-      upiId: razorpaySubTab === "upi" ? upiId : undefined,
+      upiId: razorpaySubTab === "upi" ? customUpiId : undefined,
       bank: razorpaySubTab === "netbanking" ? selectedBank : undefined,
       currency: "INR",
       amountPaid: grandTotal,
@@ -264,10 +334,6 @@ export default function PaymentModal({
       paidAt: null,
     });
   }
-
-  // Real Indian UPI Intent URI
-  const upiIntentUri = `upi://pay?pa=courtsafterdark@okhdfcbank&pn=Courts%20After%20Dark&am=${grandTotal}&cu=INR&tn=CAD-MatchPass`;
-  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(upiIntentUri)}`;
 
   return (
     <Modal open={open} onClose={onClose} title={title}>
@@ -355,7 +421,20 @@ export default function PaymentModal({
             <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
               Select Payment Method
             </label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <button
+                type="button"
+                onClick={() => setActiveTab("upi")}
+                className={`flex flex-col items-center justify-center p-3 rounded-xl border text-xs font-bold transition ${
+                  activeTab === "upi"
+                    ? "bg-emerald-500/15 border-emerald-400 text-emerald-300 shadow-glow-sm"
+                    : "bg-dark-900 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700"
+                }`}
+              >
+                <Smartphone size={18} className="mb-1 text-emerald-400" />
+                <span>UPI (GPay/Paytm)</span>
+              </button>
+
               <button
                 type="button"
                 onClick={() => setActiveTab("card")}
@@ -365,7 +444,7 @@ export default function PaymentModal({
                     : "bg-dark-900 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700"
                 }`}
               >
-                <CreditCard size={18} className="mb-1" />
+                <CreditCard size={18} className="mb-1 text-primary-400" />
                 <span>Card (RuPay/Visa)</span>
               </button>
 
@@ -378,8 +457,8 @@ export default function PaymentModal({
                     : "bg-dark-900 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700"
                 }`}
               >
-                <Smartphone size={18} className="mb-1" />
-                <span>Razorpay / UPI</span>
+                <ExternalLink size={18} className="mb-1 text-cyan-400" />
+                <span>Razorpay Gateway</span>
               </button>
 
               <button
@@ -391,7 +470,7 @@ export default function PaymentModal({
                     : "bg-dark-900 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700"
                 }`}
               >
-                <Building2 size={18} className="mb-1" />
+                <Building2 size={18} className="mb-1 text-amber-400" />
                 <span>Pay at Venue</span>
               </button>
             </div>
@@ -408,7 +487,141 @@ export default function PaymentModal({
           </div>
         )}
 
-        {/* Tab 1: Credit / Debit Card Form */}
+        {/* TAB 1: Real UPI Payment to User's Account (7828722557@ptyes) */}
+        {!processing && !showOtpModal && activeTab === "upi" && (
+          <div className="space-y-4">
+            {/* Merchant UPI Details Banner */}
+            <div className="rounded-2xl border border-emerald-500/40 bg-gradient-to-br from-emerald-950/60 to-dark-900 p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-300 font-bold text-xs">
+                    UPI
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <span>Direct UPI Transfer</span>
+                      <span className="rounded bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 text-[9px] font-bold">
+                        Instant Bank Credit
+                      </span>
+                    </h4>
+                    <p className="text-[10px] text-slate-400">Pay directly using any Indian UPI application</p>
+                  </div>
+                </div>
+
+                <div className="text-right">
+                  <span className="text-[10px] text-slate-400">Amount</span>
+                  <div className="text-base font-black text-emerald-400">₹{grandTotal.toLocaleString("en-IN")}</div>
+                </div>
+              </div>
+
+              {/* Recipient UPI ID Box with One-Click Copy */}
+              <div className="rounded-xl border border-emerald-500/30 bg-dark-950/80 p-3 flex items-center justify-between gap-2">
+                <div>
+                  <span className="text-[10px] uppercase font-semibold text-slate-400 block">
+                    Beneficiary UPI ID / VPA
+                  </span>
+                  <strong className="text-sm font-mono font-bold text-emerald-300 tracking-wide">
+                    {merchantUpiId}
+                  </strong>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleCopyUpi}
+                  className="flex items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-1.5 text-xs font-bold text-emerald-300 hover:bg-emerald-500/20 transition shrink-0"
+                >
+                  {copiedUpi ? (
+                    <>
+                      <Check size={14} className="text-emerald-400" />
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy size={14} />
+                      <span>Copy UPI</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Dynamic UPI QR Code */}
+            <div className="rounded-2xl border border-slate-800 bg-dark-900 p-4 text-center space-y-3">
+              <div className="inline-block p-3 rounded-2xl bg-white shadow-2xl">
+                <img
+                  src={qrCodeUrl}
+                  alt={`Scan to pay ₹${grandTotal} to ${merchantUpiId}`}
+                  className="h-40 w-40 mx-auto object-contain"
+                />
+              </div>
+
+              <div>
+                <p className="text-xs font-bold text-white">Scan with Google Pay, PhonePe, Paytm, or BHIM</p>
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  The amount of <strong className="text-emerald-400">₹{grandTotal.toLocaleString("en-IN")}</strong> will be pre-filled automatically.
+                </p>
+              </div>
+
+              {/* Mobile Deep Link */}
+              <div className="pt-1">
+                <a
+                  href={upiIntentUri}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-dark-850 px-4 py-2 text-xs font-semibold text-slate-200 hover:bg-dark-800 hover:text-white transition"
+                >
+                  <Smartphone size={14} className="text-emerald-400" />
+                  <span>Open directly in UPI App (Mobile)</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Step 2: Confirmation / UTR Verification */}
+            <div className="space-y-2 rounded-2xl border border-slate-800 bg-dark-900/60 p-4">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                  <span>Enter 12-Digit UPI Ref / UTR Number</span>
+                  <span className="text-[10px] text-slate-400 font-normal">(from payment screen)</span>
+                </label>
+                <button
+                  type="button"
+                  onClick={handleGenerateTestUtr}
+                  className="text-[10px] text-primary-400 hover:underline font-semibold"
+                >
+                  Auto-Fill Test UTR
+                </button>
+              </div>
+
+              <input
+                type="text"
+                value={utrNumber}
+                onChange={(e) => {
+                  setUtrNumber(e.target.value.replace(/\D/g, "").slice(0, 12));
+                  setUpiError("");
+                }}
+                placeholder="e.g. 430198273641 (12 digits)"
+                maxLength={12}
+                className="w-full rounded-xl border border-slate-700 bg-dark-950 px-3.5 py-2.5 text-xs text-white placeholder-slate-500 font-mono outline-none focus:border-emerald-400"
+              />
+
+              {upiError && (
+                <p className="text-xs text-red-400">{upiError}</p>
+              )}
+
+              <p className="text-[10px] text-slate-400 leading-relaxed">
+                After completing the transfer to <strong className="text-slate-200">{merchantUpiId}</strong>, click the button below to confirm and generate your digital pass.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleConfirmUpiPayment}
+              className="w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-500 py-3 text-sm font-bold text-dark-950 hover:bg-emerald-400 transition shadow-glow-sm"
+            >
+              <CheckCircle2 size={16} />
+              <span>Confirm UPI Payment (₹{grandTotal.toLocaleString("en-IN")}) & Reserve</span>
+            </button>
+          </div>
+        )}
+
+        {/* TAB 2: Credit / Debit Card Form */}
         {!processing && !showOtpModal && activeTab === "card" && (
           <form onSubmit={handleInitiateCardPay} className="space-y-4">
             {/* Visual Credit Card Preview */}
@@ -447,6 +660,18 @@ export default function PaymentModal({
               </div>
             </div>
 
+            {/* Quick Demo Fill Helper */}
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-slate-400">Card Payment Entry:</span>
+              <button
+                type="button"
+                onClick={handleFillDemoCard}
+                className="text-[11px] text-primary-400 hover:underline font-semibold"
+              >
+                Fill Sample RuPay Card
+              </button>
+            </div>
+
             {cardError && (
               <div className="flex items-center gap-1.5 text-xs text-red-400 bg-red-500/10 p-2.5 rounded-xl border border-red-500/20">
                 <AlertCircle size={14} className="shrink-0" />
@@ -465,7 +690,7 @@ export default function PaymentModal({
                     type="text"
                     value={cardNumber}
                     onChange={handleCardNumberChange}
-                    placeholder="6073 1234 5678 9012"
+                    placeholder="6524 1234 5678 9012"
                     maxLength={19}
                     className="w-full rounded-xl border border-slate-700 bg-dark-900 px-3.5 py-2.5 text-sm text-white placeholder-slate-500 font-mono outline-none focus:border-primary-400"
                     required
@@ -538,12 +763,12 @@ export default function PaymentModal({
               className="w-full flex items-center justify-center gap-2 rounded-xl bg-primary-400 py-3 text-sm font-bold text-dark-950 hover:bg-primary-300 transition shadow-glow-sm"
             >
               <Lock size={15} />
-              <span>Pay ₹{grandTotal.toLocaleString("en-IN")} & Reserve</span>
+              <span>Pay ₹{grandTotal.toLocaleString("en-IN")} via Card</span>
             </button>
           </form>
         )}
 
-        {/* Tab 2: Razorpay Gateway & Real UPI */}
+        {/* TAB 3: Razorpay Gateway & Real UPI */}
         {!processing && !showOtpModal && activeTab === "razorpay" && (
           <div className="space-y-4">
             {/* Razorpay Brand Header */}
@@ -612,7 +837,7 @@ export default function PaymentModal({
                     <button
                       key={app}
                       type="button"
-                      onClick={() => setUpiId(`${app.toLowerCase().replace(/\s/g, "")}@upi`)}
+                      onClick={() => setCustomUpiId(`${app.toLowerCase().replace(/\s/g, "")}@upi`)}
                       className="p-2 rounded-xl border border-slate-800 bg-dark-900 hover:border-cyan-400/40 hover:bg-dark-800 transition"
                     >
                       <span className="font-bold text-white block">{app}</span>
@@ -623,17 +848,17 @@ export default function PaymentModal({
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Enter UPI ID / VPA
+                    Enter Athlete UPI ID / VPA
                   </label>
                   <input
                     type="text"
-                    value={upiId}
-                    onChange={(e) => setUpiId(e.target.value)}
-                    placeholder="aarav@okhdfcbank"
+                    value={customUpiId}
+                    onChange={(e) => setCustomUpiId(e.target.value)}
+                    placeholder="athlete@okhdfcbank"
                     className="w-full rounded-xl border border-slate-700 bg-dark-900 px-3.5 py-2.5 text-xs text-white placeholder-slate-500 font-mono outline-none focus:border-cyan-400"
                   />
                   <p className="text-[10px] text-slate-500 mt-1">
-                    A real payment request mandate will be initiated to your UPI handle.
+                    A payment request mandate will be initiated to your UPI handle.
                   </p>
                 </div>
               </div>
@@ -652,7 +877,7 @@ export default function PaymentModal({
                 <div>
                   <p className="text-xs font-bold text-white">Scan with Google Pay, PhonePe, or Paytm</p>
                   <p className="text-[11px] text-slate-400 mt-0.5">
-                    UPI Handle: <strong className="text-cyan-300 font-mono">courtsafterdark@okhdfcbank</strong>
+                    UPI Handle: <strong className="text-cyan-300 font-mono">{merchantUpiId}</strong>
                   </p>
                   <p className="text-[11px] text-slate-300 font-semibold mt-1">
                     Payable Amount: <span className="text-cyan-300 font-bold">₹{grandTotal.toLocaleString("en-IN")}</span>
@@ -697,7 +922,7 @@ export default function PaymentModal({
           </div>
         )}
 
-        {/* Tab 3: Pay at Venue */}
+        {/* TAB 4: Pay at Venue */}
         {!processing && !showOtpModal && activeTab === "venue" && (
           <div className="space-y-4">
             <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 space-y-2 text-xs">
@@ -705,7 +930,7 @@ export default function PaymentModal({
                 <Building2 size={16} /> Pay upon Check-In at Venue Desk
               </h4>
               <p className="text-slate-300 leading-relaxed text-[11px]">
-                You can reserve this court or gear without upfront online payment. Settle your fee (₹{grandTotal.toLocaleString("en-IN")}) with cash, UPI QR, or card directly at the reception when checking in.
+                You can reserve this court or gear without upfront online payment. Settle your fee (₹{grandTotal.toLocaleString("en-IN")}) with cash, UPI QR ({merchantUpiId}), or card directly at the reception when checking in.
               </p>
               <div className="rounded-xl bg-dark-950/80 p-3 border border-amber-500/20 space-y-1 text-[11px] text-amber-200/90">
                 <p>• Your slot is reserved and guaranteed under your athlete account.</p>

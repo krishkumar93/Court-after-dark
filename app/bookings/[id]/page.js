@@ -219,7 +219,9 @@ export default function BookingDetailPage() {
           <div className="rounded-2xl border border-slate-800 bg-dark-900/80 p-5 space-y-3">
             <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
-                {paymentMethod === "Razorpay" ? (
+                {paymentMethod === "UPI" ? (
+                  <Smartphone size={14} className="text-emerald-400" />
+                ) : paymentMethod === "Razorpay" ? (
                   <Smartphone size={14} className="text-cyan-400" />
                 ) : (
                   <CreditCard size={14} className="text-primary-400" />
@@ -227,7 +229,7 @@ export default function BookingDetailPage() {
                 <span>Payment & Transaction Receipt</span>
               </h3>
               <span className="text-[10px] font-mono text-slate-400">
-                {paymentDetails.razorpayPaymentId || paymentDetails.paymentId || `REF-${booking.bookingReference}`}
+                {paymentDetails.utrNumber || paymentDetails.razorpayPaymentId || paymentDetails.paymentId || `REF-${booking.bookingReference}`}
               </span>
             </div>
 
@@ -236,9 +238,27 @@ export default function BookingDetailPage() {
                 <div className="flex justify-between">
                   <span className="text-slate-400">Payment Gateway:</span>
                   <strong className="text-white">
-                    {paymentMethod === "Razorpay" ? "Razorpay (UPI / NetBanking)" : paymentMethod === "Card" ? "Credit / Debit Card (256-Bit SSL)" : "Pay at Venue Desk"}
+                    {paymentMethod === "UPI"
+                      ? "Direct UPI (Instant Bank Transfer)"
+                      : paymentMethod === "Razorpay"
+                      ? "Razorpay (UPI / NetBanking)"
+                      : paymentMethod === "Card"
+                      ? "Credit / Debit Card (256-Bit SSL)"
+                      : "Pay at Venue Desk"}
                   </strong>
                 </div>
+                {paymentDetails.merchantUpiId && (
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Paid to UPI VPA:</span>
+                    <strong className="text-emerald-300 font-mono">{paymentDetails.merchantUpiId}</strong>
+                  </div>
+                )}
+                {paymentDetails.utrNumber && (
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">UPI Ref / UTR:</span>
+                    <strong className="text-primary-300 font-mono">{paymentDetails.utrNumber}</strong>
+                  </div>
+                )}
                 {paymentDetails.cardLast4 && (
                   <div className="flex justify-between">
                     <span className="text-slate-400">Card ending in:</span>
@@ -251,7 +271,7 @@ export default function BookingDetailPage() {
                     <strong className="text-cyan-300 font-mono">{paymentDetails.razorpayPaymentId}</strong>
                   </div>
                 )}
-                {paymentDetails.upiId && (
+                {paymentDetails.upiId && !paymentDetails.merchantUpiId && (
                   <div className="flex justify-between">
                     <span className="text-slate-400">VPA / UPI ID:</span>
                     <strong className="text-cyan-300">{paymentDetails.upiId}</strong>

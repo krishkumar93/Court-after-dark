@@ -100,11 +100,12 @@ Creates a verified court reservation with atomic double-booking conflict prevent
   "equipmentAddons": [
     { "equipmentId": "eq_01", "name": "Yonex Nanoflare", "quantity": 2, "price": 8 }
   ],
-  "paymentMethod": "Razorpay",
+  "paymentMethod": "UPI",
   "paymentDetails": {
-    "method": "Razorpay",
-    "razorpayPaymentId": "pay_CAD123456789",
-    "upiId": "athlete@okhdfcbank"
+    "method": "UPI",
+    "merchantUpiId": "7828722557@ptyes",
+    "utrNumber": "430198273641",
+    "upiId": "7828722557@ptyes"
   }
 }
 ```

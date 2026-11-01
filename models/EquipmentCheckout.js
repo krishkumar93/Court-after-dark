@@ -16,8 +16,8 @@ const EquipmentCheckoutSchema = new mongoose.Schema({
   durationHours: { type: Number, default: 2 },
   paymentMethod: {
     type: String,
-    enum: ["Card", "Razorpay", "Pay at Venue"],
-    default: "Pay at Venue",
+    enum: ["UPI", "Card", "Razorpay", "Pay at Venue"],
+    default: "UPI",
   },
   paymentStatus: {
     type: String,
@@ -30,6 +30,8 @@ const EquipmentCheckoutSchema = new mongoose.Schema({
     razorpayPaymentId: { type: String, default: "" },
     razorpayOrderId: { type: String, default: "" },
     upiId: { type: String, default: "" },
+    merchantUpiId: { type: String, default: "" },
+    utrNumber: { type: String, default: "" },
     paidAt: { type: Date, default: null },
   },
   checkoutTime: { type: Date, default: Date.now },
