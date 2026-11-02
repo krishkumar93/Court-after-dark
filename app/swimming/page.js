@@ -22,15 +22,33 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
 import Loading from "@/components/Loading";
 
+const INITIAL_SWIM_SLOTS = [
+  { _id: "init_swim_0", startTime: "06:00", endTime: "06:50", category: "General", bookedCount: 8, poolName: "Shanti Devi Mittal Olympic Swimming Complex", maxCapacity: 30 },
+  { _id: "init_swim_1", startTime: "07:00", endTime: "07:50", category: "General", bookedCount: 14, poolName: "Shanti Devi Mittal Olympic Swimming Complex", maxCapacity: 30 },
+  { _id: "init_swim_2", startTime: "08:00", endTime: "08:50", category: "General", bookedCount: 11, poolName: "Shanti Devi Mittal Olympic Swimming Complex", maxCapacity: 30 },
+  { _id: "init_swim_3", startTime: "16:00", endTime: "16:50", category: "General", bookedCount: 19, poolName: "Shanti Devi Mittal Olympic Swimming Complex", maxCapacity: 30 },
+  { _id: "init_swim_4", startTime: "17:00", endTime: "17:50", category: "Girls", bookedCount: 12, poolName: "Shanti Devi Mittal Olympic Swimming Complex", maxCapacity: 30 },
+  { _id: "init_swim_5", startTime: "18:00", endTime: "18:50", category: "General", bookedCount: 24, poolName: "Shanti Devi Mittal Olympic Swimming Complex", maxCapacity: 30 },
+  { _id: "init_swim_6", startTime: "19:00", endTime: "19:50", category: "General", bookedCount: 18, poolName: "Shanti Devi Mittal Olympic Swimming Complex", maxCapacity: 30 },
+  { _id: "init_swim_7", startTime: "20:00", endTime: "20:50", category: "General", bookedCount: 7, poolName: "Shanti Devi Mittal Olympic Swimming Complex", maxCapacity: 30 },
+];
+
 export default function SwimmingPage() {
   const { user } = useAuth();
   const { showToast } = useToast();
 
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [categoryFilter, setCategoryFilter] = useState("All");
-  const [slots, setSlots] = useState([]);
-  const [pricing, setPricing] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [slots, setSlots] = useState(INITIAL_SWIM_SLOTS);
+  const [pricing, setPricing] = useState({
+    hourlyRateHosteller: 50,
+    hourlyRateDayScholar: 100,
+    monthlyRateHosteller: 750,
+    monthlyRateDayScholar: 1000,
+    semesterRateHosteller: 2000,
+    semesterRateDayScholar: 3000,
+  });
+  const [loading, setLoading] = useState(false);
   const [bookingLoading, setBookingLoading] = useState(null); // slotId
   const [lastBooking, setLastBooking] = useState(null);
 

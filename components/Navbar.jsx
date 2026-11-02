@@ -44,9 +44,13 @@ export default function Navbar() {
   const { showToast } = useToast();
   const pathname = usePathname();
 
-  // Fetch notifications if user is logged in
+  // Fetch notifications once user is logged in
   useEffect(() => {
-    if (!user) return;
+    if (!user?.id) {
+      setNotifications([]);
+      setUnreadCount(0);
+      return;
+    }
     let isMounted = true;
     fetch("/api/notifications")
       .then((r) => r.json())
@@ -59,7 +63,7 @@ export default function Navbar() {
     return () => {
       isMounted = false;
     };
-  }, [user, pathname]);
+  }, [user?.id]);
 
   // Close menus on outside click
   useEffect(() => {

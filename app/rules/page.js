@@ -230,3 +230,4 @@ export default function RulesPage() {
     </div>
   );
 }
+

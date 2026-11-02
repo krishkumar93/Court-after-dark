@@ -21,6 +21,7 @@ import FacilityCard from "@/components/FacilityCard";
 import Loading from "@/components/Loading";
 import EmptyState from "@/components/EmptyState";
 import { useAuth } from "@/contexts/AuthContext";
+import { MOCK_FACILITIES } from "@/lib/mockData";
 
 const OFFICIAL_LPU_TYPES = [
   "All",
@@ -100,9 +101,13 @@ function FacilitiesContent() {
   const [page, setPage] = useState(1);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
 
-  const [facilities, setFacilities] = useState([]);
-  const [pagination, setPagination] = useState({ total: 0, pages: 1, limit: 12 });
-  const [loading, setLoading] = useState(true);
+  const [facilities, setFacilities] = useState(() => MOCK_FACILITIES.slice(0, 18));
+  const [pagination, setPagination] = useState({
+    total: MOCK_FACILITIES.length,
+    pages: Math.ceil(MOCK_FACILITIES.length / 18),
+    limit: 18,
+  });
+  const [loading, setLoading] = useState(false);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   useEffect(() => {

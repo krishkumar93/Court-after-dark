@@ -27,6 +27,7 @@ import Badge from "@/components/Badge";
 import Modal from "@/components/Modal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
+import { MOCK_EQUIPMENT } from "@/lib/mockData";
 
 const CATEGORIES = [
   "All",
@@ -44,10 +45,10 @@ export default function EquipmentPage() {
   const { user, loginDemo } = useAuth();
   const { showToast } = useToast();
 
-  const [equipment, setEquipment] = useState([]);
+  const [equipment, setEquipment] = useState(() => MOCK_EQUIPMENT);
   const [checkouts, setCheckouts] = useState([]);
   const [userBookings, setUserBookings] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [category, setCategory] = useState("All");
   const [search, setSearch] = useState("");
 

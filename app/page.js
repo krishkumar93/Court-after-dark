@@ -36,6 +36,7 @@ import EquipmentBookingModal from "@/components/EquipmentBookingModal";
 import Loading from "@/components/Loading";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
+import { MOCK_FACILITIES, MOCK_EQUIPMENT } from "@/lib/mockData";
 
 // 6 Core Sports Categories as specified in official university requirements
 const SPORTS_CATEGORIES = [
@@ -157,9 +158,9 @@ export default function HomePage() {
   const { user, loginDemo } = useAuth();
   const { showToast } = useToast();
 
-  const [facilities, setFacilities] = useState([]);
-  const [equipmentList, setEquipmentList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [facilities, setFacilities] = useState(() => MOCK_FACILITIES.slice(0, 6));
+  const [equipmentList, setEquipmentList] = useState(() => MOCK_EQUIPMENT.slice(0, 3));
+  const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [demoLoading, setDemoLoading] = useState(null);
@@ -178,10 +179,14 @@ export default function HomePage() {
         .catch(() => ({ equipment: [] })),
     ])
       .then(([facData, eqData]) => {
-        setFacilities(facData.facilities || []);
-        setEquipmentList((eqData.equipment || []).slice(0, 3));
+        if (facData?.facilities?.length) {
+          setFacilities(facData.facilities);
+        }
+        if (eqData?.equipment?.length) {
+          setEquipmentList(eqData.equipment.slice(0, 3));
+        }
       })
-      .finally(() => setLoading(false));
+      .catch(() => {});
   }, []);
 
   function handleHeroSearch(e) {

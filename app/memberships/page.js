@@ -23,13 +23,89 @@ import { useToast } from "@/contexts/ToastContext";
 import Loading from "@/components/Loading";
 import Modal from "@/components/Modal";
 
+const INITIAL_PLANS = [
+  {
+    _id: "plan_badminton_2026",
+    sportCategory: "Badminton",
+    sessionYear: "2026-27",
+    description: "Access to 12 indoor synthetic badminton courts at Shanti Devi Mittal Complex.",
+    hostellerEdbFee: 4500,
+    hostellerRegularFee: 5500,
+    dayScholarFee: 7500,
+    isSwimmingPlan: false,
+    isActive: true,
+  },
+  {
+    _id: "plan_gym_2026",
+    sportCategory: "Gymnasium",
+    sessionYear: "2026-27",
+    description: "Unlimited workout access to LPU Fitness Centre / Fitness Edge.",
+    hostellerEdbFee: 5000,
+    hostellerRegularFee: 6000,
+    dayScholarFee: 8000,
+    isSwimmingPlan: false,
+    isActive: true,
+  },
+  {
+    _id: "plan_basketball_2026",
+    sportCategory: "Basketball",
+    sessionYear: "2026-27",
+    description: "Access to 8 outdoor and 1 indoor basketball courts with floodlights.",
+    hostellerEdbFee: 3500,
+    hostellerRegularFee: 4500,
+    dayScholarFee: 6000,
+    isSwimmingPlan: false,
+    isActive: true,
+  },
+  {
+    _id: "plan_volleyball_2026",
+    sportCategory: "Volleyball",
+    sessionYear: "2026-27",
+    description: "Access to 3 indoor and 6 outdoor volleyball courts with tournament nets.",
+    hostellerEdbFee: 3000,
+    hostellerRegularFee: 4000,
+    dayScholarFee: 5500,
+    isSwimmingPlan: false,
+    isActive: true,
+  },
+  {
+    _id: "plan_lawn_tennis_2026",
+    sportCategory: "Lawn Tennis",
+    sessionYear: "2026-27",
+    description: "Access to synthetic floodlit lawn tennis courts with coach assistance.",
+    hostellerEdbFee: 4000,
+    hostellerRegularFee: 5000,
+    dayScholarFee: 7000,
+    isSwimmingPlan: false,
+    isActive: true,
+  },
+  {
+    _id: "plan_swimming_2026",
+    sportCategory: "Swimming (Olympic Pool)",
+    sessionYear: "2026-27",
+    description: "All-weather Olympic 50m pool & warm-up pool with certified lifeguards.",
+    isSwimmingPlan: true,
+    hourlyRateHosteller: 50,
+    hourlyRateDayScholar: 100,
+    monthlyRateHosteller: 750,
+    monthlyRateDayScholar: 1000,
+    semesterRateHosteller: 2000,
+    semesterRateDayScholar: 3000,
+    hostellerRegularFee: 3500,
+    dayScholarFee: 5000,
+    registrationFee: 200,
+    monthlyCoachingFee: 700,
+    isActive: true,
+  },
+];
+
 export default function MembershipsPage() {
   const { user } = useAuth();
   const { showToast } = useToast();
 
-  const [plans, setPlans] = useState([]);
+  const [plans, setPlans] = useState(INITIAL_PLANS);
   const [userMemberships, setUserMemberships] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // Apply Modal
   const [applyModalOpen, setApplyModalOpen] = useState(false);
