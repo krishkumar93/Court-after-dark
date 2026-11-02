@@ -8,6 +8,9 @@ const UserSchema = new mongoose.Schema({
   phone: { type: String, default: "" },
   phoneVerified: { type: Boolean, default: false },
   bio: { type: String, default: "" },
+  regNo: { type: String, default: "" }, // LPU Student Registration Number (e.g. 12104822)
+  department: { type: String, default: "" }, // e.g. School of Computer Science & Engineering
+  hostelBlock: { type: String, default: "" }, // e.g. Boys Hostel 4 (BH-4), GH-2, Day Scholar
   preferredSports: [{ type: String }],
   favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: "Facility" }],
   status: { type: String, enum: ["active", "pending", "suspended"], default: "pending" },

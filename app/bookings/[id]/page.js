@@ -146,11 +146,16 @@ export default function BookingDetailPage() {
       <div className="overflow-hidden rounded-3xl border border-slate-800 bg-dark-850 shadow-2xl">
         {/* Pass Top Banner */}
         <div className="relative bg-gradient-to-r from-dark-900 via-dark-800 to-dark-900 p-6 sm:p-8 border-b border-slate-800">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="rounded-full bg-amber-400/15 border border-amber-400/30 px-3 py-0.5 text-[10px] font-bold text-amber-300 uppercase tracking-wider">
+              Lovely Professional University • LPU Vertos Match Pass
+            </span>
+          </div>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-mono font-bold tracking-widest text-primary-400 uppercase">
-                  {booking.bookingReference || "CAD-SESSION"}
+                  {booking.bookingReference || "LPU-CAD-SESSION"}
                 </span>
                 <span className="text-slate-600">•</span>
                 <span className="text-xs font-bold uppercase text-slate-400">
@@ -162,7 +167,7 @@ export default function BookingDetailPage() {
               </h1>
               <p className="text-xs text-slate-400 flex items-center gap-1.5 mt-1">
                 <MapPin size={13} className="text-primary-400" />
-                {facility.location} • {facility.city || "Downtown"}
+                {facility.location} • {facility.city || "LPU Campus (Phagwara)"}
               </p>
             </div>
 
@@ -329,6 +334,21 @@ export default function BookingDetailPage() {
                 <p>
                   Email: <span className="text-slate-400">{booking.userId?.email || user?.email}</span>
                 </p>
+                {(booking.userId?.regNo || user?.regNo) && (
+                  <p>
+                    LPU Reg. No: <strong className="text-amber-300 font-mono">#{booking.userId?.regNo || user?.regNo}</strong>
+                  </p>
+                )}
+                {(booking.userId?.department || user?.department) && (
+                  <p>
+                    School: <span className="text-slate-300">{booking.userId?.department || user?.department}</span>
+                  </p>
+                )}
+                {(booking.userId?.hostelBlock || user?.hostelBlock) && (
+                  <p>
+                    Hostel: <span className="text-slate-300">{booking.userId?.hostelBlock || user?.hostelBlock}</span>
+                  </p>
+                )}
                 {booking.notes && (
                   <p className="pt-1 text-slate-400 italic">
                     Note: "{booking.notes}"
@@ -342,9 +362,9 @@ export default function BookingDetailPage() {
                 Session Check-In Rules
               </h3>
               <div className="rounded-xl border border-slate-800 bg-dark-900/60 p-3.5 space-y-1.5 text-slate-400">
-                <p>• Show this digital pass or reference ID to the court coordinator.</p>
-                <p>• Arrive 10 minutes prior for warmup and footwear check.</p>
-                <p>• Non-marking athletic gum-rubber footwear mandatory.</p>
+                <p>• Show this digital pass at the SDM Arena or Unipolis sports desk.</p>
+                <p>• LPU Student / Verto ID card compulsory for campus arena entry.</p>
+                <p>• Non-marking athletic gum-rubber footwear mandatory for indoor courts.</p>
               </div>
             </div>
           </div>

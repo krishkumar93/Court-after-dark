@@ -22,6 +22,9 @@ export async function PUT(request) {
   if (body.name && body.name.trim()) user.name = body.name.trim();
   if (body.phone !== undefined) user.phone = body.phone;
   if (body.bio !== undefined) user.bio = body.bio;
+  if (body.regNo !== undefined) user.regNo = body.regNo.trim();
+  if (body.department !== undefined) user.department = body.department.trim();
+  if (body.hostelBlock !== undefined) user.hostelBlock = body.hostelBlock.trim();
   if (Array.isArray(body.preferredSports)) user.preferredSports = body.preferredSports;
 
   // Optional password update
@@ -60,6 +63,9 @@ export async function PUT(request) {
       role: user.role,
       phone: user.phone,
       bio: user.bio,
+      regNo: user.regNo,
+      department: user.department,
+      hostelBlock: user.hostelBlock,
       preferredSports: user.preferredSports,
       createdAt: user.createdAt,
     },

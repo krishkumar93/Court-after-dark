@@ -5,9 +5,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export const metadata = {
-  title: "Courts After Dark | Fair Sports Facility Booking & Management Platform",
+  title: "Courts After Dark | LPU Vertos Sports Arena & Night Court Booking",
   description:
-    "Discover courts, grounds and gym facilities, check live slot availability, book fairly without monopolisation, and check out sports equipment.",
+    "Official night sports facility booking portal for Lovely Professional University (LPU Punjab). Reserve floodlit courts, turf grounds, and sports gear across Shanti Devi Mittal Indoor Complex, Baldev Raj Mittal Unipolis, and Block 34 Stadium.",
 };
 
 export default function RootLayout({ children }) {

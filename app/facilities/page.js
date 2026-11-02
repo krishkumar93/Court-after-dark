@@ -30,7 +30,15 @@ const TYPES = [
   "Table Tennis",
 ];
 
-const CITIES = ["All", "Downtown", "Midtown", "Eastside", "West End", "South Bay"];
+const CITIES = [
+  "All",
+  "LPU Campus (Phagwara)",
+  "Shanti Devi Mittal Complex",
+  "Baldev Raj Mittal Unipolis",
+  "Block 34 Stadium",
+  "Uni-Mall Hub",
+  "Hostel Arena",
+];
 
 const AMENITIES_LIST = [
   "Floodlights",
@@ -138,14 +146,14 @@ function FacilitiesContent() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-800 pb-6">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary-400 mb-1">
-            <Sparkles size={14} /> Real-Time Sports Venue Inventory
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-400 mb-1">
+            <Sparkles size={14} /> Lovely Professional University • Campus Sports Arenas
           </div>
           <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-            Discover Facilities
+            Discover LPU Facilities
           </h1>
           <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-xl">
-            Explore premium floodlit courts, turf grounds, and gyms. All slots updated live with fair anti-monopoly rules.
+            Explore floodlit badminton, basketball, 7v7 football, tennis, and cricket grounds across Shanti Devi Mittal Complex, Unipolis, and Block 34.
           </p>
         </div>
 

@@ -147,14 +147,21 @@ export default function DashboardPage() {
       {/* Header Greeting */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-800 pb-6">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary-400 mb-1">
-            <Sparkles size={14} /> Player Portal
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-400 mb-1">
+            <Sparkles size={14} /> Lovely Professional University • LPU Verto Portal
           </div>
-          <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-            Welcome back, {user.name.split(" ")[0]}
+          <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight flex items-center gap-2">
+            <span>Welcome back, {user.name.split(" ")[0]}</span>
+            {user.regNo && (
+              <span className="text-xs font-mono font-bold bg-primary-400/10 border border-primary-400/20 text-primary-300 px-2.5 py-1 rounded-full">
+                #{user.regNo}
+              </span>
+            )}
           </h1>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Review your active sessions, gear status, and fair-use quotas.
+            {user.department ? `${user.department} • ` : ""}
+            {user.hostelBlock ? `${user.hostelBlock} • ` : ""}
+            Active sessions, sports gear status, and fair-use quotas.
           </p>
         </div>
 

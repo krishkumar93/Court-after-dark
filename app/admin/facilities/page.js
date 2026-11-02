@@ -18,18 +18,25 @@ const TYPES = [
   "Table Tennis",
 ];
 
-const CITIES = ["Downtown", "Midtown", "Eastside", "West End", "South Bay"];
+const CITIES = [
+  "LPU Campus (Phagwara)",
+  "Shanti Devi Mittal Complex",
+  "Baldev Raj Mittal Unipolis",
+  "Block 34 Stadium",
+  "Uni-Mall Hub",
+  "Hostel Arena",
+];
 
 const EMPTY_FORM = {
   name: "",
   type: TYPES[0],
   location: "",
-  city: "Downtown",
+  city: "LPU Campus (Phagwara)",
   description: "",
   capacity: 4,
   openingTime: "06:00",
-  closingTime: "22:00",
-  pricePerHour: 40,
+  closingTime: "23:00",
+  pricePerHour: 350,
   indoorOutdoor: "Indoor",
   surfaceType: "Synthetic Tournament Mat",
   amenities: "Floodlights, Locker Rooms, Showers",
@@ -208,7 +215,7 @@ export default function AdminFacilitiesPage() {
                   <p className="text-[10px] text-slate-500">{f.city || "Downtown"}</p>
                 </td>
                 <td className="px-4 py-3">
-                  <p className="font-bold text-primary-400">${f.pricePerHour || 40} / hr</p>
+                  <p className="font-bold text-primary-400">₹{f.pricePerHour || 350} / hr</p>
                   <span className="text-[10px] text-slate-400">{f.indoorOutdoor || "Indoor"}</span>
                 </td>
                 <td className="px-4 py-3 text-slate-300 font-medium">
@@ -332,7 +339,7 @@ export default function AdminFacilitiesPage() {
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div>
-              <label className="block font-semibold text-slate-300 mb-1">Price / Hour ($)</label>
+              <label className="block font-semibold text-slate-300 mb-1">Price / Hour (₹ INR)</label>
               <input
                 type="number"
                 min={0}

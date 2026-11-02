@@ -9,7 +9,7 @@ import {
   Wrench,
   Dumbbell,
   Users,
-  DollarSign,
+  IndianRupee,
   TrendingUp,
   Plus,
   ArrowRight,
@@ -123,7 +123,7 @@ export default function AdminOverviewPage() {
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          icon={DollarSign}
+          icon={IndianRupee}
           label="Total Revenue Generated"
           value={`₹${totalRevenue.toLocaleString("en-IN")}`}
           subtext="Confirmed + Completed"

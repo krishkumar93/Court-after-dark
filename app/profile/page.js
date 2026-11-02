@@ -40,6 +40,9 @@ export default function ProfilePage() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [bio, setBio] = useState("");
+  const [regNo, setRegNo] = useState("");
+  const [department, setDepartment] = useState("");
+  const [hostelBlock, setHostelBlock] = useState("");
   const [preferredSports, setPreferredSports] = useState([]);
   const [savingProfile, setSavingProfile] = useState(false);
 
@@ -54,6 +57,9 @@ export default function ProfilePage() {
       setName(user.name || "");
       setPhone(user.phone || "");
       setBio(user.bio || "");
+      setRegNo(user.regNo || "");
+      setDepartment(user.department || "");
+      setHostelBlock(user.hostelBlock || "");
       setPreferredSports(user.preferredSports || []);
     }
   }, [user]);
@@ -83,7 +89,7 @@ export default function ProfilePage() {
       const res = await fetch("/api/auth/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, bio, preferredSports }),
+        body: JSON.stringify({ name, phone, bio, regNo, department, hostelBlock, preferredSports }),
       });
 
       const data = await res.json();
@@ -241,9 +247,65 @@ export default function ProfilePage() {
                 rows={3}
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
-                placeholder="e.g. Regular badminton doubles player, plays Tuesday and Thursday nights..."
+                placeholder="e.g. LPU Verto, plays evening badminton doubles at SDM Arena..."
                 className="w-full rounded-xl border border-slate-700 bg-dark-900 px-3.5 py-2.5 text-xs text-white outline-none focus:border-primary-400"
               />
+            </div>
+          </div>
+
+          {/* LPU Student & Campus Affiliation Card */}
+          <div className="rounded-2xl border border-amber-400/25 bg-gradient-to-br from-amber-950/20 via-dark-850 to-dark-850 p-6 space-y-4">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 block mb-1">
+                Lovely Professional University Affiliation
+              </span>
+              <h2 className="text-base font-bold text-white flex items-center gap-2">
+                <span>🎓 LPU Verto Credentials</span>
+              </h2>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Your campus registration and hostel affiliation are displayed on your verified digital match passes.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  LPU Registration Number
+                </label>
+                <input
+                  type="text"
+                  value={regNo}
+                  onChange={(e) => setRegNo(e.target.value)}
+                  placeholder="e.g. 12104822"
+                  className="w-full rounded-xl border border-slate-700 bg-dark-900 px-3.5 py-2.5 text-xs text-white font-mono outline-none focus:border-amber-400"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  School / Department
+                </label>
+                <input
+                  type="text"
+                  value={department}
+                  onChange={(e) => setDepartment(e.target.value)}
+                  placeholder="e.g. School of Computer Science (CSE)"
+                  className="w-full rounded-xl border border-slate-700 bg-dark-900 px-3.5 py-2.5 text-xs text-white outline-none focus:border-amber-400"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Hostel / Residence
+                </label>
+                <input
+                  type="text"
+                  value={hostelBlock}
+                  onChange={(e) => setHostelBlock(e.target.value)}
+                  placeholder="e.g. Boys Hostel 4 (BH-4) or Day Scholar"
+                  className="w-full rounded-xl border border-slate-700 bg-dark-900 px-3.5 py-2.5 text-xs text-white outline-none focus:border-amber-400"
+                />
+              </div>
             </div>
           </div>
 

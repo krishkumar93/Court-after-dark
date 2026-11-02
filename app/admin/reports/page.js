@@ -5,7 +5,7 @@ import {
   BarChart3,
   Download,
   Filter,
-  DollarSign,
+  IndianRupee,
   TrendingUp,
   ShieldCheck,
   AlertTriangle,
@@ -130,9 +130,9 @@ export default function AdminReportsPage() {
       {/* KPI Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          icon={DollarSign}
+          icon={IndianRupee}
           label="Total Revenue Generated"
-          value={`$${(m.totalRevenue || 0).toLocaleString()}`}
+          value={`₹${(m.totalRevenue || 0).toLocaleString("en-IN")}`}
           subtext={`${m.totalBookings || 0} total sessions`}
           highlight={true}
         />

@@ -139,15 +139,15 @@ function SearchContent() {
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 space-y-8">
       {/* Search Header */}
       <div className="text-center max-w-3xl mx-auto space-y-3">
-        <div className="inline-flex items-center gap-1.5 rounded-full border border-primary-400/30 bg-primary-400/10 px-3.5 py-1 text-xs font-bold text-primary-300">
-          <Sparkles size={13} className="text-primary-400" />
-          <span>Unified Sports Inventory & Grounds Discovery</span>
+        <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-400/10 px-3.5 py-1 text-xs font-bold text-amber-300">
+          <Sparkles size={13} className="text-amber-400" />
+          <span>Lovely Professional University • Campus Sports & Gear Search</span>
         </div>
         <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-          Find Available Courts & Gear
+          Find LPU Campus Courts & Gear
         </h1>
         <p className="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto">
-          Search live available grounds, floodlit courts, tournament rackets, and athletic gear. Book instantly with Card or Razorpay.
+          Search live available grounds across Shanti Devi Mittal Complex, Unipolis, and Block 34 Stadium, or rent sports equipment for your evening session.
         </p>
       </div>
 

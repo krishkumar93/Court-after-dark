@@ -49,32 +49,32 @@ export default function ContactPage() {
               <div className="flex items-start gap-3">
                 <MapPin size={16} className="text-primary-400 shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-bold text-white">Central Sports Complex</p>
-                  <p className="text-slate-400">Block A-C Athletics Pavilion, Campus Way, Downtown</p>
+                  <p className="font-bold text-white">LPU Central Sports Complex</p>
+                  <p className="text-slate-400">Shanti Devi Mittal Indoor Stadium, Block 13, Lovely Professional University, Phagwara, Punjab 144411</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
                 <Clock size={16} className="text-primary-400 shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-bold text-white">Coordinator Operating Hours</p>
-                  <p className="text-slate-400">Monday – Sunday: 06:00 AM – 11:30 PM (Daily)</p>
+                  <p className="font-bold text-white">DSW Sports Desk Hours</p>
+                  <p className="text-slate-400">Monday – Sunday: 06:00 AM – 11:00 PM (Daily Floodlight Coverage)</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
                 <Phone size={16} className="text-primary-400 shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-bold text-white">Desk Hotline</p>
-                  <p className="text-slate-400">+1 (555) 268-7872 / Ext 4</p>
+                  <p className="font-bold text-white">Campus Sports Hotline</p>
+                  <p className="text-slate-400">+91 1824 517000 / Ext 542</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
                 <Mail size={16} className="text-primary-400 shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-bold text-white">Direct Email</p>
-                  <p className="text-slate-400">desk@courtsafterdark.com</p>
+                  <p className="font-bold text-white">University Sports Email</p>
+                  <p className="text-slate-400">sports@lpu.co.in / desk@courtsafterdark.com</p>
                 </div>
               </div>
             </div>
@@ -82,10 +82,10 @@ export default function ContactPage() {
 
           <div className="rounded-2xl border border-primary-400/20 bg-primary-400/10 p-5 text-xs text-slate-300 space-y-1">
             <p className="font-bold text-primary-300 flex items-center gap-1.5">
-              <CheckCircle2 size={14} /> Immediate Check-In Assistance
+              <CheckCircle2 size={14} /> Immediate Check-In & Floodlight Assistance
             </p>
             <p className="text-slate-400 text-[11px] leading-relaxed">
-              If floodlights or net equipment require attention during play, visit the central duty desk in Block A for immediate technician dispatch.
+              If floodlights or court equipment require attention during play, visit the central duty desk at Shanti Devi Mittal Indoor Stadium (SDM Arena) for immediate technician dispatch.
             </p>
           </div>
         </div>

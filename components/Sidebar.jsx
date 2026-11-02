@@ -32,7 +32,10 @@ export default function Sidebar() {
     <aside className="hidden md:flex flex-col w-64 shrink-0 border-r border-slate-800/80 bg-dark-900/95 min-h-[calc(100vh-61px)] p-4 space-y-6">
       <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-bold">
         <Shield size={16} />
-        <span>Administrator Console</span>
+        <div>
+          <span className="block leading-none">DSW Athletics Console</span>
+          <span className="text-[10px] text-amber-400/80 font-normal">Lovely Professional University</span>
+        </div>
       </div>
 
       <nav className="space-y-1">

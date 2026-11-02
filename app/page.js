@@ -22,7 +22,9 @@ import {
   Loader2,
   CreditCard,
   Smartphone,
-  ShoppingBag,
+  GraduationCap,
+  Building2,
+  Star,
 } from "lucide-react";
 import FacilityCard from "@/components/FacilityCard";
 import EquipmentCard from "@/components/EquipmentCard";
@@ -42,36 +44,45 @@ const CATEGORIES = [
   { name: "Table Tennis", label: "Table Tennis", icon: "🏓", sport: "Table Tennis" },
 ];
 
+const LPU_CAMPUS_ZONES = [
+  { name: "SDM Indoor Complex", block: "Block 13", icon: "🏸", desc: "Badminton, Hardwood FIBA Hoops, Table Tennis & Squash" },
+  { name: "Baldev Raj Mittal Unipolis", block: "Unipolis Plaza", icon: "🏀", desc: "Open-Air Cushioned Hoops & Night Events Arena" },
+  { name: "Block 34 Athletic Stadium", block: "Stadium Ground", icon: "⚽", desc: "FIFA 4G Football Turf, 400m Synthetic Track & Floodlights" },
+  { name: "Main Cricket Grounds", block: "Opp. Uni-Mall", icon: "🏏", desc: "Natural Clay Turf Oval & 4 Night Practice Nets" },
+  { name: "Uni-Mall Fitness Hub", block: "Uni-Mall 3rd Floor", icon: "💪", desc: "Eleiko Olympic Lifting, Rogue Racks & Conditioning" },
+  { name: "Hostel Sports Lawns", block: "BH-4 & GH-2", icon: "🎾", desc: "Lawn Tennis Hardcourts & Silica Sand Volleyball" },
+];
+
 const POPULAR_SLOTS = [
-  { time: "18:00 - 19:00", label: "Sunset Rallies", demand: "High Demand", tag: "Prime Time" },
-  { time: "19:00 - 20:00", label: "Peak Floodlight Hour", demand: "High Demand", tag: "Prime Time" },
-  { time: "20:00 - 21:00", label: "After-Hours Clash", demand: "High Demand", tag: "Prime Time" },
-  { time: "21:00 - 22:00", label: "Late Night League", demand: "Moderate", tag: "Night Slot" },
+  { time: "18:00 - 19:00", label: "Post-Class Warmup", demand: "High Demand", tag: "Prime Time" },
+  { time: "19:00 - 20:00", label: "Peak Floodlight Clash", demand: "High Demand", tag: "Prime Time" },
+  { time: "20:00 - 21:00", label: "Inter-Hostel League", demand: "High Demand", tag: "Prime Time" },
+  { time: "21:00 - 22:00", label: "Late Night Verto Rallies", demand: "Moderate", tag: "Night Slot" },
 ];
 
 const HOW_IT_WORKS = [
   {
     step: "01",
-    title: "Real-Time Discovery",
-    desc: "Search available courts, turfs, and sports gear by sport, location, or prime-time floodlight hours.",
+    title: "Live Campus Discovery",
+    desc: "Search floodlit courts across Shanti Devi Mittal Indoor Complex, Unipolis, and Block 34 Stadium in real-time.",
     icon: Search,
   },
   {
     step: "02",
-    title: "Slot & Gear Allocation",
-    desc: "Concurrency-safe double booking prevention enforces fair anti-monopoly caps and transparent queues.",
+    title: "Fair Anti-Hoarding Quota",
+    desc: "Every Verto gets an equal chance with a 2-active booking limit, preventing court monopolies during peak evening hours.",
     icon: Clock,
   },
   {
     step: "03",
-    title: "Card & Razorpay Checkout",
-    desc: "Settle court fees and gear rentals securely with Credit/Debit Card, Razorpay UPI, or choose Pay at Venue.",
+    title: "Instant UPI & RuPay",
+    desc: "Settle court and gear reservations instantly via Indian UPI (GPay, PhonePe, Paytm), RuPay / Visa Cards, or pay at venue desk.",
     icon: CreditCard,
   },
   {
     step: "04",
-    title: "Digital Game Pass",
-    desc: "Present your QR match pass at venue reception to unlock floodlit courts and grab checked-out equipment.",
+    title: "Digital Verto Pass",
+    desc: "Show your digital QR game pass at the SDM or Unipolis sports desk to unlock floodlit courts and collect reserved sports gear.",
     icon: Trophy,
   },
 ];
@@ -132,7 +143,7 @@ export default function HomePage() {
 
   function handleRentGear(item) {
     if (!user) {
-      showToast("Please sign in or use Demo Player to rent equipment.", "error");
+      showToast("Please sign in or use Demo Verto to rent sports gear.", "error");
       router.push("/login");
       return;
     }
@@ -142,28 +153,30 @@ export default function HomePage() {
 
   return (
     <div className="space-y-16 sm:space-y-24 pb-16 stadium-mesh">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden border-b border-slate-800/80 bg-gradient-to-b from-dark-950 via-dark-900 to-dark-900 pt-16 pb-20 sm:pt-24 sm:pb-28">
-        {/* Luminous glow backdrops */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 h-96 w-96 rounded-full bg-primary-400/10 blur-[130px] pointer-events-none" />
-        <div className="absolute top-1/3 right-10 h-72 w-72 rounded-full bg-cyan-500/10 blur-[110px] pointer-events-none" />
+      {/* LPU Hero Section */}
+      <section className="relative overflow-hidden border-b border-slate-800/80 bg-gradient-to-b from-dark-950 via-dark-900 to-dark-900 pt-14 pb-20 sm:pt-20 sm:pb-28">
+        {/* Ambient stadium floodlight backdrops */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[420px] w-[420px] rounded-full bg-primary-400/10 blur-[130px] pointer-events-none" />
+        <div className="absolute top-1/3 right-10 h-80 w-80 rounded-full bg-amber-500/10 blur-[120px] pointer-events-none" />
+        <div className="absolute top-1/2 left-10 h-72 w-72 rounded-full bg-cyan-500/10 blur-[110px] pointer-events-none" />
 
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 text-center">
-          {/* Top pill badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary-400/30 bg-primary-400/10 px-4 py-1 text-xs font-semibold text-primary-300 backdrop-blur-md mb-6 shadow-glow-sm">
-            <Sparkles size={14} className="text-primary-400 animate-pulse" />
-            <span>Next-Gen Court & Equipment Booking Engine</span>
+          {/* Institutional Crest Pill Badge */}
+          <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/30 bg-gradient-to-r from-amber-400/15 via-primary-400/10 to-amber-400/15 px-4 py-1.5 text-xs font-bold text-amber-300 backdrop-blur-md mb-6 shadow-glow-sm">
+            <GraduationCap size={15} className="text-amber-400" />
+            <span>LOVELY PROFESSIONAL UNIVERSITY • LPU VERTOS SPORTS PORTAL</span>
+            <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
           </div>
 
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.1]">
-            Own Your Game. <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 via-cyan-300 to-emerald-400">
-              Courts, Grounds & Sports Gear.
+            Own Your Night Game at LPU. <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 via-amber-300 to-emerald-400">
+              Floodlit Courts, Stadium Turfs & Sports Gear.
             </span>
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-base sm:text-lg text-slate-300 leading-relaxed">
-            Eliminate prime-time court hoarders. Search live availability of floodlit courts and turf grounds, rent sports gear, and pay seamlessly with Card or Razorpay.
+            Eliminate prime-time court hoarding for LPU Vertos. Book floodlit badminton, basketball, 7v7 football, tennis, and cricket nets across Shanti Devi Mittal Indoor Complex, Baldev Raj Mittal Unipolis, and Block 34 Stadium.
           </p>
 
           {/* Interactive Multi-Modal Search Bar */}
@@ -172,26 +185,31 @@ export default function HomePage() {
             className="mx-auto mt-10 max-w-3xl rounded-3xl border border-slate-700/80 bg-dark-850/95 p-3 shadow-2xl backdrop-blur-xl space-y-3"
           >
             {/* Search Type Selector */}
-            <div className="flex items-center gap-1.5 border-b border-slate-800 pb-2.5 text-xs px-1">
-              <span className="text-slate-500 font-semibold uppercase tracking-wider mr-1">Search:</span>
-              {[
-                { id: "all", label: "All Items" },
-                { id: "grounds", label: "Grounds & Courts" },
-                { id: "equipment", label: "Sports Gear" },
-              ].map((t) => (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => setSearchType(t.id)}
-                  className={`rounded-lg px-3 py-1 font-bold transition ${
-                    searchType === t.id
-                      ? "bg-primary-400 text-dark-950 shadow-sm"
-                      : "text-slate-400 hover:text-white"
-                  }`}
-                >
-                  {t.label}
-                </button>
-              ))}
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2.5 text-xs px-1">
+              <div className="flex items-center gap-1.5">
+                <span className="text-slate-500 font-semibold uppercase tracking-wider mr-1">Browse:</span>
+                {[
+                  { id: "all", label: "All Items" },
+                  { id: "grounds", label: "Campus Courts & Turfs" },
+                  { id: "equipment", label: "Sports Gear" },
+                ].map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => setSearchType(t.id)}
+                    className={`rounded-lg px-3 py-1 font-bold transition ${
+                      searchType === t.id
+                        ? "bg-primary-400 text-dark-950 shadow-sm"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+              <span className="hidden sm:inline text-[11px] text-primary-300 font-mono">
+                📍 Phagwara, Punjab
+              </span>
             </div>
 
             {/* Input Row */}
@@ -202,18 +220,18 @@ export default function HomePage() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search court name, sport (Badminton, Cricket, Football), or gear..."
+                  placeholder="Search court (SDM Arena, Unipolis, Block 34, Cricket nets) or gear..."
                   className="w-full rounded-xl bg-dark-900 pl-11 pr-4 py-2.5 text-sm text-white placeholder-slate-400 outline-none focus:ring-1 focus:ring-primary-400"
                 />
               </div>
 
-              <div className="sm:w-48">
+              <div className="sm:w-52">
                 <select
                   value={selectedSport}
                   onChange={(e) => setSelectedSport(e.target.value)}
                   className="w-full rounded-xl border border-slate-700 bg-dark-900 px-3 py-2.5 text-sm text-slate-200 outline-none focus:border-primary-400 cursor-pointer"
                 >
-                  <option value="All">All Disciplines</option>
+                  <option value="All">All Sports Disciplines</option>
                   {CATEGORIES.map((c) => (
                     <option key={c.sport} value={c.sport}>
                       {c.label}
@@ -232,11 +250,11 @@ export default function HomePage() {
             </div>
           </form>
 
-          {/* Instant Demo Exploration Bar */}
+          {/* Instant 1-Click LPU Demo Accounts */}
           {!user && (
             <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5 text-xs">
               <span className="text-slate-400 flex items-center gap-1 font-medium">
-                <Sparkles size={13} className="text-primary-400" /> Explore without login:
+                <Sparkles size={13} className="text-primary-400" /> Instant LPU Access (Zero Typing):
               </span>
               <button
                 type="button"
@@ -249,7 +267,7 @@ export default function HomePage() {
                 ) : (
                   <User size={12} className="text-primary-400" />
                 )}
-                <span>1-Click Demo Player</span>
+                <span>Aarav (Verto • BH-4)</span>
               </button>
               <button
                 type="button"
@@ -262,14 +280,14 @@ export default function HomePage() {
                 ) : (
                   <Shield size={12} className="text-amber-400" />
                 )}
-                <span>1-Click Demo Admin</span>
+                <span>Dr. Baljit (DSW Admin)</span>
               </button>
               <Link
-                href="/search"
+                href="/facilities"
                 className="rounded-full border border-slate-700 bg-dark-850 px-3.5 py-1.5 text-slate-300 hover:text-white hover:bg-dark-800 transition flex items-center gap-1.5"
               >
                 <Compass size={12} className="text-primary-400" />
-                <span>Search Available Inventory</span>
+                <span>Explore All Campus Arenas</span>
               </Link>
             </div>
           )}
@@ -277,22 +295,72 @@ export default function HomePage() {
           {/* Key metrics ticker */}
           <div className="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-4xl mx-auto pt-6 border-t border-slate-800/60">
             <div>
-              <p className="text-2xl sm:text-3xl font-black text-white">100%</p>
-              <p className="text-xs text-slate-400 mt-0.5">Live Real-Time Inventory</p>
+              <p className="text-2xl sm:text-3xl font-black text-white">10+ Arenas</p>
+              <p className="text-xs text-slate-400 mt-0.5">SDM, Unipolis & Stadium</p>
             </div>
             <div>
-              <p className="text-2xl sm:text-3xl font-black text-primary-400">Card & UPI</p>
-              <p className="text-xs text-slate-400 mt-0.5">Card + Razorpay Payments</p>
+              <p className="text-2xl sm:text-3xl font-black text-primary-400">₹ INR UPI</p>
+              <p className="text-xs text-slate-400 mt-0.5">Direct to 7828722557@ptyes</p>
             </div>
             <div>
-              <p className="text-2xl sm:text-3xl font-black text-cyan-400">15+ Gear</p>
-              <p className="text-xs text-slate-400 mt-0.5">Equipment Types In Stock</p>
+              <p className="text-2xl sm:text-3xl font-black text-cyan-400">18:00 – 23:00</p>
+              <p className="text-xs text-slate-400 mt-0.5">Campus Night Floodlights</p>
             </div>
             <div>
-              <p className="text-2xl sm:text-3xl font-black text-amber-400">Fair-Share</p>
-              <p className="text-xs text-slate-400 mt-0.5">Anti-Hoarding Slot Engine</p>
+              <p className="text-2xl sm:text-3xl font-black text-amber-400">Fair-Quota</p>
+              <p className="text-xs text-slate-400 mt-0.5">Anti-Hoarding 2-Slot Cap</p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* LPU Campus Sports Zones Highlights */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <div className="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider mb-1">
+              <Building2 size={14} />
+              <span>Campus Sports Hubs</span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+              LPU Sports Complexes & Landmark Arenas
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Explore professional facilities across Lovely Professional University's 600-acre campus
+            </p>
+          </div>
+          <Link
+            href="/facilities"
+            className="text-xs font-bold text-primary-400 hover:underline flex items-center gap-1"
+          >
+            <span>View All Arenas</span>
+            <ArrowRight size={13} />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {LPU_CAMPUS_ZONES.map((zone) => (
+            <Link
+              key={zone.name}
+              href={`/facilities?search=${encodeURIComponent(zone.name.split(" ")[0])}`}
+              className="p-5 rounded-2xl border border-slate-800 bg-dark-850 hover:bg-dark-800 hover:border-primary-400/40 transition group space-y-2.5 shadow-md"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-2xl">{zone.icon}</span>
+                <span className="rounded-full bg-primary-400/10 border border-primary-400/25 px-2.5 py-0.5 text-[10px] font-bold text-primary-300">
+                  {zone.block}
+                </span>
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-white group-hover:text-primary-300 transition-colors">
+                  {zone.name}
+                </h3>
+                <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                  {zone.desc}
+                </p>
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
 
@@ -301,7 +369,7 @@ export default function HomePage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-              Browse Grounds by Discipline
+              Browse by Athletic Discipline
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
               Select an athletic sport to discover available courts, turfs, and rental gear
@@ -338,24 +406,28 @@ export default function HomePage() {
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-6">
           <div>
+            <div className="flex items-center gap-2 text-primary-400 text-xs font-bold uppercase tracking-wider mb-1">
+              <Star size={14} />
+              <span>Campus Top-Rated</span>
+            </div>
             <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
               Featured Grounds & Floodlit Courts
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
-              Top-rated sports arenas available for evening and night sessions
+              High-demand arenas available for evening and night practice sessions
             </p>
           </div>
           <Link
             href="/facilities?sort=featured"
             className="text-xs font-bold text-primary-400 hover:underline flex items-center gap-1"
           >
-            <span>Explore All Venues</span>
+            <span>Explore All Campus Venues</span>
             <ArrowRight size={13} />
           </Link>
         </div>
 
         {loading ? (
-          <Loading label="Loading featured facilities..." />
+          <Loading label="Loading campus facilities..." />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {facilities.map((fac) => (
@@ -375,10 +447,10 @@ export default function HomePage() {
                 <span>Equipment Rental Hub</span>
               </div>
               <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-                Rent Sports Gear for Your Session
+                Rent Match Gear for Your Session
               </h2>
               <p className="text-xs text-slate-400 mt-0.5">
-                Check out tournament rackets, match balls, and training gear. Pay online or upon pickup.
+                Check out tournament badminton rackets, match balls, cricket bats, and training gear. Pay online via UPI or at pickup.
               </p>
             </div>
             <Link
@@ -400,30 +472,30 @@ export default function HomePage() {
 
       {/* Payment Methods Trust Banner */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl border border-slate-800 bg-dark-850 p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="rounded-3xl border border-slate-800 bg-dark-850 p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
           <div className="space-y-2 text-center md:text-left">
-            <span className="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5 justify-center md:justify-start">
-              <ShieldCheck size={15} /> Instant Secure Checkout
+            <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5 justify-center md:justify-start">
+              <ShieldCheck size={15} /> Instant Indian Digital Payments (₹ INR)
             </span>
             <h3 className="text-xl sm:text-2xl font-bold text-white">
-              Pay with Credit Card, Debit Card or Razorpay
+              Pay with Direct UPI (GPay, Paytm), RuPay Cards or Razorpay
             </h3>
             <p className="text-xs text-slate-400 max-w-lg">
-              Seamlessly reserve courts and rent equipment using your preferred payment method with 256-bit SSL encryption, or opt to pay at venue check-in.
+              Seamlessly reserve courts and rent sports gear. Direct UPI transfers are routed to <span className="text-white font-mono font-bold">7828722557@ptyes</span> with instant digital passes.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-2.5">
+            <div className="rounded-2xl border border-emerald-500/40 bg-dark-900 px-4 py-2.5 text-xs font-bold text-emerald-300 flex items-center gap-2">
+              <Smartphone size={16} className="text-emerald-400" />
+              <span>Direct UPI (7828722557@ptyes)</span>
+            </div>
             <div className="rounded-2xl border border-slate-700 bg-dark-900 px-4 py-2.5 text-xs font-bold text-white flex items-center gap-2">
               <CreditCard size={16} className="text-primary-400" />
-              <span>Credit / Debit Card</span>
+              <span>Indian RuPay / Visa / MC</span>
             </div>
-            <div className="rounded-2xl border border-cyan-500/40 bg-dark-900 px-4 py-2.5 text-xs font-bold text-cyan-300 flex items-center gap-2">
-              <Smartphone size={16} className="text-cyan-400" />
-              <span>Razorpay UPI</span>
-            </div>
-            <div className="rounded-2xl border border-slate-700 bg-dark-900 px-4 py-2.5 text-xs font-bold text-slate-300">
-              Visa • Mastercard • RuPay
+            <div className="rounded-2xl border border-slate-700 bg-dark-900 px-4 py-2.5 text-xs font-bold text-amber-300">
+              Pay at Arena Desk
             </div>
           </div>
         </div>
@@ -436,13 +508,13 @@ export default function HomePage() {
             <div>
               <div className="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider">
                 <Flame size={15} />
-                <span>Prime-Time Protection</span>
+                <span>Prime-Time Protection for LPU Vertos</span>
               </div>
               <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight mt-1">
-                High-Demand Night Floodlight Slots
+                High-Demand Campus Floodlight Hours (18:00 – 22:00)
               </h2>
               <p className="text-xs text-slate-400 mt-0.5">
-                Our anti-monopoly fair allocation rules ensure evening slots between 18:00 - 22:00 are rotated fairly across athletes
+                Our anti-monopoly fair allocation algorithm ensures evening slots are rotated evenly across university athletes
               </p>
             </div>
             <Link
@@ -489,10 +561,10 @@ export default function HomePage() {
             Architecture Workflow
           </span>
           <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight mt-1">
-            How Courts After Dark Operates
+            How Courts After Dark Serves LPU
           </h2>
           <p className="text-xs sm:text-sm text-slate-400 mt-2">
-            The end-to-end lifecycle guarantees transparency, fair distribution, and zero scheduling clashes
+            The end-to-end booking engine guarantees transparency, fair distribution, and zero scheduling clashes
           </p>
         </div>
 
@@ -529,11 +601,15 @@ export default function HomePage() {
       <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="relative overflow-hidden rounded-3xl border border-primary-400/30 bg-gradient-to-r from-dark-850 via-dark-800 to-dark-900 p-8 sm:p-12 text-center shadow-glow-emerald">
           <div className="relative z-10 max-w-2xl mx-auto space-y-4">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-primary-400/10 border border-primary-400/30 px-3 py-1 text-xs font-bold text-primary-300">
+              <Trophy size={13} className="text-primary-400" />
+              <span>Inter-Hostel & Inter-School Championships</span>
+            </div>
             <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
-              Ready for Your Next Match?
+              Ready for Your Next Match, Verto?
             </h2>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              Search available courts and gear, book instantly with Card or Razorpay, or try our 1-click instant demo account.
+              Search available campus courts, reserve your floodlit evening session, checkout match gear, or try the 1-click instant demo mode.
             </p>
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
@@ -550,7 +626,7 @@ export default function HomePage() {
                   className="w-full sm:w-auto rounded-xl border border-primary-400/40 bg-dark-900/90 px-6 py-3 text-sm font-bold text-primary-300 hover:bg-primary-400/10 transition flex items-center justify-center gap-2"
                 >
                   <Sparkles size={15} className="text-primary-400" />
-                  <span>Try 1-Click Demo Account</span>
+                  <span>Try 1-Click Verto Demo</span>
                 </button>
               )}
             </div>

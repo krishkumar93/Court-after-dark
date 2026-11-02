@@ -68,14 +68,14 @@ export default function HelpPage() {
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8 space-y-12">
       {/* Header */}
       <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-1.5 rounded-full border border-primary-400/30 bg-primary-400/10 px-3.5 py-1 text-xs font-semibold text-primary-300">
-          <HelpCircle size={14} className="text-primary-400" /> Help Center & Fair-Play Guide
+        <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-400/10 px-3.5 py-1 text-xs font-semibold text-amber-300">
+          <HelpCircle size={14} className="text-amber-400" /> Lovely Professional University • LPU Vertos Fair-Play Guide
         </div>
         <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-          How Courts After Dark Works
+          LPU Campus Sports & Fair Quota Rules
         </h1>
         <p className="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto">
-          Understand our fair slot allocation engine, anti-monopoly rules, digital passes, and equipment checkout lifecycle.
+          Understand our fair slot allocation engine, anti-monopoly rules for Vertos, digital QR passes, and sports gear checkout across SDM Arena and Unipolis.
         </p>
 
         {/* Search */}
