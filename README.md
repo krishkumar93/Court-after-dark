@@ -141,3 +141,5 @@ Run the automated workflow test script to verify end-to-end functionality:
 node scripts/test-workflows.js
 ```
 The test verifies authentication, conflict prevention, fair-use limits, waitlists, and equipment rentals.
+---------
+Development Project
