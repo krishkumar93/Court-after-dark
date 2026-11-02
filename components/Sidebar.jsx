@@ -12,12 +12,16 @@ import {
   Sliders,
   BarChart3,
   Shield,
+  Award,
+  QrCode,
 } from "lucide-react";
 
 export const ADMIN_LINKS = [
   { href: "/admin", label: "Overview & KPIs", icon: LayoutDashboard },
   { href: "/admin/facilities", label: "Facility Inventory", icon: Building2 },
-  { href: "/admin/bookings", label: "Booking Manager", icon: CalendarDays },
+  { href: "/admin/bookings", label: "Booking Approvals & Log", icon: CalendarDays },
+  { href: "/admin/memberships", label: "Memberships & Passes", icon: Award },
+  { href: "/admin/attendance", label: "Gate Attendance & QR", icon: QrCode },
   { href: "/admin/equipment", label: "Equipment Stock", icon: Dumbbell },
   { href: "/admin/maintenance", label: "Maintenance Blocks", icon: Wrench },
   { href: "/admin/users", label: "User Accounts", icon: Users },

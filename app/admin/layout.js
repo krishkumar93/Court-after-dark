@@ -12,14 +12,16 @@ export default function AdminLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
 
+  const isStaff = user && ["admin", "super_admin", "sports_admin", "coach", "equipment_manager"].includes(user.role);
+
   useEffect(() => {
-    if (!loading && (!user || user.role !== "admin")) {
+    if (!loading && (!user || !isStaff)) {
       router.push("/login");
     }
-  }, [user, loading, router]);
+  }, [user, loading, isStaff, router]);
 
-  if (loading || !user || user.role !== "admin") {
-    return <Loading label="Verifying administrator privileges..." />;
+  if (loading || !user || !isStaff) {
+    return <Loading label="Verifying administrator and staff privileges..." />;
   }
 
   return (

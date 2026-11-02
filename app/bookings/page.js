@@ -24,7 +24,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
 import { getEquipmentImage, handleEquipmentImageError } from "@/lib/equipmentImages";
 
-const STATUS_TABS = ["All", "Confirmed", "Completed", "Cancelled"];
+const STATUS_TABS = ["All", "Pending Approval", "Approved", "Confirmed", "Completed", "Cancelled"];
 
 export default function BookingsPage() {
   const { user, loading: userLoading, loginDemo } = useAuth();

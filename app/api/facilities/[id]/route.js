@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Facility from "@/models/Facility";
-import { getSessionUser } from "@/lib/auth";
+import { getSessionUser, isAdmin } from "@/lib/auth";
 import { recordAuditLog } from "@/lib/bookingRules";
 import { MOCK_FACILITIES } from "@/lib/mockData";
 
@@ -23,15 +23,23 @@ export async function GET(request, { params }) {
 }
 
 export async function PUT(request, { params }) {
-  const session = getSessionUser();
-  if (!session || session.role !== "admin") {
-    return NextResponse.json({ error: "Admin access required." }, { status: 403 });
+  const session = getSessionUser(request);
+  if (!isAdmin(session)) {
+    return NextResponse.json({ error: "Sports Administrator access required." }, { status: 403 });
   }
   await connectDB();
   const body = await request.json();
 
-  if (body.pricePerHour) body.pricePerHour = Number(body.pricePerHour);
-  if (body.capacity) body.capacity = Number(body.capacity);
+  if (body.pricePerHour !== undefined) body.pricePerHour = Number(body.pricePerHour);
+  if (body.capacity !== undefined) body.capacity = Number(body.capacity);
+  if (body.publishedQuantity !== undefined) body.publishedQuantity = Number(body.publishedQuantity);
+  if (body.verifiedQuantity !== undefined) body.verifiedQuantity = Number(body.verifiedQuantity);
+  if (body.isQuantityVerified !== undefined) body.isQuantityVerified = Boolean(body.isQuantityVerified);
+  if (body.approvalRequired !== undefined) body.approvalRequired = Boolean(body.approvalRequired);
+  if (body.membershipRequired !== undefined) body.membershipRequired = Boolean(body.membershipRequired);
+  if (body.requiresCoachSupervision !== undefined) body.requiresCoachSupervision = Boolean(body.requiresCoachSupervision);
+
+  body.lastVerificationDate = new Date();
 
   const facility = await Facility.findByIdAndUpdate(params.id, body, { new: true });
   if (!facility) {
@@ -44,7 +52,7 @@ export async function PUT(request, { params }) {
     performedByName: session.name || session.email,
     entityType: "Facility",
     entityId: params.id,
-    details: `Updated facility details for ${facility.name}`,
+    details: `Updated facility details for ${facility.name} (verified quantity: ${facility.verifiedQuantity})`,
     severity: "info",
   });
 
@@ -52,9 +60,9 @@ export async function PUT(request, { params }) {
 }
 
 export async function DELETE(request, { params }) {
-  const session = getSessionUser();
-  if (!session || session.role !== "admin") {
-    return NextResponse.json({ error: "Admin access required." }, { status: 403 });
+  const session = getSessionUser(request);
+  if (!isAdmin(session)) {
+    return NextResponse.json({ error: "Sports Administrator access required." }, { status: 403 });
   }
   await connectDB();
   const facility = await Facility.findByIdAndDelete(params.id);

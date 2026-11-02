@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Facility from "@/models/Facility";
-import { getSessionUser } from "@/lib/auth";
+import { getSessionUser, isAdmin } from "@/lib/auth";
 import { recordAuditLog } from "@/lib/bookingRules";
 import { MOCK_FACILITIES } from "@/lib/mockData";
 
@@ -12,13 +12,17 @@ export async function GET(request) {
   const search = searchParams.get("search") || "";
   const type = searchParams.get("type") || "";
   const indoorOutdoor = searchParams.get("indoorOutdoor") || "";
+  const campusLocation = searchParams.get("campusLocation") || "";
   const city = searchParams.get("city") || "";
   const amenity = searchParams.get("amenity") || "";
+  const membershipRequired = searchParams.get("membershipRequired");
+  const approvalRequired = searchParams.get("approvalRequired");
+  const verifiedOnly = searchParams.get("verifiedOnly");
   const minPrice = searchParams.get("minPrice");
   const maxPrice = searchParams.get("maxPrice");
   const sort = searchParams.get("sort") || "name";
   const page = parseInt(searchParams.get("page") || "1", 10);
-  const limit = parseInt(searchParams.get("limit") || "24", 10);
+  const limit = parseInt(searchParams.get("limit") || "40", 10);
 
   try {
     await connectDB();
@@ -28,6 +32,8 @@ export async function GET(request) {
       query.$or = [
         { name: { $regex: search, $options: "i" } },
         { location: { $regex: search, $options: "i" } },
+        { campusLocation: { $regex: search, $options: "i" } },
+        { type: { $regex: search, $options: "i" } },
         { city: { $regex: search, $options: "i" } },
         { description: { $regex: search, $options: "i" } },
       ];
@@ -41,12 +47,28 @@ export async function GET(request) {
       query.indoorOutdoor = indoorOutdoor;
     }
 
+    if (campusLocation && campusLocation !== "All") {
+      query.campusLocation = campusLocation;
+    }
+
     if (city && city !== "All") {
       query.city = city;
     }
 
     if (amenity && amenity !== "All") {
       query.amenities = amenity;
+    }
+
+    if (membershipRequired !== null && membershipRequired !== undefined && membershipRequired !== "") {
+      query.membershipRequired = membershipRequired === "true";
+    }
+
+    if (approvalRequired !== null && approvalRequired !== undefined && approvalRequired !== "") {
+      query.approvalRequired = approvalRequired === "true";
+    }
+
+    if (verifiedOnly === "true") {
+      query.isQuantityVerified = true;
     }
 
     if (minPrice || maxPrice) {
@@ -61,6 +83,8 @@ export async function GET(request) {
     else if (sort === "price-desc") sortOption = { pricePerHour: -1 };
     else if (sort === "popularity") sortOption = { bookingCount: -1 };
     else if (sort === "featured") sortOption = { featured: -1, bookingCount: -1 };
+    else if (sort === "indoor") sortOption = { indoorOutdoor: 1, name: 1 };
+    else if (sort === "outdoor") sortOption = { indoorOutdoor: -1, name: 1 };
 
     const skip = (page - 1) * limit;
     const total = await Facility.countDocuments(query);
@@ -79,6 +103,7 @@ export async function GET(request) {
       },
     });
   } catch (err) {
+    console.error("Facility query error:", err);
     // Offline or sandbox mock fallback
     let filtered = [...MOCK_FACILITIES];
 
@@ -88,6 +113,7 @@ export async function GET(request) {
         (f) =>
           f.name.toLowerCase().includes(q) ||
           f.location.toLowerCase().includes(q) ||
+          (f.campusLocation && f.campusLocation.toLowerCase().includes(q)) ||
           f.type.toLowerCase().includes(q) ||
           (f.city && f.city.toLowerCase().includes(q))
       );
@@ -97,6 +123,9 @@ export async function GET(request) {
     }
     if (indoorOutdoor && indoorOutdoor !== "All") {
       filtered = filtered.filter((f) => f.indoorOutdoor === indoorOutdoor);
+    }
+    if (campusLocation && campusLocation !== "All") {
+      filtered = filtered.filter((f) => f.campusLocation === campusLocation);
     }
     if (city && city !== "All") {
       filtered = filtered.filter((f) => f.city === city);
@@ -132,11 +161,11 @@ export async function GET(request) {
   }
 }
 
-// POST /api/facilities (admin only)
+// POST /api/facilities (admin/staff only)
 export async function POST(request) {
-  const session = getSessionUser();
-  if (!session || session.role !== "admin") {
-    return NextResponse.json({ error: "Admin access required." }, { status: 403 });
+  const session = getSessionUser(request);
+  if (!isAdmin(session)) {
+    return NextResponse.json({ error: "Sports Administrator access required." }, { status: 403 });
   }
   await connectDB();
   const body = await request.json();
@@ -147,8 +176,13 @@ export async function POST(request) {
 
   const facility = await Facility.create({
     ...body,
-    pricePerHour: Number(body.pricePerHour) || 40,
+    pricePerHour: Number(body.pricePerHour) || 0,
     capacity: Number(body.capacity),
+    publishedQuantity: body.publishedQuantity ? Number(body.publishedQuantity) : undefined,
+    verifiedQuantity: body.verifiedQuantity ? Number(body.verifiedQuantity) : undefined,
+    isQuantityVerified: Boolean(body.isQuantityVerified),
+    approvalRequired: Boolean(body.approvalRequired),
+    membershipRequired: Boolean(body.membershipRequired),
   });
 
   await recordAuditLog({
@@ -157,9 +191,9 @@ export async function POST(request) {
     performedByName: session.name || session.email,
     entityType: "Facility",
     entityId: facility._id.toString(),
-    details: `Created ${facility.name} (${facility.type}) at ${facility.location}`,
+    details: `Created official LPU facility ${facility.name} (${facility.type}) at ${facility.campusLocation || facility.location}`,
     severity: "info",
   });
 
-  return NextResponse.json({ message: "Facility created successfully.", facility }, { status: 201 });
+  return NextResponse.json({ message: "Facility registered successfully.", facility }, { status: 201 });
 }

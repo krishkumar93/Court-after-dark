@@ -1,47 +1,39 @@
 import mongoose from "mongoose";
 
 const EquipmentCheckoutSchema = new mongoose.Schema({
-  bookingReference: {
-    type: String,
-    required: true,
-    default: () => `EQ-${Date.now().toString(36).toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`,
-  },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   equipmentId: { type: mongoose.Schema.Types.ObjectId, ref: "Equipment", required: true },
-  bookingId: { type: mongoose.Schema.Types.ObjectId, ref: "Booking" },
+  bookingId: { type: mongoose.Schema.Types.ObjectId, ref: "Booking", default: null },
+
   quantity: { type: Number, required: true, default: 1 },
-  rentalPrice: { type: Number, default: 5 },
-  totalAmount: { type: Number, default: 5 },
-  rentalDate: { type: String }, // "YYYY-MM-DD"
-  durationHours: { type: Number, default: 2 },
-  paymentMethod: {
-    type: String,
-    enum: ["UPI", "Card", "Razorpay", "Pay at Venue"],
-    default: "UPI",
-  },
-  paymentStatus: {
-    type: String,
-    enum: ["Paid", "Pay at Venue", "Refunded"],
-    default: "Pay at Venue",
-  },
-  paymentDetails: {
-    cardBrand: { type: String, default: "" },
-    cardLast4: { type: String, default: "" },
-    razorpayPaymentId: { type: String, default: "" },
-    razorpayOrderId: { type: String, default: "" },
-    upiId: { type: String, default: "" },
-    merchantUpiId: { type: String, default: "" },
-    utrNumber: { type: String, default: "" },
-    paidAt: { type: Date, default: null },
-  },
   checkoutTime: { type: Date, default: Date.now },
-  returnTime: { type: Date, default: null },
+  expectedReturnTime: { type: Date, required: true },
+  actualReturnTime: { type: Date, default: null },
+
   status: {
     type: String,
-    enum: ["Checked Out", "Returned", "Booked"],
+    enum: ["Requested", "Approved", "Checked Out", "Returned", "Overdue", "Damaged", "Rejected"],
     default: "Checked Out",
   },
+  returnCondition: {
+    type: String,
+    enum: ["New", "Good", "Fair", "Worn", "Damaged"],
+    default: "Good",
+  },
+  managerNotes: { type: String, default: "" },
+
+  issuedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+  receivedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+
+  rentalFeePaid: { type: Number, default: 0 },
+  securityDepositHeld: { type: Number, default: 0 },
+  depositRefunded: { type: Boolean, default: true },
+
+  createdAt: { type: Date, default: Date.now },
 });
+
+EquipmentCheckoutSchema.index({ userId: 1, status: 1 });
+EquipmentCheckoutSchema.index({ equipmentId: 1, status: 1 });
 
 export default mongoose.models.EquipmentCheckout ||
   mongoose.model("EquipmentCheckout", EquipmentCheckoutSchema);

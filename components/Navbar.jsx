@@ -19,6 +19,11 @@ import {
   Loader2,
   Search,
   GraduationCap,
+  Waves,
+  Award,
+  Medal,
+  Whistle,
+  Store,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
@@ -26,7 +31,7 @@ import { useToast } from "@/contexts/ToastContext";
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [demoMenuOpen, setDemoMenuOpen] = useState(false);
-  const [demoLoading, setDemoLoading] = useState(null); // 'player' | 'admin'
+  const [demoLoading, setDemoLoading] = useState(null);
   const demoRef = useRef(null);
 
   const { user, logout, loading, loginDemo } = useAuth();
@@ -50,8 +55,9 @@ export default function Navbar() {
     setOpen(false);
     try {
       const loggedUser = await loginDemo(role);
-      showToast(`Welcome! Logged in as Demo ${role === "admin" ? "Admin" : "Player"} (${loggedUser.name}).`);
-      if (loggedUser.role === "admin") {
+      showToast(`Signed in as ${loggedUser.name} (${loggedUser.role}).`);
+      const isStaffUser = ["admin", "super_admin", "sports_admin", "coach", "equipment_manager"].includes(loggedUser.role);
+      if (isStaffUser) {
         window.location.href = "/admin";
       } else {
         window.location.href = "/dashboard";
@@ -62,12 +68,14 @@ export default function Navbar() {
     }
   }
 
+  const isStaffUser = user && ["admin", "super_admin", "sports_admin", "coach", "equipment_manager"].includes(user.role);
+
   const navLinks = [
-    { href: "/search", label: "Search & Book", icon: Search },
     { href: "/facilities", label: "Campus Courts", icon: Compass },
+    { href: "/swimming", label: "Olympic Pool", icon: Waves },
+    { href: "/memberships", label: "Memberships", icon: Award },
     { href: "/equipment", label: "Sports Gear", icon: Dumbbell },
-    { href: "/bookings", label: user ? "My Bookings" : "Bookings", icon: Calendar },
-    { href: "/help", label: "LPU Rules & FAQ", icon: HelpCircle },
+    { href: "/bookings", label: user ? "My Passes" : "Passes", icon: Calendar },
   ];
 
   return (
@@ -83,9 +91,9 @@ export default function Navbar() {
           </div>
           <div className="flex items-center gap-2 text-[10px] text-slate-400 font-mono">
             <span className="rounded bg-primary-400/10 text-primary-300 border border-primary-400/20 px-2 py-0.5 font-bold">
-              LPU CAMPUS, PUNJAB
+              PHAGWARA, PUNJAB
             </span>
-            <span className="hidden md:inline">Floodlights: 18:00 – 23:00</span>
+            <span className="hidden md:inline">20 Indoor • 15 Outdoor Facilities</span>
           </div>
         </div>
       </div>
@@ -99,14 +107,14 @@ export default function Navbar() {
           <div>
             <div className="flex items-center gap-1.5">
               <span className="font-extrabold tracking-tight text-white text-base sm:text-lg flex items-center gap-1">
-                COURTS <span className="text-primary-400 font-black">AFTER DARK</span>
+                LPU <span className="text-primary-400 font-black">SPORTS</span>
               </span>
               <span className="rounded-md bg-amber-400/15 border border-amber-400/30 px-1.5 py-0.2 text-[9px] font-black text-amber-300 uppercase tracking-wider">
-                LPU Vertos
+                Vertos Portal
               </span>
             </div>
             <span className="hidden sm:block text-[10px] text-slate-400 tracking-wider font-semibold uppercase -mt-0.5">
-              Lovely Professional University Sports Portal
+              Lovely Professional University Sports Platform
             </span>
           </div>
         </Link>
@@ -133,7 +141,7 @@ export default function Navbar() {
             );
           })}
 
-          {user?.role === "admin" && (
+          {isStaffUser && (
             <Link
               href="/admin"
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition ${
@@ -143,7 +151,7 @@ export default function Navbar() {
               }`}
             >
               <Shield size={15} />
-              DSW Admin
+              DSW Console
             </Link>
           )}
         </nav>
@@ -152,78 +160,125 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-2.5">
           {!loading && !user && (
             <>
-              {/* Instant Demo Dropdown */}
+              {/* Instant Demo Dropdown for all 5 roles */}
               <div className="relative" ref={demoRef}>
                 <button
                   type="button"
                   onClick={() => setDemoMenuOpen(!demoMenuOpen)}
                   disabled={demoLoading !== null}
                   className="flex items-center gap-1.5 rounded-xl border border-primary-400/40 bg-primary-400/10 px-3 py-1.5 text-xs font-bold text-primary-300 hover:bg-primary-400/20 hover:border-primary-400 transition"
-                  title="Try immediately as an LPU Verto or Admin"
+                  title="Try immediately as an LPU Verto, Coach, or Admin"
                 >
                   {demoLoading ? (
                     <Loader2 size={13} className="animate-spin text-primary-400" />
                   ) : (
                     <Sparkles size={13} className="text-primary-400 animate-pulse" />
                   )}
-                  <span>{demoLoading ? "Logging in..." : "Demo Vertos"}</span>
+                  <span>{demoLoading ? "Logging in..." : "Demo Accounts (5 Roles)"}</span>
                   <ChevronDown size={12} className={`transition-transform ${demoMenuOpen ? "rotate-180" : ""}`} />
                 </button>
 
                 {demoMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-64 rounded-2xl border border-slate-700/80 bg-dark-850 p-2 shadow-2xl backdrop-blur-xl z-50 space-y-1">
+                  <div className="absolute right-0 mt-2 w-72 rounded-2xl border border-slate-700/80 bg-dark-850 p-2 shadow-2xl backdrop-blur-xl z-50 space-y-1">
                     <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800 flex items-center justify-between">
-                      <span>1-Click LPU Demo Access</span>
-                      <span className="text-primary-400">Zero Typing</span>
+                      <span>LPU Institutional Roles</span>
+                      <span className="text-primary-400">1-Click Switch</span>
                     </div>
+
                     <button
                       type="button"
-                      onClick={() => handleInstantDemo("player")}
-                      className="flex items-center justify-between w-full px-2.5 py-2 text-left rounded-xl hover:bg-dark-800 transition group"
+                      onClick={() => handleInstantDemo("student")}
+                      className="flex items-center justify-between w-full px-2.5 py-1.5 text-left rounded-xl hover:bg-dark-800 transition group"
                     >
                       <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 rounded-lg bg-primary-400/15 border border-primary-400/30 flex items-center justify-center text-primary-400">
-                          <GraduationCap size={15} />
+                        <div className="h-7 w-7 rounded-lg bg-primary-400/15 border border-primary-400/30 flex items-center justify-center text-primary-400">
+                          <GraduationCap size={14} />
                         </div>
                         <div>
-                          <div className="text-xs font-bold text-white group-hover:text-primary-400 transition-colors">
-                            Aarav Sharma (Verto)
+                          <div className="text-xs font-bold text-white group-hover:text-primary-400">
+                            Aarav Sharma (Student EDB)
                           </div>
-                          <div className="text-[10px] text-slate-400 font-mono">Reg: 12104822 • BH-4</div>
+                          <div className="text-[10px] text-slate-400">Hosteller with EDB • BH-4</div>
                         </div>
                       </div>
-                      <span className="text-[10px] text-primary-400 font-semibold bg-primary-400/10 px-1.5 py-0.5 rounded">1-Click</span>
+                      <span className="text-[9px] text-primary-400 font-semibold bg-primary-400/10 px-1.5 py-0.5 rounded">Verto</span>
                     </button>
 
                     <button
                       type="button"
-                      onClick={() => handleInstantDemo("admin")}
-                      className="flex items-center justify-between w-full px-2.5 py-2 text-left rounded-xl hover:bg-dark-800 transition group"
+                      onClick={() => handleInstantDemo("student_medalist")}
+                      className="flex items-center justify-between w-full px-2.5 py-1.5 text-left rounded-xl hover:bg-dark-800 transition group"
                     >
                       <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
-                          <Shield size={15} />
+                        <div className="h-7 w-7 rounded-lg bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-300">
+                          <Medal size={14} />
                         </div>
                         <div>
-                          <div className="text-xs font-bold text-white group-hover:text-amber-400 transition-colors">
-                            Dr. Baljit (DSW Admin)
+                          <div className="text-xs font-bold text-white group-hover:text-amber-300">
+                            Rohan Verma (Medalist)
                           </div>
-                          <div className="text-[10px] text-slate-400">LPU Athletics Director</div>
+                          <div className="text-[10px] text-amber-300/80">Complimentary Sports Pass</div>
                         </div>
                       </div>
-                      <span className="text-[10px] text-amber-400 font-semibold bg-amber-500/10 px-1.5 py-0.5 rounded">1-Click</span>
+                      <span className="text-[9px] text-amber-400 font-semibold bg-amber-400/10 px-1.5 py-0.5 rounded">Gold</span>
                     </button>
 
-                    <div className="border-t border-slate-800 pt-1 mt-1">
-                      <Link
-                        href="/search"
-                        onClick={() => setDemoMenuOpen(false)}
-                        className="flex items-center gap-1.5 w-full px-2.5 py-1.5 text-[11px] font-medium text-slate-400 hover:text-white rounded-lg hover:bg-dark-800"
-                      >
-                        <Search size={12} className="text-primary-400" />
-                        <span>Search Campus Courts (Guest Mode)</span>
-                      </Link>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleInstantDemo("coach")}
+                      className="flex items-center justify-between w-full px-2.5 py-1.5 text-left rounded-xl hover:bg-dark-800 transition group"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="h-7 w-7 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-300">
+                          <Shield size={14} />
+                        </div>
+                        <div>
+                          <div className="text-xs font-bold text-white group-hover:text-emerald-300">
+                            Coach Sandeep Kumar
+                          </div>
+                          <div className="text-[10px] text-slate-400">Head Badminton Coach</div>
+                        </div>
+                      </div>
+                      <span className="text-[9px] text-emerald-400 font-semibold bg-emerald-500/10 px-1.5 py-0.5 rounded">Coach</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleInstantDemo("sports_admin")}
+                      className="flex items-center justify-between w-full px-2.5 py-1.5 text-left rounded-xl hover:bg-dark-800 transition group"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="h-7 w-7 rounded-lg bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-300">
+                          <Trophy size={14} />
+                        </div>
+                        <div>
+                          <div className="text-xs font-bold text-white group-hover:text-cyan-300">
+                            DSW Sports Admin
+                          </div>
+                          <div className="text-[10px] text-slate-400">Approvals & Facility Manager</div>
+                        </div>
+                      </div>
+                      <span className="text-[9px] text-cyan-400 font-semibold bg-cyan-500/10 px-1.5 py-0.5 rounded">Admin</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleInstantDemo("equipment_manager")}
+                      className="flex items-center justify-between w-full px-2.5 py-1.5 text-left rounded-xl hover:bg-dark-800 transition group"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="h-7 w-7 rounded-lg bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-300">
+                          <Dumbbell size={14} />
+                        </div>
+                        <div>
+                          <div className="text-xs font-bold text-white group-hover:text-purple-300">
+                            Gurpreet Singh (Store)
+                          </div>
+                          <div className="text-[10px] text-slate-400">Sports Store & Gear Stock</div>
+                        </div>
+                      </div>
+                      <span className="text-[9px] text-purple-400 font-semibold bg-purple-500/10 px-1.5 py-0.5 rounded">Store</span>
+                    </button>
                   </div>
                 )}
               </div>
@@ -239,7 +294,7 @@ export default function Navbar() {
                 className="flex items-center gap-1.5 rounded-xl bg-primary-400 px-4 py-2 text-xs sm:text-sm font-bold text-dark-950 hover:bg-primary-300 transition shadow-glow-sm"
               >
                 <Sparkles size={14} />
-                Student Sign Up
+                Student Registration
               </Link>
             </>
           )}
@@ -251,153 +306,71 @@ export default function Navbar() {
                 className="flex items-center gap-2 rounded-xl border border-slate-700/80 bg-dark-850 px-3 py-1.5 text-xs sm:text-sm text-slate-200 hover:border-primary-400/40 hover:bg-dark-800 transition"
               >
                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-400/20 text-primary-400 text-xs font-bold">
-                  {user.name.charAt(0).toUpperCase()}
+                  {user.name?.charAt(0).toUpperCase()}
                 </div>
                 <div className="text-left">
-                  <div className="font-semibold text-xs leading-tight">{user.name.split(" ")[0]}</div>
+                  <div className="font-semibold text-xs leading-tight">{user.name?.split(" ")[0]}</div>
                   {user.regNo && (
                     <div className="text-[9px] text-primary-300 font-mono leading-none">
                       #{user.regNo}
                     </div>
                   )}
                 </div>
-                {user.role === "admin" && (
-                  <span className="rounded bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-amber-300">
-                    DSW Admin
-                  </span>
-                )}
               </Link>
-              <Link
-                href="/profile"
-                title="Account Settings"
-                className="p-2 rounded-xl border border-slate-700/60 text-slate-400 hover:text-white hover:bg-dark-800 transition"
-              >
-                <UserIcon size={16} />
-              </Link>
+
               <button
+                type="button"
                 onClick={logout}
+                className="rounded-xl border border-slate-700 p-2 text-slate-400 hover:text-white hover:bg-dark-800 transition"
                 title="Log Out"
-                className="flex items-center gap-1 rounded-xl border border-slate-700/60 px-2.5 py-1.5 text-xs text-slate-400 hover:text-red-400 hover:border-red-500/30 hover:bg-red-500/10 transition"
               >
-                <LogOut size={14} />
+                <LogOut size={16} />
               </button>
             </div>
           )}
         </div>
 
-        {/* Mobile Toggle Button */}
-        <button
-          className="md:hidden p-2 rounded-xl text-slate-300 hover:text-white hover:bg-dark-850"
-          onClick={() => setOpen(!open)}
-          aria-label="Toggle navigation menu"
-        >
-          {open ? <X size={22} /> : <Menu size={22} />}
-        </button>
+        {/* Mobile menu button */}
+        <div className="flex md:hidden items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setOpen(!open)}
+            className="rounded-xl border border-slate-700 bg-dark-850 p-2 text-slate-200"
+          >
+            {open ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Drawer */}
       {open && (
-        <div className="md:hidden border-t border-slate-800 bg-dark-950/98 backdrop-blur-xl px-4 py-4 space-y-2">
-          {navLinks.map((link) => {
-            const Icon = link.icon;
-            const active = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
-            return (
+        <div className="md:hidden border-b border-slate-800 bg-dark-900 px-4 py-4 space-y-3">
+          <nav className="space-y-1">
+            {navLinks.map((link) => {
+              const Icon = link.icon;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-semibold text-slate-300 hover:bg-dark-800 hover:text-white"
+                >
+                  <Icon size={16} className="text-primary-400" />
+                  {link.label}
+                </Link>
+              );
+            })}
+            {isStaffUser && (
               <Link
-                key={link.href}
-                href={link.href}
-                aria-current={active ? "page" : undefined}
+                href="/admin"
                 onClick={() => setOpen(false)}
-                className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-semibold transition ${
-                  active ? "bg-primary-400/15 text-primary-300 border border-primary-400/30" : "text-slate-300 hover:text-white hover:bg-dark-850"
-                }`}
+                className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-semibold text-amber-300 bg-amber-500/10 border border-amber-500/20"
               >
-                <Icon size={16} className={active ? "text-primary-400" : "text-slate-400"} />
-                {link.label}
+                <Shield size={16} />
+                DSW Admin Console
               </Link>
-            );
-          })}
-
-          {user?.role === "admin" && (
-            <Link
-              href="/admin"
-              onClick={() => setOpen(false)}
-              className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-semibold text-amber-300 bg-amber-500/10 border border-amber-500/20"
-            >
-              <Shield size={16} />
-              DSW Athletics Admin
-            </Link>
-          )}
-
-          <div className="border-t border-slate-800 pt-3 mt-2">
-            {!user ? (
-              <div className="space-y-2.5">
-                {/* Mobile Instant Demo Buttons */}
-                <div className="rounded-xl border border-primary-400/30 bg-primary-400/5 p-2.5 space-y-2">
-                  <div className="text-[11px] font-bold text-primary-400 flex items-center gap-1">
-                    <Sparkles size={12} /> 1-Click LPU Demo Logins:
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      disabled={demoLoading !== null}
-                      onClick={() => handleInstantDemo("player")}
-                      className="rounded-lg border border-primary-400/30 bg-primary-400/15 py-1.5 text-center text-xs font-bold text-primary-300 hover:bg-primary-400/25"
-                    >
-                      {demoLoading === "player" ? "Loading..." : "⚡ Aarav (Verto)"}
-                    </button>
-                    <button
-                      type="button"
-                      disabled={demoLoading !== null}
-                      onClick={() => handleInstantDemo("admin")}
-                      className="rounded-lg border border-amber-500/30 bg-amber-500/15 py-1.5 text-center text-xs font-bold text-amber-300 hover:bg-amber-500/25"
-                    >
-                      {demoLoading === "admin" ? "Loading..." : "🛡️ DSW Admin"}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2">
-                  <Link
-                    href="/login"
-                    onClick={() => setOpen(false)}
-                    className="rounded-xl border border-slate-700 px-3 py-2 text-center text-xs font-semibold text-slate-200"
-                  >
-                    Log In
-                  </Link>
-                  <Link
-                    href="/register"
-                    onClick={() => setOpen(false)}
-                    className="rounded-xl bg-primary-400 px-3 py-2 text-center text-xs font-bold text-dark-950"
-                  >
-                    Student Sign Up
-                  </Link>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-1">
-                <Link
-                  href="/dashboard"
-                  onClick={() => setOpen(false)}
-                  className="block px-3 py-2 text-sm text-slate-200 font-semibold"
-                >
-                  Dashboard ({user.name})
-                </Link>
-                <Link
-                  href="/profile"
-                  onClick={() => setOpen(false)}
-                  className="block px-3 py-2 text-sm text-slate-400 hover:text-white"
-                >
-                  Profile & Settings
-                </Link>
-                <button
-                  onClick={logout}
-                  className="w-full text-left px-3 py-2 text-sm text-red-400 hover:underline"
-                >
-                  Log Out
-                </button>
-              </div>
             )}
-          </div>
+          </nav>
         </div>
       )}
     </header>

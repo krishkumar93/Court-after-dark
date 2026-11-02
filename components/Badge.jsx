@@ -1,6 +1,12 @@
 const STYLES = {
   Available: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
   Confirmed: "bg-primary-400/15 text-primary-400 border-primary-400/30",
+  "Pending Approval": "bg-amber-500/20 text-amber-300 border-amber-500/40",
+  Approved: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
+  Draft: "bg-slate-500/20 text-slate-300 border-slate-500/40",
+  "Payment Pending": "bg-yellow-500/20 text-yellow-300 border-yellow-500/40",
+  "Payment Verification Pending": "bg-blue-500/20 text-blue-300 border-blue-500/40",
+  "No Show": "bg-rose-500/20 text-rose-300 border-rose-500/40",
   Booked: "bg-amber-500/15 text-amber-400 border-amber-500/30",
   Maintenance: "bg-orange-500/15 text-orange-400 border-orange-500/30",
   Closed: "bg-slate-600/20 text-slate-400 border-slate-600/30",
@@ -19,6 +25,9 @@ const STYLES = {
   Indoor: "bg-sky-500/10 text-sky-300 border-sky-500/20",
   Outdoor: "bg-amber-500/10 text-amber-300 border-amber-500/20",
   "Prime Time": "bg-primary-400/20 text-primary-300 border-primary-400/40",
+  Active: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+  Suspended: "bg-red-500/15 text-red-400 border-red-500/30",
+  Complimentary: "bg-amber-400/20 text-amber-300 border-amber-400/40",
 };
 
 export default function Badge({ children, dot = true, size = "sm" }) {

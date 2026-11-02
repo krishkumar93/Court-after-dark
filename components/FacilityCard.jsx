@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { MapPin, Users, Clock, Heart, Sparkles, ChevronRight, Layers } from "lucide-react";
+import { MapPin, Users, Clock, Heart, Sparkles, ChevronRight, AlertTriangle, ShieldCheck, FileText, CheckCircle2 } from "lucide-react";
 import Badge from "@/components/Badge";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
@@ -48,6 +48,8 @@ export default function FacilityCard({ facility, onFavoriteToggle, isFavorited =
     }
   }
 
+  const isFree = !facility.pricePerHour || facility.pricePerHour === 0;
+
   return (
     <Link
       href={`/facilities/${facility._id}`}
@@ -70,11 +72,21 @@ export default function FacilityCard({ facility, onFavoriteToggle, isFavorited =
         <div className="absolute inset-0 bg-gradient-to-t from-dark-900 via-transparent to-transparent opacity-80" />
 
         {/* Top Badges */}
-        <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-          <Badge>{facility.status}</Badge>
+        <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 max-w-[75%]">
+          <Badge>{facility.status || "Available"}</Badge>
           {facility.indoorOutdoor && (
             <span className="rounded-full bg-dark-900/90 border border-slate-700/80 px-2.5 py-0.5 text-[10px] font-bold text-slate-200 backdrop-blur-md">
               {facility.indoorOutdoor}
+            </span>
+          )}
+          {facility.approvalRequired && (
+            <span className="rounded-full bg-amber-500/20 border border-amber-500/40 px-2 py-0.5 text-[10px] font-semibold text-amber-300 backdrop-blur-md">
+              Coach Approval
+            </span>
+          )}
+          {!facility.isQuantityVerified && (
+            <span className="rounded-full bg-amber-950/80 border border-amber-500/50 px-2 py-0.5 text-[9px] font-medium text-amber-300 flex items-center gap-1 backdrop-blur-md">
+              <AlertTriangle size={10} /> Pending verification
             </span>
           )}
         </div>
@@ -95,11 +107,19 @@ export default function FacilityCard({ facility, onFavoriteToggle, isFavorited =
 
         {/* Price tag */}
         <div className="absolute bottom-3 right-3 rounded-xl bg-dark-950/90 border border-primary-400/30 px-3 py-1 backdrop-blur-md">
-          <span className="text-[10px] text-slate-400">from </span>
-          <span className="text-sm font-black text-primary-400">
-            ₹{facility.pricePerHour || 450}
-          </span>
-          <span className="text-[10px] text-slate-400"> / hr</span>
+          {isFree ? (
+            <span className="text-xs font-black text-emerald-400">
+              Free with Pass
+            </span>
+          ) : (
+            <>
+              <span className="text-[10px] text-slate-400">₹</span>
+              <span className="text-sm font-black text-primary-400">
+                {facility.pricePerHour}
+              </span>
+              <span className="text-[10px] text-slate-400"> / hr</span>
+            </>
+          )}
         </div>
       </div>
 
@@ -110,10 +130,9 @@ export default function FacilityCard({ facility, onFavoriteToggle, isFavorited =
             <span className="text-[10px] font-bold uppercase tracking-wider text-primary-400">
               {facility.type}
             </span>
-            {facility.bookingCount > 0 && (
-              <span className="flex items-center gap-1 text-[11px] text-slate-400 font-medium">
-                <Sparkles size={11} className="text-primary-400" />
-                {facility.bookingCount} bookings
+            {facility.publishedQuantity && (
+              <span className="text-[10px] text-slate-400 font-medium">
+                {facility.publishedQuantity} {facility.publishedQuantity === 1 ? "unit" : "units / courts"}
               </span>
             )}
           </div>
@@ -124,28 +143,38 @@ export default function FacilityCard({ facility, onFavoriteToggle, isFavorited =
 
           <div className="flex items-center gap-1.5 text-xs text-slate-400 mt-1">
             <MapPin size={13} className="shrink-0 text-primary-400" />
-            <span className="truncate">{facility.location} {facility.city ? `• ${facility.city}` : ""}</span>
+            <span className="truncate">{facility.campusLocation || facility.location}</span>
           </div>
+
+          {facility.discrepancyNote && (
+            <p className="mt-1 text-[11px] text-amber-400/90 line-clamp-1 flex items-center gap-1 italic">
+              <AlertTriangle size={11} className="shrink-0 text-amber-400" />
+              {facility.discrepancyNote}
+            </p>
+          )}
         </div>
 
-        {/* Amenities preview tags */}
-        {facility.amenities?.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 pt-1">
-            {facility.amenities.slice(0, 3).map((amenity) => (
-              <span
-                key={amenity}
-                className="rounded-lg bg-dark-800 border border-slate-850 px-2 py-0.5 text-[10px] text-slate-300"
-              >
-                {amenity}
-              </span>
-            ))}
-            {facility.amenities.length > 3 && (
-              <span className="rounded-lg bg-dark-800 px-1.5 py-0.5 text-[10px] text-slate-400">
-                +{facility.amenities.length - 3}
-              </span>
-            )}
-          </div>
-        )}
+        {/* Badges / Features preview */}
+        <div className="flex flex-wrap gap-1.5 pt-1">
+          {facility.membershipRequired && (
+            <span className="rounded-lg bg-primary-950/60 border border-primary-500/30 px-2 py-0.5 text-[10px] text-primary-300 font-medium">
+              Membership Track
+            </span>
+          )}
+          {facility.surfaceType && (
+            <span className="rounded-lg bg-dark-800 border border-slate-800 px-2 py-0.5 text-[10px] text-slate-300">
+              {facility.surfaceType}
+            </span>
+          )}
+          {facility.amenities?.slice(0, 2).map((amenity) => (
+            <span
+              key={amenity}
+              className="rounded-lg bg-dark-800 border border-slate-850 px-2 py-0.5 text-[10px] text-slate-400"
+            >
+              {amenity}
+            </span>
+          ))}
+        </div>
 
         {/* Footer info & Book CTA */}
         <div className="flex items-center justify-between border-t border-slate-800/80 pt-2.5 text-xs text-slate-400">
@@ -159,7 +188,7 @@ export default function FacilityCard({ facility, onFavoriteToggle, isFavorited =
           </div>
 
           <span className="text-xs font-bold text-primary-400 group-hover:text-primary-300 flex items-center gap-0.5">
-            Book <ChevronRight size={13} />
+            {facility.approvalRequired ? "Request" : "Book"} <ChevronRight size={13} />
           </span>
         </div>
       </div>
