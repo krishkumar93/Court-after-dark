@@ -1,4 +1,3 @@
-// Reperenting use client
 "use client";
 
 import { useEffect, useState } from "react";
@@ -16,6 +15,7 @@ import {
   ArrowRight,
   Clock,
   Sparkles,
+  GraduationCap,
 } from "lucide-react";
 import Loading from "@/components/Loading";
 import BookingCard from "@/components/BookingCard";
@@ -27,25 +27,25 @@ import { useToast } from "@/contexts/ToastContext";
 function StatCard({ icon: Icon, label, value, subtext, highlight = false }) {
   return (
     <div
-      className={`rounded-2xl border p-5 flex items-center gap-4 transition ${
+      className={`rounded-xl border p-4 flex items-center gap-4 transition bg-white ${
         highlight
-          ? "border-primary-400/40 bg-primary-400/10 shadow-glow-sm"
-          : "border-slate-800 bg-dark-850"
+          ? "border-[#a71d2a]/40 shadow-xs"
+          : "border-slate-200 shadow-xs"
       }`}
     >
       <div
-        className={`flex h-11 w-11 items-center justify-center rounded-xl ${
+        className={`flex h-11 w-11 items-center justify-center rounded-lg ${
           highlight
-            ? "bg-primary-400 text-dark-950 font-bold"
-            : "bg-dark-800 text-primary-400 border border-slate-700/80"
+            ? "bg-red-50 text-[#a71d2a] font-bold"
+            : "bg-slate-100 text-slate-700 border border-slate-200"
         }`}
       >
         <Icon size={20} />
       </div>
       <div>
-        <p className="text-2xl font-black text-white">{value}</p>
-        <p className="text-xs text-slate-400 mt-0.5">{label}</p>
-        {subtext && <p className="text-[10px] text-primary-400 font-semibold">{subtext}</p>}
+        <p className="text-2xl font-black text-slate-900">{value}</p>
+        <p className="text-xs text-slate-500 font-medium mt-0.5">{label}</p>
+        {subtext && <p className="text-[10px] text-[#a71d2a] font-bold">{subtext}</p>}
       </div>
     </div>
   );
@@ -91,7 +91,7 @@ export default function DashboardPage() {
       const res = await fetch(`/api/bookings/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "Cancelled", reason: "Cancelled from dashboard" }),
+        body: JSON.stringify({ status: "Cancelled", reason: "Cancelled from student portal" }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -117,20 +117,20 @@ export default function DashboardPage() {
     }
   }
 
-  if (userLoading || loading) return <Loading label="Loading player dashboard..." />;
+  if (userLoading || loading) return <Loading label="Loading student dashboard..." />;
 
   if (!user) {
     return (
       <div className="mx-auto max-w-lg px-4 py-20 text-center space-y-4">
-        <h1 className="text-2xl font-bold text-white">Sign In to View Dashboard</h1>
-        <p className="text-xs text-slate-400">
+        <h1 className="text-2xl font-bold text-slate-900">Sign In to View Student Dashboard</h1>
+        <p className="text-xs text-slate-500">
           Track upcoming court games, gear checkouts, and priority waitlist updates.
         </p>
         <Link
           href="/login"
-          className="inline-block rounded-xl bg-primary-400 px-6 py-2.5 text-xs font-bold text-dark-950 hover:bg-primary-300"
+          className="inline-block rounded-lg bg-[#a71d2a] px-6 py-2.5 text-xs font-bold text-white hover:bg-[#8e1520]"
         >
-          Log In
+          Student Login
         </Link>
       </div>
     );
@@ -143,25 +143,25 @@ export default function DashboardPage() {
   const maxActive = 2;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 space-y-10">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8">
       {/* Header Greeting */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-800 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-6">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-400 mb-1">
-            <Sparkles size={14} /> Lovely Professional University • LPU Verto Portal
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#a71d2a] mb-1">
+            <GraduationCap size={15} /> Lovely Professional University • Student Sports Portal
           </div>
-          <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight flex items-center gap-2">
-            <span>Welcome back, {user.name.split(" ")[0]}</span>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
+            <span>Welcome, {user.name}</span>
             {user.regNo && (
-              <span className="text-xs font-mono font-bold bg-primary-400/10 border border-primary-400/20 text-primary-300 px-2.5 py-1 rounded-full">
+              <span className="text-xs font-mono font-bold bg-red-50 border border-red-200 text-[#a71d2a] px-2.5 py-0.5 rounded-full">
                 #{user.regNo}
               </span>
             )}
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
             {user.department ? `${user.department} • ` : ""}
             {user.hostelBlock ? `${user.hostelBlock} • ` : ""}
-            Active sessions, sports gear status, and fair-use quotas.
+            Active reservations, equipment status, and anti-hoarding quota tracking.
           </p>
         </div>
 
@@ -169,13 +169,13 @@ export default function DashboardPage() {
         <div className="flex items-center gap-2.5">
           <Link
             href="/facilities"
-            className="flex items-center gap-1.5 rounded-xl bg-primary-400 px-4 py-2.5 text-xs font-bold text-dark-950 hover:bg-primary-300 transition shadow-glow-sm"
+            className="flex items-center gap-1.5 rounded-lg bg-[#a71d2a] px-4 py-2 text-xs font-bold text-white hover:bg-[#8e1520] transition shadow-xs cursor-pointer"
           >
-            <Plus size={15} /> Book Court
+            <Plus size={15} /> Book Facility
           </Link>
           <Link
             href="/equipment"
-            className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-dark-850 px-3.5 py-2.5 text-xs font-semibold text-slate-200 hover:text-white hover:bg-dark-800"
+            className="flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition cursor-pointer"
           >
             <Dumbbell size={15} /> Rent Gear
           </Link>
@@ -188,7 +188,7 @@ export default function DashboardPage() {
           icon={CalendarDays}
           label="Active Reservations"
           value={upcoming.length}
-          subtext={`${upcoming.length} of ${maxActive} fair cap used`}
+          subtext={`${upcoming.length} of ${maxActive} fair quota slots`}
           highlight={upcoming.length > 0}
         />
         <StatCard icon={Building2} label="Completed Games" value={completed.length} />
@@ -196,21 +196,21 @@ export default function DashboardPage() {
           icon={Dumbbell}
           label="Equipment In Use"
           value={activeCheckouts.length}
-          subtext={activeCheckouts.length > 0 ? "Return after play" : "None active"}
+          subtext={activeCheckouts.length > 0 ? "Return at store" : "None checked out"}
         />
         <StatCard icon={XCircle} label="Cancelled Sessions" value={cancelled.length} />
       </div>
 
       {/* Waitlist Notifications (if any) */}
       {waitlist.length > 0 && (
-        <section className="rounded-3xl border border-indigo-500/30 bg-indigo-500/10 p-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold text-white flex items-center gap-2">
-              <Bell size={16} className="text-indigo-400" />
+        <section className="rounded-xl border border-indigo-200 bg-indigo-50/70 p-5 space-y-4">
+          <div className="flex items-center justify-between border-b border-indigo-100 pb-2">
+            <h2 className="text-sm font-bold text-indigo-950 flex items-center gap-2">
+              <Bell size={16} className="text-indigo-600" />
               Active Priority Waitlists ({waitlist.length})
             </h2>
-            <span className="text-[11px] text-indigo-300">
-              Auto-monitored slot queue
+            <span className="text-[11px] text-indigo-700 font-semibold">
+              First-come first-served queue
             </span>
           </div>
 
@@ -218,21 +218,21 @@ export default function DashboardPage() {
             {waitlist.map((w) => (
               <div
                 key={w._id}
-                className="flex items-center justify-between rounded-xl border border-slate-800 bg-dark-900/90 p-4"
+                className="flex items-center justify-between rounded-lg border border-indigo-200 bg-white p-3.5"
               >
                 <div>
-                  <h4 className="text-xs font-bold text-white">{w.facilityId?.name}</h4>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
+                  <h4 className="text-xs font-bold text-slate-900">{w.facilityId?.name}</h4>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
                     {w.date} • {w.startTime}-{w.endTime}
                   </p>
                   <span
-                    className={`inline-block mt-1 text-[10px] font-semibold ${
+                    className={`inline-block mt-1 text-[10px] font-bold ${
                       w.status === "Notified"
-                        ? "text-cyan-400 font-bold"
-                        : "text-indigo-400"
+                        ? "text-emerald-700"
+                        : "text-indigo-700"
                     }`}
                   >
-                    Status: {w.status === "Notified" ? "Slot Released! Ready to book" : "Waiting in queue"}
+                    Status: {w.status === "Notified" ? "Slot Released! Claim now" : "Waiting in queue"}
                   </span>
                 </div>
 
@@ -240,14 +240,14 @@ export default function DashboardPage() {
                   {w.status === "Notified" ? (
                     <Link
                       href={`/facilities/${w.facilityId?._id}`}
-                      className="rounded-lg bg-primary-400 px-3 py-1.5 text-[11px] font-bold text-dark-950"
+                      className="rounded-lg bg-[#a71d2a] px-3 py-1.5 text-[11px] font-bold text-white hover:bg-[#8e1520]"
                     >
                       Book Now
                     </Link>
                   ) : (
                     <button
                       onClick={() => handleLeaveWaitlist(w._id)}
-                      className="text-xs text-slate-500 hover:text-red-400"
+                      className="text-xs text-slate-400 hover:text-red-600 cursor-pointer"
                     >
                       Leave
                     </button>
@@ -259,36 +259,27 @@ export default function DashboardPage() {
         </section>
       )}
 
-      {/* Upcoming Bookings Section */}
+      {/* Upcoming Active Bookings */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-bold text-white tracking-tight">Upcoming Bookings</h2>
-            <p className="text-xs text-slate-400">Your scheduled court reservations</p>
-          </div>
-          <Link
-            href="/bookings"
-            className="text-xs font-semibold text-primary-400 hover:underline flex items-center gap-1"
-          >
-            All Bookings ({bookings.length}) <ArrowRight size={13} />
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+            <Clock size={16} className="text-[#a71d2a]" /> Upcoming Game Passes ({upcoming.length})
+          </h2>
+          <Link href="/bookings" className="text-xs font-bold text-[#a71d2a] hover:underline">
+            View All Passes
           </Link>
         </div>
 
         {upcoming.length === 0 ? (
           <EmptyState
-            title="No upcoming reservations"
-            description="You don't have any sessions booked right now. Browse our night courts and reserve your next game."
-            action={
-              <Link
-                href="/facilities"
-                className="rounded-xl bg-primary-400 px-5 py-2 text-xs font-bold text-dark-950 hover:bg-primary-300"
-              >
-                Browse Facilities
-              </Link>
-            }
+            icon={CalendarDays}
+            title="No active court passes"
+            description="You have no upcoming bookings. Explore Shanti Devi Mittal Indoor Complex or Unipolis to reserve your session."
+            actionLabel="Browse Available Facilities"
+            onAction={() => (window.location.href = "/facilities")}
           />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {upcoming.map((b) => (
               <BookingCard key={b._id} booking={b} onCancel={handleCancelBooking} />
             ))}
@@ -296,25 +287,15 @@ export default function DashboardPage() {
         )}
       </section>
 
-      {/* Saved Favorites Section */}
+      {/* Favorites Preview */}
       {favorites.length > 0 && (
-        <section className="space-y-4 border-t border-slate-800 pt-8">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-white flex items-center gap-2">
-              <Heart size={18} className="text-red-400" />
-              Saved Favorite Venues ({favorites.length})
-            </h2>
-            <Link
-              href="/facilities"
-              className="text-xs font-semibold text-primary-400 hover:underline"
-            >
-              Explore More →
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {favorites.slice(0, 3).map((f) => (
-              <FacilityCard key={f._id} facility={f} isFavorited={true} />
+        <section className="space-y-4 pt-4 border-t border-slate-200">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+            <Heart size={16} className="text-[#a71d2a]" fill="currentColor" /> Saved Campus Courts ({favorites.length})
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {favorites.slice(0, 3).map((fac) => (
+              <FacilityCard key={fac._id} facility={fac} isFavorited={true} />
             ))}
           </div>
         </section>

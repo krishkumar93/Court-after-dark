@@ -53,3 +53,4 @@ MembershipSchema.index({ userId: 1, sportCategory: 1, status: 1 });
 
 export default mongoose.models.Membership ||
   mongoose.model("Membership", MembershipSchema);
+

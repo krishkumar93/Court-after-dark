@@ -34,3 +34,4 @@ SwimmingSlotSchema.index({ facilityId: 1, date: 1, startTime: 1 }, { unique: tru
 
 export default mongoose.models.SwimmingSlot ||
   mongoose.model("SwimmingSlot", SwimmingSlotSchema);
+

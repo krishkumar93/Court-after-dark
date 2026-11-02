@@ -12,25 +12,25 @@ export default function AvailabilityGrid({
   return (
     <div className="space-y-3">
       {/* Legend */}
-      <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-400 pb-1">
+      <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-500 pb-1">
         <span className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-sm bg-emerald-500/30 border border-emerald-500/50" />
+          <span className="h-2.5 w-2.5 rounded-sm bg-emerald-100 border border-emerald-400" />
           Available
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-sm bg-primary-400 border border-primary-400" />
+          <span className="h-2.5 w-2.5 rounded-sm bg-[#a71d2a] border border-[#a71d2a]" />
           Selected
         </span>
         <span className="flex items-center gap-1.5">
-          <Flame size={12} className="text-primary-400" />
-          Prime Time (Peak)
+          <Flame size={12} className="text-[#a71d2a]" />
+          Prime Time (18:00–22:00)
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-sm bg-slate-800 border border-slate-700" />
+          <span className="h-2.5 w-2.5 rounded-sm bg-slate-100 border border-slate-300" />
           Booked (Waitlistable)
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-sm bg-orange-500/20 border border-orange-500/40" />
+          <span className="h-2.5 w-2.5 rounded-sm bg-orange-100 border border-orange-300" />
           Maintenance
         </span>
       </div>
@@ -50,28 +50,28 @@ export default function AvailabilityGrid({
                 key={slot}
                 type="button"
                 onClick={() => onSelect(slot)}
-                className={`relative flex flex-col justify-between rounded-xl border p-2.5 text-left transition ${
+                className={`relative flex flex-col justify-between rounded-lg border p-2.5 text-left transition cursor-pointer ${
                   isSelected
-                    ? "border-primary-400 bg-primary-400/20 text-white ring-2 ring-primary-400 shadow-glow-sm"
-                    : "border-emerald-500/30 bg-emerald-500/10 text-emerald-200 hover:border-emerald-400 hover:bg-emerald-500/20"
+                    ? "border-[#a71d2a] bg-red-50 text-slate-900 ring-2 ring-[#a71d2a] shadow-xs"
+                    : "border-emerald-200 bg-emerald-50 text-emerald-900 hover:border-emerald-400 hover:bg-emerald-100/70"
                 }`}
               >
                 <div className="flex items-center justify-between w-full">
                   <span className="text-xs font-bold">{formatSlotLabel(slot)}</span>
                   {isSelected ? (
-                    <Check size={14} className="text-primary-400 shrink-0" />
+                    <Check size={14} className="text-[#a71d2a] shrink-0 font-bold" />
                   ) : isPrime ? (
-                    <span title="Prime Time Slot">
-                      <Flame size={13} className="text-primary-400 shrink-0" />
+                    <span title="Prime Time Floodlight Slot">
+                      <Flame size={13} className="text-[#a71d2a] shrink-0" />
                     </span>
                   ) : null}
                 </div>
                 <div className="flex items-center justify-between mt-1 text-[10px]">
-                  <span className={isSelected ? "text-primary-300 font-semibold" : "text-emerald-400"}>
+                  <span className={isSelected ? "text-[#a71d2a] font-bold" : "text-emerald-700 font-semibold"}>
                     {isSelected ? "Selected" : "Open Slot"}
                   </span>
                   {isPrime && (
-                    <span className="text-[9px] uppercase font-bold tracking-wider text-primary-400">
+                    <span className="text-[9px] uppercase font-bold tracking-wider text-[#a71d2a]">
                       Peak
                     </span>
                   )}
@@ -84,29 +84,29 @@ export default function AvailabilityGrid({
             return (
               <div
                 key={slot}
-                className="flex flex-col justify-between rounded-xl border border-slate-800 bg-dark-900/80 p-2.5 text-left text-slate-500"
+                className="flex flex-col justify-between rounded-lg border border-slate-200 bg-slate-100 p-2.5 text-left text-slate-500"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium line-through opacity-80">
+                  <span className="text-xs font-medium line-through opacity-80 text-slate-500">
                     {formatSlotLabel(slot)}
                   </span>
-                  {isPrime && <Flame size={12} className="text-slate-600 shrink-0" />}
+                  {isPrime && <Flame size={12} className="text-slate-400 shrink-0" />}
                 </div>
-                <div className="flex items-center justify-between mt-1.5 pt-1 border-t border-slate-800/60">
-                  <span className="text-[10px] text-amber-500/80 font-medium">Booked</span>
+                <div className="flex items-center justify-between mt-1.5 pt-1 border-t border-slate-200">
+                  <span className="text-[10px] text-amber-800 font-semibold">Booked</span>
                   {onJoinWaitlist && (
                     <button
                       type="button"
                       disabled={isUserWaitlisted}
                       onClick={() => onJoinWaitlist(slot)}
-                      className={`text-[10px] font-semibold flex items-center gap-1 transition ${
+                      className={`text-[10px] font-bold flex items-center gap-0.5 transition cursor-pointer ${
                         isUserWaitlisted
-                          ? "text-primary-400 cursor-default"
-                          : "text-slate-400 hover:text-primary-300 hover:underline"
+                          ? "text-cyan-800 cursor-default"
+                          : "text-[#a71d2a] hover:underline"
                       }`}
                     >
                       <Bell size={10} />
-                      {isUserWaitlisted ? "Waitlisted" : "Waitlist"}
+                      <span>{isUserWaitlisted ? "In Queue" : "Waitlist"}</span>
                     </button>
                   )}
                 </div>
@@ -118,22 +118,21 @@ export default function AvailabilityGrid({
             return (
               <div
                 key={slot}
-                className="flex flex-col justify-between rounded-xl border border-orange-500/30 bg-orange-500/10 p-2.5 text-left text-orange-400/80"
+                className="flex flex-col justify-between rounded-lg border border-orange-200 bg-orange-50/70 p-2.5 text-left text-orange-800"
               >
-                <span className="text-xs font-medium">{formatSlotLabel(slot)}</span>
-                <span className="text-[10px] text-orange-400 font-semibold mt-1">Maintenance</span>
+                <span className="text-xs font-semibold">{formatSlotLabel(slot)}</span>
+                <span className="text-[10px] text-orange-700 font-bold mt-1">Maintenance</span>
               </div>
             );
           }
 
-          // Closed
           return (
             <div
               key={slot}
-              className="flex flex-col justify-between rounded-xl border border-slate-850 bg-dark-950 p-2.5 text-left text-slate-600"
+              className="flex flex-col justify-between rounded-lg border border-slate-200 bg-slate-100 p-2.5 text-left text-slate-400 opacity-60"
             >
-              <span className="text-xs font-medium opacity-60">{formatSlotLabel(slot)}</span>
-              <span className="text-[10px] opacity-60 mt-1">Closed</span>
+              <span className="text-xs line-through">{formatSlotLabel(slot)}</span>
+              <span className="text-[10px] mt-1">Closed</span>
             </div>
           );
         })}

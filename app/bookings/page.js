@@ -14,6 +14,7 @@ import {
   Compass,
   ShoppingBag,
   Sparkles,
+  GraduationCap,
 } from "lucide-react";
 import Loading from "@/components/Loading";
 import BookingCard from "@/components/BookingCard";
@@ -44,8 +45,8 @@ export default function BookingsPage() {
   async function handleInstantDemoLogin() {
     setDemoLoginLoading(true);
     try {
-      const logged = await loginDemo("player");
-      showToast(`Welcome! Logged in as Demo Athlete (${logged.name}).`);
+      const logged = await loginDemo("student");
+      showToast(`Welcome! Logged in as Demo Student (${logged.name}).`);
       loadAll();
     } catch {
       showToast("Demo sign-in failed. Please try again.", "error");
@@ -90,7 +91,7 @@ export default function BookingsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           status: "Cancelled",
-          reason: cancelReason || "Cancelled by player",
+          reason: cancelReason || "Cancelled by student",
         }),
       });
 
@@ -100,11 +101,11 @@ export default function BookingsPage() {
         return;
       }
 
-      showToast("Booking cancelled. The slot has been released back to availability.");
+      showToast("Reservation cancelled successfully. Slot has been released.");
       setCancellingId(null);
       loadAll();
     } catch {
-      showToast("Cancellation failed. Please retry.", "error");
+      showToast("Cancellation failed. Please contact the sports desk.", "error");
     } finally {
       setCancellingLoading(false);
     }
@@ -117,105 +118,64 @@ export default function BookingsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ checkoutId }),
       });
-      if (res.ok) {
-        showToast("Equipment returned and inventory restored.");
-        loadAll();
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error || "Could not return equipment.", "error");
+        return;
       }
+      showToast("Equipment returned and inventory restored.");
+      loadAll();
     } catch {
-      showToast("Return failed.", "error");
+      showToast("Return action failed.", "error");
     }
   }
 
-  if (userLoading || loading) return <Loading label="Loading your booking history..." />;
+  if (userLoading || loading) return <Loading label="Loading student sports passes..." />;
 
+  // Unauthenticated Guest View
   if (!user) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8 space-y-10">
-        {/* Sign In & Demo Access Banner */}
-        <div className="text-center max-w-2xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-primary-400/30 bg-primary-400/10 px-3.5 py-1 text-xs font-bold text-primary-300">
-            <Sparkles size={13} className="text-primary-400" />
-            <span>Digital Game Passes & Reservations</span>
+      <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8 space-y-8">
+        <div className="rounded-xl border border-slate-200 bg-white p-8 sm:p-12 text-center space-y-6 shadow-xs">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-red-50 border border-red-200 text-[#a71d2a]">
+            <CalendarDays size={28} />
           </div>
-          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-            Athlete Bookings & Match Tickets
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-            View your upcoming floodlit court reservations, review equipment rental receipts, check active fair-quota status, or access verified payment records.
-          </p>
 
-          {/* Action Row */}
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <div className="space-y-2 max-w-lg mx-auto">
+            <span className="rounded bg-red-50 border border-red-200 px-3 py-0.5 text-xs font-bold text-[#a71d2a] uppercase tracking-wider">
+              Student Authentication Required
+            </span>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              Manage Your LPU Sports Bookings & Digital Passes
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Log in with your university student credentials to access confirmed match passes, track gear checkouts, and review QR codes.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <button
               type="button"
               disabled={demoLoginLoading}
               onClick={handleInstantDemoLogin}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-primary-400 px-6 py-3 text-xs font-bold text-dark-950 hover:bg-primary-300 transition shadow-glow-sm"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-lg bg-[#a71d2a] px-6 py-2.5 text-xs font-bold text-white hover:bg-[#8e1520] transition shadow-xs cursor-pointer"
             >
               <Sparkles size={14} />
-              <span>{demoLoginLoading ? "Signing In as Demo Athlete..." : "Instant 1-Click Access (Demo Player)"}</span>
+              <span>{demoLoginLoading ? "Signing In..." : "Instant Demo Student (Aarav)"}</span>
             </button>
             <Link
               href="/login"
-              className="w-full sm:w-auto rounded-xl border border-slate-700 bg-dark-900 px-6 py-3 text-center text-xs font-bold text-slate-200 hover:text-white hover:bg-dark-800 transition"
+              className="w-full sm:w-auto rounded-lg border border-slate-300 bg-white px-6 py-2.5 text-center text-xs font-bold text-slate-700 hover:bg-slate-50 transition cursor-pointer"
             >
-              Log In to Account
+              Student Login
             </Link>
             <Link
               href="/register"
-              className="w-full sm:w-auto rounded-xl border border-slate-700 bg-dark-900 px-6 py-3 text-center text-xs font-bold text-slate-200 hover:text-white hover:bg-dark-800 transition"
+              className="w-full sm:w-auto rounded-lg border border-slate-300 bg-white px-6 py-2.5 text-center text-xs font-bold text-slate-700 hover:bg-slate-50 transition cursor-pointer"
             >
               Register Free
             </Link>
           </div>
-        </div>
-
-        {/* Quick Booking Hub Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800/80">
-          <Link
-            href="/facilities"
-            className="group rounded-2xl border border-slate-800 bg-dark-850 p-5 hover:border-primary-400/40 hover:bg-dark-800 transition shadow-lg card-hover-glow"
-          >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-400/15 border border-primary-400/30 text-primary-400 mb-3 group-hover:scale-105 transition">
-              <Compass size={20} />
-            </div>
-            <h3 className="text-sm font-bold text-white group-hover:text-primary-300 transition">
-              Book Courts & Grounds
-            </h3>
-            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-              Reserve badminton courts, basketball floors, 7v7 football turfs, and cricket nets with night floodlights.
-            </p>
-          </Link>
-
-          <Link
-            href="/equipment"
-            className="group rounded-2xl border border-slate-800 bg-dark-850 p-5 hover:border-primary-400/40 hover:bg-dark-800 transition shadow-lg card-hover-glow"
-          >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-400/15 border border-primary-400/30 text-primary-400 mb-3 group-hover:scale-105 transition">
-              <Dumbbell size={20} />
-            </div>
-            <h3 className="text-sm font-bold text-white group-hover:text-primary-300 transition">
-              Rent Sports Gear
-            </h3>
-            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-              Rent dumbbells, match footballs, volleyballs, cricket bats, and table tennis paddles with live stock tracking.
-            </p>
-          </Link>
-
-          <Link
-            href="/search"
-            className="group rounded-2xl border border-slate-800 bg-dark-850 p-5 hover:border-primary-400/40 hover:bg-dark-800 transition shadow-lg card-hover-glow"
-          >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-400/15 border border-primary-400/30 text-primary-400 mb-3 group-hover:scale-105 transition">
-              <Search size={20} />
-            </div>
-            <h3 className="text-sm font-bold text-white group-hover:text-primary-300 transition">
-              Unified Search
-            </h3>
-            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-              Search across both available grounds and sports equipment simultaneously with sport filters and instant checkout.
-            </p>
-          </Link>
         </div>
       </div>
     );
@@ -246,44 +206,40 @@ export default function BookingsPage() {
   });
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8 space-y-8">
+    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8 space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-800 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-4">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-primary-400">
-            Player Dashboard
+          <span className="text-xs font-bold uppercase tracking-wider text-[#a71d2a]">
+            Student Sports Portal
           </span>
-          <h1 className="text-3xl font-black text-white tracking-tight mt-1">My Bookings & Rentals</h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Manage your reserved courts, view digital match passes, and track sports gear rentals.
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-0.5">
+            My Bookings & Digital Passes
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Manage your reserved campus facilities, digital gate passes, and sports equipment checkouts.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <Link
-            href="/search"
-            className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-dark-850 px-3.5 py-2 text-xs font-semibold text-slate-200 hover:text-white hover:bg-dark-800 transition"
-          >
-            <Search size={14} className="text-primary-400" /> Search Available
-          </Link>
-          <Link
             href="/facilities"
-            className="flex items-center gap-1.5 rounded-xl bg-primary-400 px-4 py-2 text-xs font-bold text-dark-950 hover:bg-primary-300 transition shadow-glow-sm"
+            className="flex items-center gap-1.5 rounded-lg bg-[#a71d2a] px-4 py-2 text-xs font-bold text-white hover:bg-[#8e1520] transition shadow-xs cursor-pointer"
           >
-            <Plus size={15} /> Book Court
+            <Plus size={15} /> Book Facility
           </Link>
         </div>
       </div>
 
       {/* Main View Switcher: Courts vs Equipment */}
-      <div className="flex rounded-2xl bg-dark-850 p-1.5 border border-slate-800 w-fit">
+      <div className="flex rounded-lg bg-slate-100 p-1 border border-slate-200 w-fit">
         <button
           type="button"
           onClick={() => setMainView("courts")}
-          className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition ${
+          className={`flex items-center gap-2 rounded-md px-4 py-1.5 text-xs font-bold transition cursor-pointer ${
             mainView === "courts"
-              ? "bg-primary-400 text-dark-950 shadow-sm"
-              : "text-slate-400 hover:text-white"
+              ? "bg-[#a71d2a] text-white shadow-xs"
+              : "text-slate-600 hover:text-slate-900"
           }`}
         >
           <Compass size={14} />
@@ -292,223 +248,190 @@ export default function BookingsPage() {
         <button
           type="button"
           onClick={() => setMainView("equipment")}
-          className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition ${
+          className={`flex items-center gap-2 rounded-md px-4 py-1.5 text-xs font-bold transition cursor-pointer ${
             mainView === "equipment"
-              ? "bg-primary-400 text-dark-950 shadow-sm"
-              : "text-slate-400 hover:text-white"
+              ? "bg-[#a71d2a] text-white shadow-xs"
+              : "text-slate-600 hover:text-slate-900"
           }`}
         >
-          <Dumbbell size={14} />
+          <ShoppingBag size={14} />
           <span>Sports Gear Rentals ({equipmentBookings.length})</span>
         </button>
       </div>
 
-      {/* Fair Use Quota Banner (for Courts) */}
-      {mainView === "courts" && (
-        <div className="rounded-2xl border border-slate-800 bg-dark-850 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-400/10 border border-primary-400/20 text-primary-400">
-              <ShieldCheck size={20} />
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-white">Active Allocation Quota</h3>
-              <p className="text-xs text-slate-400">
-                Fair-use policy limits each player to {maxActive} active reservations at a time.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-slate-300">
-              Current active: <strong className="text-primary-400 text-sm">{confirmedCount}</strong> / {maxActive}
-            </span>
-            <div className="h-2 w-28 rounded-full bg-dark-750 overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all ${
-                  confirmedCount >= maxActive ? "bg-amber-400" : "bg-primary-400"
+      {/* Filter and Search Bar */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs">
+        {mainView === "courts" ? (
+          <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0">
+            {STATUS_TABS.map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setActiveTab(tab)}
+                className={`rounded-md px-3 py-1.5 text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+                  activeTab === tab
+                    ? "bg-[#a71d2a] text-white shadow-xs"
+                    : "text-slate-600 hover:bg-slate-100"
                 }`}
-                style={{ width: `${Math.min(100, (confirmedCount / maxActive) * 100)}%` }}
-              />
-            </div>
+              >
+                {tab}
+              </button>
+            ))}
           </div>
+        ) : (
+          <span className="text-xs text-slate-600 font-bold">
+            Sports Gear Issues ({filteredGear.length} records)
+          </span>
+        )}
+
+        <div className="relative sm:w-64">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by ref or arena..."
+            className="w-full rounded-lg border border-slate-300 bg-slate-50 pl-9 pr-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 outline-none focus:border-[#a71d2a] focus:bg-white"
+          />
         </div>
-      )}
+      </div>
 
-      {/* Main View 1: Court Bookings */}
-      {mainView === "courts" && (
-        <div className="space-y-6">
-          {/* Tabs & Search controls */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-            <div className="flex gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-              {STATUS_TABS.map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`rounded-xl px-4 py-2 text-xs font-bold transition whitespace-nowrap ${
-                    activeTab === tab
-                      ? "bg-primary-400 text-dark-950 shadow-glow-sm"
-                      : "border border-slate-800 bg-dark-850 text-slate-400 hover:text-white hover:bg-dark-800"
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
+      {/* Active Quota Notice */}
+      <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs text-slate-600">
+        <span className="flex items-center gap-1.5">
+          <ShieldCheck size={14} className="text-[#a71d2a]" />
+          <span>Anti-Hoarding Quota: <strong>{confirmedCount}</strong> of <strong>{maxActive}</strong> active slots used</span>
+        </span>
+        <span className="text-[11px] text-slate-500 font-medium">Weekly peak evening limit: 3 sessions</span>
+      </div>
 
-            <div className="relative sm:w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={14} />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Filter by ref or court..."
-                className="w-full rounded-xl border border-slate-700 bg-dark-850 pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-primary-400"
-              />
-            </div>
+      {/* Main Results View */}
+      {mainView === "courts" ? (
+        filteredCourts.length === 0 ? (
+          <EmptyState
+            icon={CalendarDays}
+            title="No court bookings found"
+            description="You have no bookings matching the selected filter."
+            actionLabel="Browse Available Courts"
+            onAction={() => (window.location.href = "/facilities")}
+          />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredCourts.map((b) => (
+              <BookingCard key={b._id} booking={b} onCancel={promptCancel} />
+            ))}
           </div>
+        )
+      ) : (
+        /* Equipment Rentals View */
+        filteredGear.length === 0 ? (
+          <EmptyState
+            icon={Dumbbell}
+            title="No sports gear checkouts"
+            description="You have not rented any sports equipment yet. Visit the gear catalog to checkout items."
+            actionLabel="Rent Sports Gear"
+            onAction={() => (window.location.href = "/equipment")}
+          />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {filteredGear.map((c) => {
+              const eq = c.equipmentId || {};
+              const isCheckedOut = c.status === "Checked Out";
 
-          {/* Bookings List */}
-          {filteredCourts.length === 0 ? (
-            <EmptyState
-              title="No court bookings found"
-              description={
-                activeTab === "All"
-                  ? "You haven't reserved any court slots yet. Explore available venues to book your first game."
-                  : `You have no bookings matching the "${activeTab}" filter.`
-              }
-              action={
-                <Link
-                  href="/facilities"
-                  className="rounded-xl bg-primary-400 px-4 py-2 text-xs font-bold text-dark-950 hover:bg-primary-300"
-                >
-                  Explore Venues
-                </Link>
-              }
-            />
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {filteredCourts.map((b) => (
-                <BookingCard key={b._id} booking={b} onCancel={promptCancel} />
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Main View 2: Equipment Rentals */}
-      {mainView === "equipment" && (
-        <div className="space-y-6">
-          {filteredGear.length === 0 ? (
-            <EmptyState
-              title="No sports gear checkouts"
-              description="You have not rented any equipment yet. Explore our gear inventory to rent match balls, rackets, and training gear."
-              action={
-                <Link
-                  href="/equipment"
-                  className="rounded-xl bg-primary-400 px-4 py-2 text-xs font-bold text-dark-950 hover:bg-primary-300"
-                >
-                  Rent Sports Gear
-                </Link>
-              }
-            />
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filteredGear.map((c) => (
+              return (
                 <div
                   key={c._id}
-                  className="rounded-2xl border border-slate-800 bg-dark-850 p-5 space-y-4"
+                  className="rounded-xl border border-slate-200 bg-white p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs"
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="h-14 w-14 rounded-xl overflow-hidden bg-dark-900 border border-slate-800 shrink-0">
-                        <img
-                          src={getEquipmentImage(c.equipmentId)}
-                          alt={c.equipmentId?.name}
-                          onError={(e) => handleEquipmentImageError(e, c.equipmentId)}
-                          className="h-full w-full object-cover"
-                        />
-                      </div>
-                      <div>
-                        <span className="text-[10px] font-mono font-bold text-primary-400 uppercase">
+                  <div className="flex items-center gap-3">
+                    <div className="h-14 w-14 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 shrink-0">
+                      <img
+                        src={getEquipmentImage(eq)}
+                        alt={eq.name || "Equipment"}
+                        onError={(e) => handleEquipmentImageError(e, eq)}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-mono font-bold text-[#a71d2a]">
                           {c.bookingReference || "EQ-PASS"}
                         </span>
-                        <h4 className="text-sm font-bold text-white mt-0.5">
-                          {c.equipmentId?.name} × {c.quantity}
-                        </h4>
-                        <p className="text-[11px] text-slate-400">
-                          {c.equipmentId?.category} • Fee: <strong className="text-primary-300">₹{c.totalAmount || c.rentalPrice || 100}</strong>
-                        </p>
+                        <span className="text-slate-300">•</span>
+                        <span className="text-[10px] text-slate-500 uppercase font-semibold">
+                          {eq.category || "Gear"}
+                        </span>
+                      </div>
+                      <h3 className="text-sm font-bold text-slate-900 mt-0.5">
+                        {eq.name} × {c.quantity}
+                      </h3>
+                      <div className="flex items-center gap-2 text-xs text-slate-500 mt-1">
+                        <span className="font-bold text-[#a71d2a]">
+                          ₹{c.totalAmount || c.rentalPrice || 5}
+                        </span>
+                        <span>
+                          • Paid via {c.paymentMethod || "UPI"}
+                        </span>
                       </div>
                     </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 self-end sm:self-auto">
                     <Badge size="sm">{c.status}</Badge>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-300 pt-2 border-t border-slate-800">
-                    <div>
-                      <span className="text-slate-500">Method: </span>
-                      <strong className="text-white">{c.paymentMethod || "Card"} ({c.paymentStatus || "Paid"})</strong>
-                    </div>
-                    <div>
-                      <span className="text-slate-500">Rental Date: </span>
-                      <strong className="text-white">{c.rentalDate || new Date(c.checkoutTime).toLocaleDateString()}</strong>
-                    </div>
-                  </div>
-
-                  {c.status === "Checked Out" && (
-                    <div className="pt-2 border-t border-slate-800 flex justify-end">
+                    {isCheckedOut && (
                       <button
                         type="button"
                         onClick={() => handleReturnGear(c._id)}
-                        className="rounded-xl bg-primary-400/10 border border-primary-400/30 px-3 py-1.5 text-xs font-bold text-primary-300 hover:bg-primary-400/20 transition"
+                        className="rounded-lg bg-red-50 border border-red-200 px-3 py-1.5 text-xs font-bold text-[#a71d2a] hover:bg-red-100 transition cursor-pointer"
                       >
                         Return Gear
                       </button>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
+              );
+            })}
+          </div>
+        )
       )}
 
       {/* Cancellation Modal */}
       <Modal
         open={Boolean(cancellingId)}
         onClose={() => setCancellingId(null)}
-        title="Cancel Court Reservation"
+        title="Cancel Facility Reservation"
         footer={
           <div className="flex justify-end gap-2 w-full">
             <button
               onClick={() => setCancellingId(null)}
-              className="rounded-xl border border-slate-700 px-4 py-2 text-xs font-semibold text-slate-300"
+              className="rounded-lg border border-slate-300 px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 cursor-pointer"
             >
-              Keep Booking
+              Keep Slot
             </button>
             <button
               onClick={handleConfirmCancel}
               disabled={cancellingLoading}
-              className="rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white hover:bg-red-500"
+              className="rounded-lg bg-red-600 px-4 py-2 text-xs font-bold text-white hover:bg-red-700 cursor-pointer"
             >
               {cancellingLoading ? "Cancelling..." : "Confirm Cancellation"}
             </button>
           </div>
         }
       >
-        <div className="space-y-3 text-xs text-slate-300">
+        <div className="space-y-3 text-xs text-slate-700">
           <p>
-            Are you sure you want to cancel this booking? Once cancelled, the slot will be released back to the live availability grid or offered to waitlisted players.
+            Are you sure you want to release this slot? It will become available to students on the waitlist.
           </p>
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">
-              Reason for Cancellation (Optional)
+            <label className="block text-xs font-bold text-slate-700 mb-1">
+              Cancellation Reason (Optional)
             </label>
             <input
               type="text"
               value={cancelReason}
               onChange={(e) => setCancelReason(e.target.value)}
-              placeholder="e.g. Schedule conflict, weather, injury..."
-              className="w-full rounded-xl border border-slate-700 bg-dark-900 px-3 py-2 text-xs text-white outline-none focus:border-primary-400"
+              placeholder="e.g. academic clash, lab schedule change..."
+              className="w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-xs text-slate-800 outline-none focus:border-[#a71d2a]"
             />
           </div>
         </div>

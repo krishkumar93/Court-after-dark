@@ -17,6 +17,7 @@ import {
   CreditCard,
   QrCode,
   Tag,
+  Building2,
 } from "lucide-react";
 import EquipmentCard from "@/components/EquipmentCard";
 import EquipmentBookingModal from "@/components/EquipmentBookingModal";
@@ -93,8 +94,8 @@ export default function EquipmentPage() {
   async function handleContinueAsDemoPlayer() {
     setDemoLoading(true);
     try {
-      const logged = await loginDemo("player");
-      showToast(`Welcome! Logged in as Demo Player (${logged.name}).`);
+      const logged = await loginDemo("student");
+      showToast(`Welcome! Logged in as Demo Student (${logged.name}).`);
       setGuestAuthModalOpen(false);
       setBookingModalOpen(true);
     } catch (err) {
@@ -143,54 +144,47 @@ export default function EquipmentPage() {
   });
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 space-y-10">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-800 pb-6">
-        <div>
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-primary-400/30 bg-primary-400/10 px-3 py-0.5 text-xs font-bold text-primary-300 mb-2">
-            <Sparkles size={13} className="text-primary-400" />
-            <span>Sports Equipment & Locker Booking</span>
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8">
+      {/* Institutional Header Banner */}
+      <div className="rounded-xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xs">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div className="space-y-2 max-w-2xl">
+            <div className="inline-flex items-center gap-1.5 rounded bg-red-50 border border-red-200 px-2.5 py-0.5 text-xs font-bold text-[#a71d2a]">
+              <Building2 size={13} /> LPU CENTRAL SPORTS STORE • BLOCK 13
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              Sports Equipment Rental & Issue Desk
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Official university sports gear store. Check out tournament-grade badminton rackets, match balls, cricket kits, and fitness accessories for your session.
+            </p>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-            Rent & Reserve Sports Gear
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-xl">
-            Book tournament rackets, match balls, and training gear. Pay online with Credit/Debit Card or Razorpay, or pay at venue reception upon pickup.
-          </p>
-        </div>
 
-        <div className="flex items-center gap-3">
-          <Link
-            href="/search?tab=equipment"
-            className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-dark-850 px-3.5 py-2 text-xs font-semibold text-slate-200 hover:border-primary-400/40 hover:text-white transition"
-          >
-            <Search size={14} className="text-primary-400" />
-            <span>Search Available Gear</span>
-          </Link>
-          <div className="flex items-center gap-2 rounded-xl bg-dark-850 border border-slate-800 px-3.5 py-2 text-xs text-slate-300">
-            <Dumbbell size={15} className="text-primary-400" />
-            <span>
-              Catalog: <strong className="text-white">{equipment.length}</strong> Items
-            </span>
+          <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl p-3 shrink-0">
+            <Dumbbell size={20} className="text-[#a71d2a]" />
+            <div>
+              <div className="text-base font-black text-slate-900">{equipment.length} Items</div>
+              <div className="text-[10px] text-slate-500 font-bold uppercase">Store Inventory</div>
+            </div>
           </div>
         </div>
       </div>
 
       {/* User's Active Equipment Bookings */}
       {user && (
-        <section className="rounded-3xl border border-slate-800 bg-dark-850 p-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <CheckCircle2 size={18} className="text-primary-400" />
-              My Active Equipment Bookings ({activeCheckouts.length})
+        <section className="rounded-xl border border-slate-200 bg-white p-6 space-y-4 shadow-xs">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <CheckCircle2 size={16} className="text-[#a71d2a]" />
+              My Active Equipment Checkouts ({activeCheckouts.length})
             </h2>
-            <span className="text-xs text-slate-400">
-              Return items when your match finishes to restore inventory
+            <span className="text-xs text-slate-500">
+              Return items at Block 13 central store when match concludes
             </span>
           </div>
 
           {activeCheckouts.length === 0 ? (
-            <p className="text-xs text-slate-500 py-2">
+            <p className="text-xs text-slate-500 py-1">
               You currently have no active gear checkouts. Select items below to reserve for your upcoming court session.
             </p>
           ) : (
@@ -198,34 +192,39 @@ export default function EquipmentPage() {
               {activeCheckouts.map((c) => (
                 <div
                   key={c._id}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-dark-900 p-4"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3.5"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="h-12 w-12 rounded-xl overflow-hidden bg-dark-800 shrink-0 border border-slate-700">
+                    <div className="h-12 w-12 rounded-lg overflow-hidden bg-white shrink-0 border border-slate-200">
                       <img
-                        src={c.equipmentId?.image || "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=400&q=80"}
+                        src={
+                          c.equipmentId?.image ||
+                          "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=400&q=80"
+                        }
                         alt={c.equipmentId?.name}
                         className="h-full w-full object-cover"
                       />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-mono font-bold text-primary-400">
+                        <span className="text-[10px] font-mono font-bold text-[#a71d2a]">
                           {c.bookingReference || "EQ-PASS"}
                         </span>
-                        <span className="text-slate-600">•</span>
-                        <span className="text-[10px] text-slate-400 uppercase font-semibold">
+                        <span className="text-slate-300">•</span>
+                        <span className="text-[10px] text-slate-500 uppercase font-semibold">
                           {c.equipmentId?.category}
                         </span>
                       </div>
-                      <h4 className="text-sm font-bold text-white">
+                      <h4 className="text-sm font-bold text-slate-900">
                         {c.equipmentId?.name} × {c.quantity}
                       </h4>
-                      <div className="flex items-center gap-2 text-[11px] text-slate-400 mt-0.5">
-                        <span className="text-primary-300 font-semibold">
-                          ₹{c.totalAmount || c.rentalPrice || 100}
+                      <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5">
+                        <span className="text-[#a71d2a] font-bold">
+                          ₹{c.totalAmount || c.rentalPrice || 5}
                         </span>
-                        <span>• Method: {c.paymentMethod || "Card"} ({c.paymentStatus || "Paid"})</span>
+                        <span>
+                          • Method: {c.paymentMethod || "UPI"} ({c.paymentStatus || "Paid"})
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -234,7 +233,7 @@ export default function EquipmentPage() {
                     <Badge size="sm">{c.status}</Badge>
                     <button
                       onClick={() => handleReturn(c._id)}
-                      className="rounded-xl bg-primary-400/10 border border-primary-400/30 px-3 py-1.5 text-xs font-bold text-primary-300 hover:bg-primary-400/20 transition"
+                      className="rounded-lg bg-red-50 border border-red-200 px-3 py-1.5 text-xs font-bold text-[#a71d2a] hover:bg-red-100 transition cursor-pointer"
                     >
                       Return Gear
                     </button>
@@ -246,17 +245,19 @@ export default function EquipmentPage() {
         </section>
       )}
 
-      {/* Categories & Search */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-        <div className="flex gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+      {/* Filter and Search Bar */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+        {/* Category Pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
+              type="button"
               onClick={() => setCategory(cat)}
-              className={`rounded-xl px-3.5 py-2 text-xs font-bold transition whitespace-nowrap ${
+              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition whitespace-nowrap cursor-pointer ${
                 category === cat
-                  ? "bg-primary-400 text-dark-950 shadow-glow-sm"
-                  : "border border-slate-800 bg-dark-850 text-slate-400 hover:text-white hover:bg-dark-800"
+                  ? "bg-[#a71d2a] text-white shadow-xs"
+                  : "bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100"
               }`}
             >
               {cat}
@@ -264,14 +265,15 @@ export default function EquipmentPage() {
           ))}
         </div>
 
+        {/* Search Input */}
         <div className="relative sm:w-72">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" size={14} />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search equipment name or sport..."
-            className="w-full rounded-xl border border-slate-700 bg-dark-850 pl-9 pr-3.5 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-primary-400"
+            placeholder="Search sports gear..."
+            className="w-full rounded-lg border border-slate-300 bg-slate-50 pl-9 pr-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 outline-none focus:border-[#a71d2a] focus:bg-white"
           />
         </div>
       </div>
@@ -279,19 +281,14 @@ export default function EquipmentPage() {
       {/* Equipment Cards Grid */}
       {filtered.length === 0 ? (
         <EmptyState
-          title="No sports gear found"
-          description="Try selecting another category or clearing your search term."
-          action={
-            <button
-              onClick={() => {
-                setCategory("All");
-                setSearch("");
-              }}
-              className="rounded-xl bg-primary-400 px-4 py-2 text-xs font-bold text-dark-950"
-            >
-              Reset Filters
-            </button>
-          }
+          icon={Dumbbell}
+          title="No equipment found"
+          description="No sports gear matches your active category or search query."
+          actionLabel="Clear Filter"
+          onAction={() => {
+            setCategory("All");
+            setSearch("");
+          }}
         />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -301,12 +298,11 @@ export default function EquipmentPage() {
         </div>
       )}
 
-      {/* Equipment Booking Modal */}
+      {/* Booking Checkout Modal */}
       <EquipmentBookingModal
         open={bookingModalOpen}
         onClose={() => setBookingModalOpen(false)}
         item={selectedItemForBooking}
-        userBookings={userBookings}
         onBookingComplete={handleBookingSuccess}
       />
 
@@ -314,58 +310,51 @@ export default function EquipmentPage() {
       <Modal
         open={guestAuthModalOpen}
         onClose={() => setGuestAuthModalOpen(false)}
-        title="Athlete Profile Required for Gear Booking"
+        title="Student Sign In Required"
       >
-        <div className="space-y-4 text-xs">
-          <p className="text-slate-300 leading-relaxed">
-            Equipment booking requires an athlete account so venue coordinators can generate your digital rental pass and track active borrowed items.
+        <div className="space-y-4 text-xs text-slate-700">
+          <p className="leading-relaxed">
+            To rent sports equipment and link it to your university ID, please log in with your LPU student account or continue using our instant 1-click demo role.
           </p>
 
-          <div className="rounded-2xl border border-primary-400/30 bg-primary-400/10 p-4 space-y-3">
-            <div className="flex items-center gap-1.5 font-bold text-primary-400">
-              <Sparkles size={14} className="animate-pulse" />
+          <div className="rounded-xl border border-red-200 bg-red-50 p-4 space-y-3">
+            <div className="flex items-center gap-1.5 font-bold text-[#a71d2a]">
+              <Sparkles size={14} />
               <span>Instant 1-Click Demo Option</span>
             </div>
-            <p className="text-[11px] text-slate-300">
-              Skip registration and instantly authenticate as our Demo Athlete:
+            <p className="text-[11px] text-slate-600">
+              Skip typing credentials! Continue as our Demo Student (Aarav Sharma) to test the equipment checkout flow:
             </p>
             <button
               type="button"
               disabled={demoLoading}
               onClick={handleContinueAsDemoPlayer}
-              className="w-full flex items-center justify-center gap-2 rounded-xl bg-primary-400 py-2.5 text-xs font-bold text-dark-950 hover:bg-primary-300 transition shadow-glow-sm"
+              className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#a71d2a] py-2.5 text-xs font-bold text-white hover:bg-[#8e1520] transition shadow-xs cursor-pointer"
             >
               {demoLoading ? (
                 <>
                   <Loader2 size={13} className="animate-spin" />
-                  <span>Signing In as Demo Player...</span>
+                  <span>Logging in...</span>
                 </>
               ) : (
                 <>
                   <User size={13} />
-                  <span>Continue with Demo Player (Aarav)</span>
+                  <span>Continue with Demo Student</span>
                 </>
               )}
             </button>
           </div>
 
-          <div className="relative flex items-center justify-center pt-2">
-            <div className="w-full border-t border-slate-800"></div>
-            <span className="absolute bg-dark-850 px-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
-              or use personal account
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2 pt-1">
+          <div className="grid grid-cols-2 gap-2 pt-2">
             <Link
               href="/login"
-              className="rounded-xl border border-slate-700 bg-dark-900 py-2 text-center text-xs font-semibold text-slate-200 hover:text-white hover:bg-dark-800 transition"
+              className="rounded-lg border border-slate-300 bg-white py-2 text-center text-xs font-bold text-slate-700 hover:bg-slate-50 transition"
             >
-              Log In
+              Student Login
             </Link>
             <Link
               href="/register"
-              className="rounded-xl border border-slate-700 bg-dark-900 py-2 text-center text-xs font-semibold text-slate-200 hover:text-white hover:bg-dark-800 transition"
+              className="rounded-lg bg-[#a71d2a] py-2 text-center text-xs font-bold text-white hover:bg-[#8e1520] transition"
             >
               Register Free
             </Link>

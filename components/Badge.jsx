@@ -1,42 +1,42 @@
 const STYLES = {
-  Available: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
-  Confirmed: "bg-primary-400/15 text-primary-400 border-primary-400/30",
-  "Pending Approval": "bg-amber-500/20 text-amber-300 border-amber-500/40",
-  Approved: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
-  Draft: "bg-slate-500/20 text-slate-300 border-slate-500/40",
-  "Payment Pending": "bg-yellow-500/20 text-yellow-300 border-yellow-500/40",
-  "Payment Verification Pending": "bg-blue-500/20 text-blue-300 border-blue-500/40",
-  "No Show": "bg-rose-500/20 text-rose-300 border-rose-500/40",
-  Booked: "bg-amber-500/15 text-amber-400 border-amber-500/30",
-  Maintenance: "bg-orange-500/15 text-orange-400 border-orange-500/30",
-  Closed: "bg-slate-600/20 text-slate-400 border-slate-600/30",
-  Cancelled: "bg-red-500/15 text-red-400 border-red-500/30",
-  Completed: "bg-sky-500/15 text-sky-400 border-sky-500/30",
-  Rejected: "bg-red-500/15 text-red-400 border-red-500/30",
-  Unavailable: "bg-red-500/15 text-red-400 border-red-500/30",
-  "Checked Out": "bg-amber-500/15 text-amber-400 border-amber-500/30",
-  Returned: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
-  Scheduled: "bg-orange-500/15 text-orange-400 border-orange-500/30",
-  Waiting: "bg-indigo-500/15 text-indigo-400 border-indigo-500/30",
-  Notified: "bg-cyan-500/15 text-cyan-400 border-cyan-500/30",
-  Paid: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
-  "Pay at Venue": "bg-slate-500/15 text-slate-300 border-slate-500/30",
-  Refunded: "bg-purple-500/15 text-purple-400 border-purple-500/30",
-  Indoor: "bg-sky-500/10 text-sky-300 border-sky-500/20",
-  Outdoor: "bg-amber-500/10 text-amber-300 border-amber-500/20",
-  "Prime Time": "bg-primary-400/20 text-primary-300 border-primary-400/40",
-  Active: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
-  Suspended: "bg-red-500/15 text-red-400 border-red-500/30",
-  Complimentary: "bg-amber-400/20 text-amber-300 border-amber-400/40",
+  Available: "bg-emerald-50 text-emerald-700 border-emerald-300",
+  Confirmed: "bg-red-50 text-[#a71d2a] border-red-200",
+  "Pending Approval": "bg-amber-50 text-amber-800 border-amber-300",
+  Approved: "bg-emerald-50 text-emerald-700 border-emerald-300",
+  Draft: "bg-slate-100 text-slate-700 border-slate-300",
+  "Payment Pending": "bg-yellow-50 text-yellow-800 border-yellow-300",
+  "Payment Verification Pending": "bg-blue-50 text-blue-800 border-blue-300",
+  "No Show": "bg-rose-50 text-rose-700 border-rose-300",
+  Booked: "bg-amber-50 text-amber-800 border-amber-300",
+  Maintenance: "bg-orange-50 text-orange-800 border-orange-300",
+  Closed: "bg-slate-100 text-slate-600 border-slate-300",
+  Cancelled: "bg-red-50 text-red-700 border-red-200",
+  Completed: "bg-sky-50 text-sky-800 border-sky-300",
+  Rejected: "bg-red-50 text-red-700 border-red-200",
+  Unavailable: "bg-red-50 text-red-700 border-red-200",
+  "Checked Out": "bg-amber-50 text-amber-800 border-amber-300",
+  Returned: "bg-emerald-50 text-emerald-700 border-emerald-300",
+  Scheduled: "bg-orange-50 text-orange-800 border-orange-300",
+  Waiting: "bg-indigo-50 text-indigo-700 border-indigo-200",
+  Notified: "bg-cyan-50 text-cyan-800 border-cyan-300",
+  Paid: "bg-emerald-50 text-emerald-700 border-emerald-300",
+  "Pay at Venue": "bg-slate-100 text-slate-700 border-slate-300",
+  Refunded: "bg-purple-50 text-purple-700 border-purple-200",
+  Indoor: "bg-sky-50 text-sky-800 border-sky-300",
+  Outdoor: "bg-amber-50 text-amber-800 border-amber-300",
+  "Prime Time": "bg-rose-50 text-rose-800 border-rose-300",
+  Active: "bg-emerald-50 text-emerald-700 border-emerald-300",
+  Suspended: "bg-red-50 text-red-700 border-red-200",
+  Complimentary: "bg-amber-50 text-amber-800 border-amber-300",
 };
 
 export default function Badge({ children, dot = true, size = "sm" }) {
-  const style = STYLES[children] || "bg-slate-800 text-slate-300 border-slate-700";
+  const style = STYLES[children] || "bg-slate-100 text-slate-700 border-slate-300";
   const sizeClasses = size === "xs" ? "px-2 py-0.5 text-[10px]" : "px-2.5 py-0.5 text-xs";
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full border font-semibold tracking-wide backdrop-blur-sm ${sizeClasses} ${style}`}
+      className={`inline-flex items-center gap-1.5 rounded-full border font-bold tracking-wide ${sizeClasses} ${style}`}
     >
       {dot && (
         <span

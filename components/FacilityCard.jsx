@@ -2,7 +2,16 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { MapPin, Users, Clock, Heart, Sparkles, ChevronRight, AlertTriangle, ShieldCheck, FileText, CheckCircle2 } from "lucide-react";
+import {
+  MapPin,
+  Users,
+  Clock,
+  Heart,
+  ChevronRight,
+  AlertTriangle,
+  ShieldCheck,
+  CheckCircle2,
+} from "lucide-react";
 import Badge from "@/components/Badge";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
@@ -54,10 +63,10 @@ export default function FacilityCard({ facility, onFavoriteToggle, isFavorited =
     <Link
       href={`/facilities/${facility._id}`}
       aria-label={`View details and book ${facility.name}`}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-800/80 bg-dark-850 hover:border-primary-400/50 hover:bg-dark-800 transition duration-300 shadow-lg card-hover-glow"
+      className="group relative flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white hover:border-[#a71d2a]/50 hover:shadow-md transition duration-200"
     >
       {/* Thumbnail */}
-      <div className="relative h-48 w-full overflow-hidden bg-dark-900">
+      <div className="relative h-48 w-full overflow-hidden bg-slate-100">
         <img
           src={facility.image || FALLBACK_IMAGE}
           alt={facility.name}
@@ -66,27 +75,27 @@ export default function FacilityCard({ facility, onFavoriteToggle, isFavorited =
               e.currentTarget.src = FALLBACK_IMAGE;
             }
           }}
-          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+          className="h-full w-full object-cover transition duration-300 group-hover:scale-103"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-dark-900 via-transparent to-transparent opacity-80" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-70" />
 
         {/* Top Badges */}
-        <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 max-w-[75%]">
+        <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5 max-w-[75%]">
           <Badge>{facility.status || "Available"}</Badge>
           {facility.indoorOutdoor && (
-            <span className="rounded-full bg-dark-900/90 border border-slate-700/80 px-2.5 py-0.5 text-[10px] font-bold text-slate-200 backdrop-blur-md">
+            <span className="rounded-full bg-white/95 border border-slate-300 px-2.5 py-0.5 text-[10px] font-bold text-slate-800 shadow-xs">
               {facility.indoorOutdoor}
             </span>
           )}
           {facility.approvalRequired && (
-            <span className="rounded-full bg-amber-500/20 border border-amber-500/40 px-2 py-0.5 text-[10px] font-semibold text-amber-300 backdrop-blur-md">
+            <span className="rounded-full bg-amber-500/90 border border-amber-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-xs">
               Coach Approval
             </span>
           )}
           {!facility.isQuantityVerified && (
-            <span className="rounded-full bg-amber-950/80 border border-amber-500/50 px-2 py-0.5 text-[9px] font-medium text-amber-300 flex items-center gap-1 backdrop-blur-md">
-              <AlertTriangle size={10} /> Pending verification
+            <span className="rounded-full bg-amber-50 border border-amber-300 px-2 py-0.5 text-[9px] font-bold text-amber-800 flex items-center gap-1 shadow-xs">
+              <AlertTriangle size={10} /> Pending Verification
             </span>
           )}
         </div>
@@ -96,29 +105,29 @@ export default function FacilityCard({ facility, onFavoriteToggle, isFavorited =
           onClick={handleToggleFavorite}
           disabled={favLoading}
           aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
-          className={`absolute top-3 right-3 h-8 w-8 rounded-full flex items-center justify-center backdrop-blur-md transition ${
+          className={`absolute top-2.5 right-2.5 h-8 w-8 rounded-full flex items-center justify-center transition shadow-xs ${
             favorite
-              ? "bg-red-500/20 text-red-400 border border-red-500/40 hover:bg-red-500/30"
-              : "bg-dark-900/70 text-slate-400 border border-slate-700/60 hover:text-white hover:bg-dark-900"
+              ? "bg-red-50 text-[#a71d2a] border border-red-200"
+              : "bg-white/90 text-slate-500 hover:text-[#a71d2a] hover:bg-white"
           }`}
         >
-          <Heart size={15} fill={favorite ? "currentColor" : "none"} />
+          <Heart size={14} fill={favorite ? "currentColor" : "none"} />
         </button>
 
         {/* Price tag */}
-        <div className="absolute bottom-3 right-3 rounded-xl bg-dark-950/90 border border-primary-400/30 px-3 py-1 backdrop-blur-md">
+        <div className="absolute bottom-2.5 right-2.5 rounded-lg bg-white/95 border border-slate-200 px-2.5 py-1 shadow-xs">
           {isFree ? (
-            <span className="text-xs font-black text-emerald-400">
+            <span className="text-xs font-bold text-emerald-700">
               Free with Pass
             </span>
           ) : (
-            <>
-              <span className="text-[10px] text-slate-400">₹</span>
-              <span className="text-sm font-black text-primary-400">
+            <div className="flex items-baseline gap-0.5">
+              <span className="text-[10px] text-slate-500 font-bold">₹</span>
+              <span className="text-sm font-extrabold text-[#a71d2a]">
                 {facility.pricePerHour}
               </span>
-              <span className="text-[10px] text-slate-400"> / hr</span>
-            </>
+              <span className="text-[10px] text-slate-500"> / hr</span>
+            </div>
           )}
         </div>
       </div>
@@ -127,28 +136,28 @@ export default function FacilityCard({ facility, onFavoriteToggle, isFavorited =
       <div className="flex flex-1 flex-col p-4 justify-between space-y-3">
         <div>
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-primary-400">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#a71d2a]">
               {facility.type}
             </span>
             {facility.publishedQuantity && (
-              <span className="text-[10px] text-slate-400 font-medium">
+              <span className="text-[10px] text-slate-500 font-semibold">
                 {facility.publishedQuantity} {facility.publishedQuantity === 1 ? "unit" : "units / courts"}
               </span>
             )}
           </div>
 
-          <h3 className="text-base sm:text-lg font-bold text-white group-hover:text-primary-300 transition line-clamp-1 mt-0.5">
+          <h3 className="text-base font-bold text-slate-900 group-hover:text-[#a71d2a] transition line-clamp-1 mt-0.5">
             {facility.name}
           </h3>
 
-          <div className="flex items-center gap-1.5 text-xs text-slate-400 mt-1">
-            <MapPin size={13} className="shrink-0 text-primary-400" />
+          <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-1">
+            <MapPin size={12} className="shrink-0 text-[#a71d2a]" />
             <span className="truncate">{facility.campusLocation || facility.location}</span>
           </div>
 
           {facility.discrepancyNote && (
-            <p className="mt-1 text-[11px] text-amber-400/90 line-clamp-1 flex items-center gap-1 italic">
-              <AlertTriangle size={11} className="shrink-0 text-amber-400" />
+            <p className="mt-1 text-[11px] text-amber-700 line-clamp-1 flex items-center gap-1 italic">
+              <AlertTriangle size={11} className="shrink-0 text-amber-600" />
               {facility.discrepancyNote}
             </p>
           )}
@@ -157,19 +166,19 @@ export default function FacilityCard({ facility, onFavoriteToggle, isFavorited =
         {/* Badges / Features preview */}
         <div className="flex flex-wrap gap-1.5 pt-1">
           {facility.membershipRequired && (
-            <span className="rounded-lg bg-primary-950/60 border border-primary-500/30 px-2 py-0.5 text-[10px] text-primary-300 font-medium">
+            <span className="rounded bg-red-50 border border-red-200 px-2 py-0.5 text-[10px] text-[#a71d2a] font-bold">
               Membership Track
             </span>
           )}
           {facility.surfaceType && (
-            <span className="rounded-lg bg-dark-800 border border-slate-800 px-2 py-0.5 text-[10px] text-slate-300">
+            <span className="rounded bg-slate-100 border border-slate-200 px-2 py-0.5 text-[10px] text-slate-700">
               {facility.surfaceType}
             </span>
           )}
           {facility.amenities?.slice(0, 2).map((amenity) => (
             <span
               key={amenity}
-              className="rounded-lg bg-dark-800 border border-slate-850 px-2 py-0.5 text-[10px] text-slate-400"
+              className="rounded bg-slate-100 border border-slate-200 px-2 py-0.5 text-[10px] text-slate-600"
             >
               {amenity}
             </span>
@@ -177,17 +186,19 @@ export default function FacilityCard({ facility, onFavoriteToggle, isFavorited =
         </div>
 
         {/* Footer info & Book CTA */}
-        <div className="flex items-center justify-between border-t border-slate-800/80 pt-2.5 text-xs text-slate-400">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between border-t border-slate-100 pt-2.5 text-xs text-slate-500">
+          <div className="flex items-center gap-3 text-[11px]">
             <span className="flex items-center gap-1">
-              <Users size={12} className="text-slate-500" /> {facility.capacity} max
+              <Users size={12} className="text-slate-400" /> {facility.capacity} max
             </span>
             <span className="flex items-center gap-1">
-              <Clock size={12} className="text-slate-500" /> {to12Hour(facility.openingTime) || facility.openingTime} - {to12Hour(facility.closingTime) || facility.closingTime}
+              <Clock size={12} className="text-slate-400" />{" "}
+              {to12Hour(facility.openingTime) || facility.openingTime} -{" "}
+              {to12Hour(facility.closingTime) || facility.closingTime}
             </span>
           </div>
 
-          <span className="text-xs font-bold text-primary-400 group-hover:text-primary-300 flex items-center gap-0.5">
+          <span className="text-xs font-bold text-[#a71d2a] group-hover:underline flex items-center gap-0.5">
             {facility.approvalRequired ? "Request" : "Book"} <ChevronRight size={13} />
           </span>
         </div>

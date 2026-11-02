@@ -24,18 +24,15 @@ export default function OtpInput({
 
   function handleChange(index, e) {
     const rawVal = e.target.value;
-    // Extract only digits
     const cleanDigits = rawVal.replace(/\D/g, "");
 
     if (!cleanDigits) {
-      // Clear current box
       const newDigits = [...digits];
       newDigits[index] = "";
       onChange(newDigits.join(""));
       return;
     }
 
-    // If multiple digits were typed/pasted into single box
     if (cleanDigits.length > 1) {
       const newDigits = [...digits];
       for (let i = 0; i < cleanDigits.length && index + i < length; i++) {
@@ -48,12 +45,10 @@ export default function OtpInput({
       return;
     }
 
-    // Single digit input
     const newDigits = [...digits];
     newDigits[index] = cleanDigits.slice(-1);
     onChange(newDigits.join(""));
 
-    // Advance to next box
     if (index < length - 1) {
       inputRefs.current[index + 1]?.focus();
     }
@@ -62,7 +57,6 @@ export default function OtpInput({
   function handleKeyDown(index, e) {
     if (e.key === "Backspace") {
       if (!digits[index] && index > 0) {
-        // Current box is empty, move to previous box and clear it
         const newDigits = [...digits];
         newDigits[index - 1] = "";
         onChange(newDigits.join(""));
@@ -107,16 +101,15 @@ export default function OtpInput({
           onKeyDown={(e) => handleKeyDown(i, e)}
           onFocus={(e) => e.target.select()}
           aria-label={`Verification digit ${i + 1} of ${length}`}
-          className={`h-12 w-10 sm:h-14 sm:w-12 rounded-xl text-center text-xl sm:text-2xl font-mono font-bold text-white transition outline-none ${
+          className={`h-12 w-10 sm:h-14 sm:w-12 rounded-lg text-center text-xl sm:text-2xl font-mono font-bold transition outline-none ${
             hasError
-              ? "border-2 border-red-500 bg-red-500/10 text-red-200"
+              ? "border-2 border-red-500 bg-red-50 text-red-900"
               : digits[i]
-              ? "border-2 border-primary-400 bg-dark-900 text-primary-300 shadow-glow-sm"
-              : "border border-slate-700 bg-dark-950 hover:border-slate-600 focus:border-primary-400 focus:ring-1 focus:ring-primary-400"
+              ? "border-2 border-[#a71d2a] bg-red-50/50 text-slate-900 shadow-xs"
+              : "border border-slate-300 bg-slate-50 text-slate-800 hover:border-slate-400 focus:border-[#a71d2a] focus:bg-white"
           } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
         />
       ))}
     </div>
   );
 }
-

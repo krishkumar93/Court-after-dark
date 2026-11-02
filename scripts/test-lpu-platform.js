@@ -118,3 +118,4 @@ REQUIRED_STATUSES.forEach((st) => assert.ok(typeof st === "string" && st.length 
 console.log("   ✓ All 11 lifecycle statuses confirmed.\n");
 
 console.log("🎉 LPU Platform Test Suite passed cleanly (100% assertions green)!\n");
+

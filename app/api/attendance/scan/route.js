@@ -100,3 +100,4 @@ export async function POST(request) {
     return NextResponse.json({ error: "Failed to process gate verification: " + err.message }, { status: 500 });
   }
 }
+

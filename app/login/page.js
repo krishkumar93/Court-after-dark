@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  Trophy,
   Lock,
   Mail,
   Smartphone,
@@ -20,6 +19,7 @@ import {
   AlertCircle,
   RefreshCw,
   Edit2,
+  GraduationCap,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
@@ -27,10 +27,8 @@ import OtpInput from "@/components/OtpInput";
 import { isValidEmail } from "@/lib/validators";
 
 export default function LoginPage() {
-  // Method: 'phone' (SMS OTP) | 'password' (Email + Password)
-  const [authMethod, setAuthMethod] = useState("phone");
-  // Step: 'input' | 'otp'
-  const [step, setStep] = useState("input");
+  const [authMethod, setAuthMethod] = useState("phone"); // 'phone' | 'password'
+  const [step, setStep] = useState("input"); // 'input' | 'otp'
 
   // Form Fields
   const [phone, setPhone] = useState("");
@@ -45,7 +43,7 @@ export default function LoginPage() {
   const [canResend, setCanResend] = useState(false);
 
   // Loading & Error States
-  const [loadingAction, setLoadingAction] = useState(null); // 'send-otp' | 'verify-otp' | 'password-login' | 'demo-player' | 'demo-admin'
+  const [loadingAction, setLoadingAction] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [requiresConfig, setRequiresConfig] = useState(false);
 
@@ -70,7 +68,6 @@ export default function LoginPage() {
     return () => clearInterval(timer);
   }, [step, countdown]);
 
-  // Format Phone Input
   function handlePhoneChange(e) {
     let digits = e.target.value.replace(/\D/g, "").slice(0, 10);
     if (digits.length > 5) {
@@ -81,7 +78,6 @@ export default function LoginPage() {
     setRequiresConfig(false);
   }
 
-  // Step 1: Send Real SMS OTP to Mobile Phone
   async function handleSendOtp(e) {
     if (e) e.preventDefault();
     setErrorMessage("");
@@ -99,222 +95,193 @@ export default function LoginPage() {
 
     setLoadingAction("send-otp");
     try {
-      const res = await sendOtp(cleanPhone, "login");
-      setMaskedPhone(res.maskedPhone || `+91 ${cleanPhone.slice(0, 2)}*** **${cleanPhone.slice(-3)}`);
+      const res = await sendOtp(cleanPhone);
+      setMaskedPhone(res.maskedPhone || `+91 ******${cleanPhone.slice(-4)}`);
       setStep("otp");
       setCountdown(45);
       setCanResend(false);
       setOtp("");
-      showToast(res.message || "Verification code dispatched via SMS!");
+      showToast("Verification code dispatched via SMS. Please check your phone.");
     } catch (err) {
-      setErrorMessage(err.message || "Failed to send verification SMS. Please retry.");
-      if (err.data?.requiresConfiguration) {
+      const msg = err.message || "Failed to send SMS OTP.";
+      setErrorMessage(msg);
+      if (err.requiresConfig || msg.includes("Twilio") || msg.includes("SMS gateway")) {
         setRequiresConfig(true);
       }
-      showToast(err.message || "Could not send OTP", "error");
     } finally {
       setLoadingAction(null);
     }
   }
 
-  // Step 2: Verify 6-Digit SMS OTP & Sign In
   async function handleVerifyOtp(e) {
     if (e) e.preventDefault();
-    if (!otp || otp.length !== 6) {
-      setErrorMessage("Please enter all 6 digits of the verification code received on your phone.");
+    if (otp.length !== 6) {
+      setErrorMessage("Please enter all 6 digits of the OTP code.");
       return;
     }
 
+    const cleanPhone = phone.replace(/\s/g, "");
     setLoadingAction("verify-otp");
     setErrorMessage("");
 
     try {
-      const cleanPhone = phone.replace(/\s/g, "");
-      const user = await verifyOtp({
-        phone: cleanPhone,
-        otp,
-      });
-
-      showToast(`Welcome back, ${user.name}!`);
-      if (user.role === "admin") {
-        window.location.href = "/admin";
+      const userObj = await verifyOtp(cleanPhone, otp);
+      showToast(`Welcome back, ${userObj.name}! Authentication verified.`);
+      if (["admin", "super_admin", "sports_admin", "coach", "equipment_manager"].includes(userObj.role)) {
+        router.push("/admin");
       } else {
-        window.location.href = "/dashboard";
+        router.push("/dashboard");
       }
     } catch (err) {
-      setErrorMessage(err.message || "Incorrect verification code. Please check your SMS and retry.");
-      showToast(err.message || "Verification failed", "error");
+      setErrorMessage(err.message || "Invalid or expired OTP code. Please check and retry.");
+    } finally {
       setLoadingAction(null);
     }
   }
 
-  // Password Login Handler
   async function handlePasswordSubmit(e) {
     e.preventDefault();
-    if (!email.trim() || !isValidEmail(email)) {
+    setErrorMessage("");
+
+    if (!isValidEmail(email)) {
       setErrorMessage("Please enter a valid email address.");
       return;
     }
     if (!password) {
-      setErrorMessage("Please enter your account password.");
+      setErrorMessage("Password is required.");
       return;
     }
 
     setLoadingAction("password-login");
-    setErrorMessage("");
-
     try {
-      const loggedUser = await login(email.trim().toLowerCase(), password);
-      showToast(`Welcome back, ${loggedUser.name}!`);
-      if (loggedUser.role === "admin") {
-        window.location.href = "/admin";
+      const loggedUser = await login(email, password);
+      showToast(`Signed in successfully as ${loggedUser.name}.`);
+      if (["admin", "super_admin", "sports_admin", "coach", "equipment_manager"].includes(loggedUser.role)) {
+        router.push("/admin");
       } else {
-        window.location.href = "/dashboard";
+        router.push("/dashboard");
       }
     } catch (err) {
-      setErrorMessage(err.message || "Invalid email or password.");
-      showToast(err.message || "Login failed", "error");
+      setErrorMessage(err.message || "Invalid credentials. Please verify your email and password.");
+    } finally {
       setLoadingAction(null);
     }
   }
 
-  // Instant Demo Login (Zero Typing)
   async function handleDemoLogin(role) {
-    const actionKey = role === "admin" ? "demo-admin" : "demo-player";
-    setLoadingAction(actionKey);
+    setLoadingAction(role === "admin" ? "demo-admin" : "demo-player");
+    setErrorMessage("");
     try {
       const loggedUser = await loginDemo(role);
-      showToast(`Welcome! Signed in as Demo ${role === "admin" ? "Admin" : "Player"} (${loggedUser.name}).`);
-      if (loggedUser.role === "admin") {
-        window.location.href = "/admin";
+      showToast(`Logged in as ${loggedUser.name} (${loggedUser.role}).`);
+      if (["admin", "super_admin", "sports_admin", "coach", "equipment_manager"].includes(loggedUser.role)) {
+        router.push("/admin");
       } else {
-        window.location.href = "/dashboard";
+        router.push("/dashboard");
       }
     } catch (err) {
-      showToast(err.message || "Failed to sign in as demo user.", "error");
+      setErrorMessage(err.message || "Failed to start demo session.");
+    } finally {
       setLoadingAction(null);
     }
   }
 
   return (
-    <div className="relative mx-auto flex min-h-[90vh] max-w-lg flex-col justify-center px-4 py-12">
-      {/* Ambient Emerald Glow Behind Form */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 sm:w-96 h-80 sm:h-96 bg-primary-400/10 rounded-full blur-3xl pointer-events-none" />
-
-      {/* Main Glass Card */}
-      <div className="relative rounded-3xl border border-slate-800/90 bg-dark-900/95 p-6 sm:p-9 shadow-2xl backdrop-blur-2xl space-y-6">
-        {/* Header with Brand Emblem */}
-        <div className="text-center space-y-2.5">
-          <div className="mx-auto flex h-13 w-13 items-center justify-center rounded-2xl bg-gradient-to-tr from-primary-500/20 to-primary-400/10 border border-primary-400/30 text-primary-400 shadow-glow-sm">
-            <Trophy size={26} />
+    <div className="mx-auto flex min-h-[85vh] max-w-md flex-col justify-center px-4 py-12">
+      {/* University Card */}
+      <div className="rounded-xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm space-y-6">
+        {/* Header with Official LPU Logo */}
+        <div className="text-center space-y-2">
+          <div className="mx-auto flex justify-center pb-1">
+            <img
+              src="/images/lpu-logo.svg"
+              alt="Lovely Professional University"
+              className="h-10 w-auto object-contain"
+            />
           </div>
           <div>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-400/10 border border-primary-400/25 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary-300">
-              <Shield size={11} /> Fair-Play Athlete Authentication
-            </span>
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight mt-1.5">
-              Welcome Back, Athlete
+            <div className="text-xs font-bold uppercase tracking-wider text-[#a71d2a]">
+              LOVELY PROFESSIONAL UNIVERSITY
+            </div>
+            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mt-0.5">
+              Student Sports Portal Sign In
             </h1>
-            <p className="text-xs text-slate-400 max-w-sm mx-auto mt-1">
+            <p className="text-xs text-slate-500 max-w-xs mx-auto mt-1">
               {step === "otp"
                 ? `Enter the 6-digit SMS verification code sent to ${maskedPhone}.`
-                : "Sign in with your mobile number via real SMS OTP or account password."}
+                : "Sign in with your mobile number via real SMS OTP or student password."}
             </p>
           </div>
         </div>
 
-        {/* Configuration Notice (if SMS gateway credentials are not configured) */}
-        {requiresConfig && step === "input" && (
-          <div className="rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 space-y-2 text-xs text-amber-200">
-            <div className="flex items-center gap-2 font-bold text-amber-300">
-              <AlertCircle size={16} />
-              <span>Real SMS Gateway Setup Required</span>
-            </div>
-            <p className="text-[11px] text-slate-300 leading-relaxed">
-              To deliver live SMS OTPs to physical cellular SIM cards, configure Twilio Verify in your <code className="bg-dark-950 px-1 py-0.5 rounded text-amber-300">.env.local</code> file:
-            </p>
-            <div className="rounded-xl bg-dark-950/80 p-2.5 font-mono text-[10px] text-slate-300 space-y-0.5 border border-amber-500/20">
-              <p>TWILIO_ACCOUNT_SID=your_account_sid</p>
-              <p>TWILIO_AUTH_TOKEN=your_auth_token</p>
-              <p>TWILIO_VERIFY_SERVICE_SID=your_verify_service_sid</p>
-            </div>
-            <p className="text-[11px] text-slate-400">
-              You can also test the platform immediately using the 1-click Demo Accounts below without SMS configuration.
-            </p>
-          </div>
-        )}
-
-        {/* Instant 1-Click Demo Quick Logins */}
+        {/* 1-Click Instant Demo Accounts */}
         {step === "input" && (
-          <div className="rounded-2xl border border-primary-400/25 bg-gradient-to-b from-primary-400/10 via-dark-950/70 to-dark-950/70 p-3.5 space-y-2.5">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-primary-400">
-                <Sparkles size={14} className="animate-pulse" />
-                <span>1-Click Instant Demo Access</span>
-              </div>
-              <span className="rounded-full bg-primary-400/15 px-2 py-0.5 text-[9px] font-bold text-primary-300 uppercase">
-                Skip Typing
+          <div className="rounded-lg border border-red-200 bg-red-50/60 p-3 space-y-2">
+            <div className="flex items-center justify-between text-xs font-bold text-[#a71d2a]">
+              <span className="flex items-center gap-1.5">
+                <Sparkles size={13} />
+                <span>Instant Demo Access</span>
+              </span>
+              <span className="text-[10px] uppercase font-semibold text-slate-500">
+                1-Click Sign In
               </span>
             </div>
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 disabled={loadingAction !== null}
-                onClick={() => handleDemoLogin("player")}
-                className="flex flex-col items-center justify-center gap-1 rounded-xl border border-primary-400/30 bg-primary-400/10 p-2.5 text-xs font-bold text-primary-300 hover:bg-primary-400/20 hover:border-primary-400 disabled:opacity-60 transition group"
+                onClick={() => handleDemoLogin("student")}
+                className="flex flex-col items-center justify-center gap-0.5 rounded-lg border border-red-200 bg-white p-2 text-xs font-bold text-slate-800 hover:border-[#a71d2a] hover:bg-red-50 transition cursor-pointer"
               >
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1 text-[#a71d2a]">
                   {loadingAction === "demo-player" ? (
-                    <Loader2 size={13} className="animate-spin text-primary-400" />
+                    <Loader2 size={12} className="animate-spin" />
                   ) : (
-                    <User size={13} className="text-primary-400 group-hover:scale-110 transition-transform" />
+                    <User size={13} />
                   )}
-                  <span>{loadingAction === "demo-player" ? "Signing In..." : "Demo Athlete"}</span>
+                  <span>Aarav (Student)</span>
                 </div>
-                <span className="text-[10px] text-slate-400 font-normal">Aarav (Rackets & Courts)</span>
+                <span className="text-[10px] text-slate-500 font-normal">Hosteller with EDB</span>
               </button>
 
               <button
                 type="button"
                 disabled={loadingAction !== null}
-                onClick={() => handleDemoLogin("admin")}
-                className="flex flex-col items-center justify-center gap-1 rounded-xl border border-amber-500/30 bg-amber-500/10 p-2.5 text-xs font-bold text-amber-300 hover:bg-amber-500/20 hover:border-amber-500 disabled:opacity-60 transition group"
+                onClick={() => handleDemoLogin("sports_admin")}
+                className="flex flex-col items-center justify-center gap-0.5 rounded-lg border border-amber-300 bg-white p-2 text-xs font-bold text-slate-800 hover:border-amber-500 hover:bg-amber-50 transition cursor-pointer"
               >
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1 text-amber-800">
                   {loadingAction === "demo-admin" ? (
-                    <Loader2 size={13} className="animate-spin text-amber-400" />
+                    <Loader2 size={12} className="animate-spin" />
                   ) : (
-                    <Shield size={13} className="text-amber-400 group-hover:scale-110 transition-transform" />
+                    <Shield size={13} />
                   )}
-                  <span>{loadingAction === "demo-admin" ? "Signing In..." : "Demo Admin"}</span>
+                  <span>DSW Admin</span>
                 </div>
-                <span className="text-[10px] text-slate-400 font-normal">Full Operator Dashboard</span>
+                <span className="text-[10px] text-slate-500 font-normal">Sports Console</span>
               </button>
             </div>
           </div>
         )}
 
-        {/* Step 1: Mode Switcher Tabs */}
+        {/* Mode Switcher Tabs */}
         {step === "input" && (
           <div className="space-y-1">
-            <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-              Choose Sign In Method
-            </label>
-            <div className="grid grid-cols-2 gap-1.5 rounded-2xl bg-dark-950 p-1 border border-slate-800">
+            <div className="grid grid-cols-2 gap-1 rounded-lg bg-slate-100 p-1 border border-slate-200">
               <button
                 type="button"
                 onClick={() => {
                   setAuthMethod("phone");
                   setErrorMessage("");
                 }}
-                className={`flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition ${
+                className={`flex items-center justify-center gap-1.5 py-2 rounded-md text-xs font-bold transition cursor-pointer ${
                   authMethod === "phone"
-                    ? "bg-primary-400 text-dark-950 shadow-glow-sm"
-                    : "text-slate-400 hover:text-white"
+                    ? "bg-[#a71d2a] text-white shadow-xs"
+                    : "text-slate-600 hover:text-slate-900"
                 }`}
               >
-                <Smartphone size={14} />
-                <span>Phone SMS OTP</span>
+                <Smartphone size={13} />
+                <span>Mobile SMS OTP</span>
               </button>
 
               <button
@@ -323,13 +290,13 @@ export default function LoginPage() {
                   setAuthMethod("password");
                   setErrorMessage("");
                 }}
-                className={`flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition ${
+                className={`flex items-center justify-center gap-1.5 py-2 rounded-md text-xs font-bold transition cursor-pointer ${
                   authMethod === "password"
-                    ? "bg-primary-400 text-dark-950 shadow-glow-sm"
-                    : "text-slate-400 hover:text-white"
+                    ? "bg-[#a71d2a] text-white shadow-xs"
+                    : "text-slate-600 hover:text-slate-900"
                 }`}
               >
-                <Lock size={14} />
+                <Lock size={13} />
                 <span>Email & Password</span>
               </button>
             </div>
@@ -338,21 +305,21 @@ export default function LoginPage() {
 
         {/* Error Alert Box */}
         {errorMessage && (
-          <div className="flex items-start gap-2 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-300">
-            <AlertCircle size={15} className="shrink-0 text-red-400 mt-0.5" />
+          <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700">
+            <AlertCircle size={15} className="shrink-0 text-red-600 mt-0.5" />
             <span className="leading-relaxed">{errorMessage}</span>
           </div>
         )}
 
-        {/* STEP 1A: Mobile Number SMS OTP Form */}
+        {/* Form: Mobile Number SMS OTP */}
         {step === "input" && authMethod === "phone" && (
           <form onSubmit={handleSendOtp} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 mb-1">
                 Indian Mobile Number
               </label>
-              <div className="relative flex rounded-xl border border-slate-700 bg-dark-950 overflow-hidden focus-within:border-primary-400 transition">
-                <div className="flex items-center gap-1.5 px-3 bg-dark-800 border-r border-slate-700/80 text-xs font-bold text-slate-200">
+              <div className="relative flex rounded-lg border border-slate-300 bg-slate-50 overflow-hidden focus-within:border-[#a71d2a] focus-within:bg-white transition">
+                <div className="flex items-center gap-1 px-3 bg-slate-100 border-r border-slate-300 text-xs font-bold text-slate-700">
                   <span>🇮🇳</span>
                   <span>+91</span>
                 </div>
@@ -362,44 +329,44 @@ export default function LoginPage() {
                   onChange={handlePhoneChange}
                   placeholder="78287 22557"
                   maxLength={11}
-                  className="w-full bg-transparent px-3.5 py-2.5 text-sm text-white placeholder-slate-500 font-mono outline-none"
+                  className="w-full bg-transparent px-3 py-2 text-sm text-slate-900 placeholder-slate-400 font-mono outline-none"
                   autoFocus
                 />
               </div>
               <p className="mt-1 text-[11px] text-slate-500">
-                A 6-digit verification code will be sent privately to your phone via SMS.
+                A 6-digit verification code will be dispatched to your phone via SMS.
               </p>
             </div>
 
             <button
               type="submit"
               disabled={loadingAction !== null}
-              className="w-full flex items-center justify-center gap-2 rounded-xl bg-primary-400 py-3 text-sm font-bold text-dark-950 hover:bg-primary-300 disabled:opacity-60 transition shadow-glow-sm"
+              className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#a71d2a] py-2.5 text-xs font-bold text-white hover:bg-[#8e1520] disabled:opacity-60 transition shadow-xs cursor-pointer"
             >
               {loadingAction === "send-otp" ? (
                 <>
-                  <Loader2 size={15} className="animate-spin" />
-                  <span>Dispatching SMS Code...</span>
+                  <Loader2 size={14} className="animate-spin" />
+                  <span>Sending SMS Code...</span>
                 </>
               ) : (
                 <>
                   <span>Send Verification Code (SMS)</span>
-                  <ArrowRight size={15} />
+                  <ArrowRight size={14} />
                 </>
               )}
             </button>
           </form>
         )}
 
-        {/* STEP 1B: Traditional Email & Password Login Form */}
+        {/* Form: Email & Password */}
         {step === "input" && authMethod === "password" && (
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Email Address
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                Student Email Address
               </label>
               <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={15} />
                 <input
                   type="email"
                   value={email}
@@ -407,29 +374,29 @@ export default function LoginPage() {
                     setEmail(e.target.value);
                     setErrorMessage("");
                   }}
-                  placeholder="athlete@example.com"
-                  className="w-full rounded-xl border border-slate-700 bg-dark-950 pl-10 pr-3.5 py-2.5 text-sm text-white placeholder-slate-500 outline-none focus:border-primary-400 transition"
+                  placeholder="aarav.12104582@lpu.in"
+                  className="w-full rounded-lg border border-slate-300 bg-slate-50 pl-9 pr-3 py-2 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-[#a71d2a] focus:bg-white"
                   autoFocus
                 />
               </div>
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-semibold text-slate-300">
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-bold text-slate-700">
                   Password
                 </label>
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="text-[11px] text-slate-400 hover:text-slate-200 flex items-center gap-1"
+                  className="text-[11px] text-slate-500 hover:text-slate-800 flex items-center gap-1 cursor-pointer"
                 >
-                  {showPassword ? <EyeOff size={12} /> : <Eye size={12} />}
+                  {showPassword ? <EyeOff size={11} /> : <Eye size={11} />}
                   <span>{showPassword ? "Hide" : "Show"}</span>
                 </button>
               </div>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={15} />
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
@@ -438,52 +405,25 @@ export default function LoginPage() {
                     setErrorMessage("");
                   }}
                   placeholder="••••••••"
-                  className="w-full rounded-xl border border-slate-700 bg-dark-950 pl-10 pr-10 py-2.5 text-sm text-white placeholder-slate-500 outline-none focus:border-primary-400 transition"
+                  className="w-full rounded-lg border border-slate-300 bg-slate-50 pl-9 pr-9 py-2 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-[#a71d2a] focus:bg-white"
                 />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between text-[11px] text-slate-400">
-              <span className="text-slate-500">Quick fill:</span>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEmail("aarav@example.com");
-                    setPassword("player123");
-                  }}
-                  className="text-primary-400 hover:underline"
-                >
-                  Fill Player
-                </button>
-                <span className="text-slate-700">•</span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEmail("admin@courtsafterdark.com");
-                    setPassword("admin123");
-                  }}
-                  className="text-amber-400 hover:underline"
-                >
-                  Fill Admin
-                </button>
               </div>
             </div>
 
             <button
               type="submit"
               disabled={loadingAction !== null}
-              className="w-full flex items-center justify-center gap-2 rounded-xl bg-primary-400 py-3 text-sm font-bold text-dark-950 hover:bg-primary-300 disabled:opacity-60 transition shadow-glow-sm"
+              className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#a71d2a] py-2.5 text-xs font-bold text-white hover:bg-[#8e1520] disabled:opacity-60 transition shadow-xs cursor-pointer"
             >
               {loadingAction === "password-login" ? (
                 <>
-                  <Loader2 size={15} className="animate-spin" />
+                  <Loader2 size={14} className="animate-spin" />
                   <span>Signing In...</span>
                 </>
               ) : (
                 <>
                   <span>Sign In with Password</span>
-                  <ArrowRight size={15} />
+                  <ArrowRight size={14} />
                 </>
               )}
             </button>
@@ -492,18 +432,17 @@ export default function LoginPage() {
 
         {/* STEP 2: Pure 6-Box SMS OTP Verification Screen */}
         {step === "otp" && (
-          <form onSubmit={handleVerifyOtp} className="space-y-6 animate-in fade-in zoom-in-95 duration-200">
-            {/* Target Display and Change Button */}
-            <div className="flex items-center justify-between rounded-2xl bg-dark-950 p-4 border border-slate-800">
-              <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-400/15 text-primary-400 border border-primary-400/30">
-                  <Smartphone size={18} />
+          <form onSubmit={handleVerifyOtp} className="space-y-5 animate-in fade-in duration-200">
+            <div className="flex items-center justify-between rounded-lg bg-slate-50 p-3 border border-slate-200">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 text-[#a71d2a] border border-red-200">
+                  <Smartphone size={16} />
                 </div>
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
-                    SMS Sent To
+                  <span className="text-[10px] uppercase font-bold text-slate-500 block">
+                    SMS Delivered To
                   </span>
-                  <strong className="text-sm text-white font-mono">{maskedPhone}</strong>
+                  <strong className="text-xs text-slate-900 font-mono">{maskedPhone}</strong>
                 </div>
               </div>
 
@@ -514,16 +453,15 @@ export default function LoginPage() {
                   setOtp("");
                   setErrorMessage("");
                 }}
-                className="flex items-center gap-1 text-xs font-semibold text-primary-400 hover:underline"
+                className="flex items-center gap-1 text-xs font-bold text-[#a71d2a] hover:underline cursor-pointer"
               >
-                <Edit2 size={13} />
+                <Edit2 size={12} />
                 <span>Change</span>
               </button>
             </div>
 
-            {/* 6 Individual Digit Input Boxes */}
-            <div className="space-y-3">
-              <label className="block text-center text-xs font-semibold text-slate-300">
+            <div className="space-y-2">
+              <label className="block text-center text-xs font-bold text-slate-700">
                 Enter 6-Digit Code Received via SMS
               </label>
 
@@ -538,14 +476,14 @@ export default function LoginPage() {
                 hasError={!!errorMessage}
               />
 
-              <div className="flex items-center justify-between text-xs pt-2 px-1">
+              <div className="flex items-center justify-between text-xs pt-1 px-1">
                 <span className="text-[11px] text-slate-500">
                   {canResend ? (
                     "Didn't receive SMS?"
                   ) : (
                     <span>
                       Resend SMS in{" "}
-                      <strong className="text-primary-300 font-mono">
+                      <strong className="text-[#a71d2a] font-mono font-bold">
                         00:{countdown < 10 ? `0${countdown}` : countdown}
                       </strong>
                     </span>
@@ -556,13 +494,13 @@ export default function LoginPage() {
                   type="button"
                   disabled={!canResend || loadingAction !== null}
                   onClick={handleSendOtp}
-                  className="flex items-center gap-1.5 text-xs font-bold text-primary-400 hover:underline disabled:opacity-40 disabled:no-underline"
+                  className="flex items-center gap-1 text-xs font-bold text-[#a71d2a] hover:underline disabled:opacity-40 disabled:no-underline cursor-pointer"
                 >
                   <RefreshCw
-                    size={13}
+                    size={12}
                     className={loadingAction === "send-otp" ? "animate-spin" : ""}
                   />
-                  <span>Resend SMS OTP</span>
+                  <span>Resend Code</span>
                 </button>
               </div>
             </div>
@@ -570,16 +508,16 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loadingAction !== null || otp.length !== 6}
-              className="w-full flex items-center justify-center gap-2 rounded-xl bg-primary-400 py-3.5 text-sm font-bold text-dark-950 hover:bg-primary-300 disabled:opacity-40 disabled:cursor-not-allowed transition shadow-glow-sm"
+              className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#a71d2a] py-3 text-xs font-bold text-white hover:bg-[#8e1520] disabled:opacity-40 disabled:cursor-not-allowed transition shadow-xs cursor-pointer"
             >
               {loadingAction === "verify-otp" ? (
                 <>
-                  <Loader2 size={16} className="animate-spin" />
-                  <span>Verifying Code & Signing In...</span>
+                  <Loader2 size={15} className="animate-spin" />
+                  <span>Verifying Code...</span>
                 </>
               ) : (
                 <>
-                  <CheckCircle2 size={16} />
+                  <CheckCircle2 size={15} />
                   <span>Verify OTP & Sign In</span>
                 </>
               )}
@@ -587,30 +525,17 @@ export default function LoginPage() {
           </form>
         )}
 
-        {/* Security & Guest Links */}
-        <div className="space-y-3 pt-2 border-t border-slate-800/80 text-center">
-          <div className="flex items-center justify-center gap-4 text-[11px] text-slate-500">
-            <span className="flex items-center gap-1">
-              <Shield size={12} className="text-primary-400" /> 256-Bit SSL Encrypted
-            </span>
-            <span>•</span>
-            <span>Real Carrier SMS Delivery</span>
-          </div>
-
-          <div className="text-xs text-slate-400">
-            Don't have an athlete account?{" "}
-            <Link href="/register" className="text-primary-400 font-bold hover:underline">
-              Register for free
+        {/* Footer Links */}
+        <div className="space-y-2 pt-2 border-t border-slate-100 text-center text-xs">
+          <div className="text-slate-600">
+            Don't have a student account?{" "}
+            <Link href="/register" className="text-[#a71d2a] font-bold hover:underline">
+              Student Registration
             </Link>
           </div>
-
-          <div className="pt-1">
-            <Link
-              href="/facilities"
-              className="inline-flex items-center gap-1.5 text-[11px] text-slate-400 hover:text-white transition"
-            >
-              <Compass size={13} className="text-primary-400" />
-              <span>Explore Facilities Directory as Guest</span>
+          <div>
+            <Link href="/facilities" className="text-[11px] text-slate-500 hover:text-slate-800">
+              Browse campus facilities as guest →
             </Link>
           </div>
         </div>

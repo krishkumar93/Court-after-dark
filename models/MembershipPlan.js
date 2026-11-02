@@ -46,3 +46,4 @@ const MembershipPlanSchema = new mongoose.Schema({
 
 export default mongoose.models.MembershipPlan ||
   mongoose.model("MembershipPlan", MembershipPlanSchema);
+

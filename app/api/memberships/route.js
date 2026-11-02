@@ -131,3 +131,4 @@ export async function POST(request) {
     return NextResponse.json({ error: err.message || "Failed to create membership." }, { status: 500 });
   }
 }
+
